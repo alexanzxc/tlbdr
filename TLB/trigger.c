@@ -245,22 +245,23 @@ int main(int argc, char *argv[]){
 
 	const int BUF_PROT = PROT_READ|PROT_WRITE|PROT_EXEC;
 	
-	//We want 2^FREEDOM_OF_BITS virtual pages
+	//We want 2^FREEDOM_OF_BITS virtual pages 2^23
 	unsigned long number_of_pages = pow(2, FREEDOM_OF_BITS);
 	
-	//We want 2^UNIQUE_BITS physical pages
-	unsigned long unique_pages = pow(2, UNIQUE_BITS);
+	//We want 2^UNIQUE_BITS physical pages 2^12
+	unsigned long unique_pages = pow(2, UNIQUE_BITS); //4096 
 	
 	//Maps all virtual pages to the set of physical pages
 	int fd_shm = shm_open("/example_shm", O_RDWR | O_CREAT, 0777);
 	ftruncate(fd_shm, PAGE_SIZE * unique_pages);
 	int i;
 
-	for(i = 0; i < number_of_pages / unique_pages; i++){
+	for(i = 0; i < number_of_pages / unique_pages; i++){ //i max 2048
 		if(mmap(BASE + (PAGE_SIZE * unique_pages * i), PAGE_SIZE * unique_pages, BUF_PROT, MAP_SHARED|MAP_POPULATE, fd_shm, 0) == MAP_FAILED){
 			printf("Unable to allocate memory at %p (i = %d)\n", BASE + (PAGE_SIZE * unique_pages * i), i);
 			return 1;
 		}
+		printf("memory at %p (i = %d)\n", BASE + (PAGE_SIZE * unique_pages * i), i);
 	}
 	
 	//Write an identifier to each unique physcial page
@@ -275,10 +276,10 @@ int main(int argc, char *argv[]){
 	}  
 	
 	int res;
-	printf("This tool tests TLB properties. It will disable all but one core per physical core. In addition, kernel preemption and interrupts will be disabled while testing. YOU MAY LOSE CONTROL OVER YOUR MACHINE DURING TESTING. Please save important work before proceeding. Do you want to continue [y|n]?\n");
-	if(read_response() != 'y'){
-		return 0;
-	}
+	// printf("This tool tests TLB properties. It will disable all but one core per physical core. In addition, kernel preemption and interrupts will be disabled while testing. YOU MAY LOSE CONTROL OVER YOUR MACHINE DURING TESTING. Please save important work before proceeding. Do you want to continue [y|n]?\n");
+	// if(read_response() != 'y'){
+	// 	return 0;
+	// }
 	
 	//Pin process to a core
 	cpu_set_t mask;
@@ -327,16 +328,23 @@ int main(int argc, char *argv[]){
 	if(test != 0){
 		printf("Testing, please wait a moment...\n");
 		read(fd, msg, test - 1);
-		remove_line_above();
+		printf("\n\n");
 		printf("%d. %s\n", test, msg);
 	}else{
-		//Perform all tests
-		for(i = 0; i < 19; i++){
-			printf("Testing, please wait a moment...\n");
-			read(fd, msg, tests[i]);
-			remove_line_above();
-			printf("%d. %s\n", i + 1, msg);
-		}
+		//Perform 3 5 12
+		i = 2;
+		read(fd, msg, tests[i]);
+		printf("\n");
+		printf("%d. %s\n", i + 1, msg);
+		i = 4;
+		read(fd, msg, tests[i]);
+		printf("\n");
+		printf("%d. %s\n", i + 1, msg);
+		i = 11;
+		read(fd, msg, tests[i]);
+		printf("\n");
+		printf("%d. %s\n", i + 1, msg);
+		
 	}
 
 	enable_all_cores();

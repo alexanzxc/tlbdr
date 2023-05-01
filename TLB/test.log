@@ -1,0 +1,12 @@
+Pinned on core 0, disabled core 2.
+
+
+3. sTLB hash function: XOR-7 hash function (128 sets), 12 ways/set.
+
+
+5. dTLB hash function: LIN-16 hash function (16 sets), 4 ways/set.
+
+
+12. dTLB replacement policy: PLRU short sequence evicted 0 with success [1m[30m1000 / 1000[0m, long sequence did not evict 0 with success [1m[30m940 / 1000[0m.
+
+Enabled all cores.
