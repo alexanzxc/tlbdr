@@ -1,0 +1,51 @@
+Notes :
+
+- check hugepages:
+
+grep Huge /proc/meminfo
+cat /sys/devices/system/node/node*/meminfo | grep Huge
+
+- enable/disable hugepages:
+https://www.kernel.org/doc/html/latest/admin-guide/mm/transhuge.html
+
+echo always >/sys/kernel/mm/transparent_hugepage/enabled
+echo madvise >/sys/kernel/mm/transparent_hugepage/enabled
+echo never >/sys/kernel/mm/transparent_hugepage/enabled
+
+echo 1 >/sys/kernel/mm/transparent_hugepage/khugepaged/defrag
+
+- buddyinfo
+
+cat /proc/buddyinfo
+
+- kernel print or control the kernel ring buffer
+
+dmesg -wH
+
+- htop find process
+
+htop / search
+
+- huge pages
+
+echo 10 > /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
+[root@m1 alex]# cat /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
+
+
+
+
+
+
+
+
+why do we allocate the sizes we do ?
+
+
+0x133801000000
+0x133802000000
+
+16777216 = 16MB*2048
+
+ut of memory: Killed process 28983 (trigger) total-vm:10258884kB, anon-rss:10247808kB, file-rss:256kB, shmem-rss:0kB, UID:0 pgtables:20104kB oom_score_adj:200
+
+with MAP_SHARED

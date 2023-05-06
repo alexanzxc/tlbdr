@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 #include <stdint.h>
 #include <stdio.h>
+#include <math.h>
 #include <time.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -270,7 +271,8 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	// prot flag for mmap : The prot argument describes the desired memory protection of the mapping , here pages may be read writen executed.
+	// prot flag for mmap : The prot argument describes the desired memory protection of the mapping
+	// here pages may be read written executed.
 	const int BUF_PROT = PROT_READ | PROT_WRITE | PROT_EXEC;
 
 	// We want 2^FREEDOM_OF_BITS virtual pages 2^23
@@ -289,16 +291,17 @@ int main(int argc, char *argv[])
 	int i;
 
 	for (i = 0; i < number_of_pages / unique_pages; i++)
-	{ // i max 2048
-		if (mmap(BASE + (PAGE_SIZE * unique_pages * i), PAGE_SIZE * unique_pages, BUF_PROT, MAP_SHARED | MAP_POPULATE, fd_shm, 0) == MAP_FAILED)
+	{ // i max 2048 - MAP_PRIVATE FLAG crashes with OOM
+		if (mmap(BASE + (PAGE_SIZE * unique_pages * i), PAGE_SIZE * unique_pages, BUF_PROT, MAP_SHARED | MAP_POPULATE | MAP_HUGETLB, fd_shm, 0) == MAP_FAILED)
 		{
 			printf("Unable to allocate memory at %p (i = %d)\n", BASE + (PAGE_SIZE * unique_pages * i), i);
 			return 1;
 		}
 		printf("memory at %p (i = %d)\n", BASE + (PAGE_SIZE * unique_pages * i), i);
+		sleep(0.1);
 	}
 
-	// Write an identifier to each unique physcial page
+	// Write an identifier to each unique physical page
 	// The identifier will be returned when this code is executed
 	volatile unsigned char *p1;
 	for (i = 0; i < unique_pages; i++)
@@ -378,31 +381,30 @@ int main(int argc, char *argv[])
 		printf("\n\n");
 		printf("%d. %s\n", test, msg);
 	}
-	// }else{
-	// 	//Perform 3 5 12
-	// 	i = 2;
-	// 	read(fd, msg, tests[i]);
-	// 	printf("\n");
-	// 	printf("%d. %s\n", i + 1, msg);
-	// 	i = 4;
-	// 	read(fd, msg, tests[i]);
-	// 	printf("\n");
-	// 	printf("%d. %s\n", i + 1, msg);
-	// 	i = 11;
-	// 	read(fd, msg, tests[i]);
-	// 	printf("\n");
-	// 	printf("%d. %s\n", i + 1, msg);
-	// }
 	else
 	{
 		// Perform all tests
 		for (i = 0; i < 19; i++)
 		{
-			printf("Testing, please wait a moment...\n");
+			// printf("Testing first run, please wait a moment...\n");
 			read(fd, msg, tests[i]);
-			remove_line_above();
-			printf("%d. %s\n", i + 1, msg);
+			// remove_line_above();
+			// printf("%d. %s\n", i + 1, msg);
 		}
+		// following will not work without a full run first, trying to figure out why.
+		// Perform 3 5 12
+		i = 2;
+		read(fd, msg, tests[i]);
+		printf("\n");
+		printf("%d. %s\n", i + 1, msg);
+		i = 4;
+		read(fd, msg, tests[i]);
+		printf("\n");
+		printf("%d. %s\n", i + 1, msg);
+		i = 11;
+		read(fd, msg, tests[i]);
+		printf("\n");
+		printf("%d. %s\n", i + 1, msg);
 	}
 	enable_all_cores();
 	printf("Enabled all cores.\n");
