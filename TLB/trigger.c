@@ -13,6 +13,12 @@
 
 #define BUF_LENGTH (100)
 #define NUMBER_OF_TESTS (19)
+#define ADDR (void *) (0x0UL)
+#define LENGTH (40UL*1024*1024)
+#define PROTECTION (PROT_READ | PROT_WRITE | PROT_EXEC)
+#ifndef MAP_HUGETLB
+#define MAP_HUGETLB 0x40000 /* arch specific */
+#endif
 
 // All tests to be executed
 int tests[NUMBER_OF_TESTS] = {INCLUSIVITY, EXCLUSIVITY, STLB_HASH, ITLB_HASH, DTLB_HASH, ITLB_REINSERTION, DTLB_REINSERTION, STLB_REINSERTION, STLB_REINSERTION_L1_EVICTION, STLB_REPLACEMENT, ITLB_REPLACEMENT, DTLB_REPLACEMENT, STLB_PERMUTATION, DTLB_PERMUTATION, ITLB_PERMUTATION, STLB_PCID, DTLB_PCID, ITLB_PCID, STLB_PCID_PERMUTATION};
@@ -271,6 +277,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
+<<<<<<< Updated upstream
 	// prot flag for mmap : The prot argument describes the desired memory protection of the mapping
 	// here pages may be read written executed.
 	const int BUF_PROT = PROT_READ | PROT_WRITE | PROT_EXEC;
@@ -300,10 +307,40 @@ int main(int argc, char *argv[])
 		printf("memory at %p (i = %d)\n", BASE + (PAGE_SIZE * unique_pages * i), i);
 		sleep(0.1);
 	}
+=======
+	//prot flag for mmap : The prot argument describes the desired memory protection of the mapping , here pages may be read writen executed.
+	
+	
+	//We want 2^FREEDOM_OF_BITS virtual pages 2^23
+	//why do we want 2^23 ?
+	unsigned long number_of_pages = pow(2, FREEDOM_OF_BITS);
+	
+	//We want 2^UNIQUE_BITS physical pages 2^12
+	//why 2^12 ? offset? 4096
+	unsigned long unique_pages = pow(2, UNIQUE_BITS); 
+
+	//number of pages/unique pages = 2^11 =2048.
+	
+	//Maps all virtual pages to the set of physical pages
+	int fd_shm = shm_open("/mnt/hugepages", O_RDWR | O_CREAT, 0777);
+	ftruncate(fd_shm, PAGE_SIZE * unique_pages); //16mb
+	int i;
+
+	for(i = 1; i < 10 ; i++){ //i max 2048
+		if(mmap(ADDR, i * (1<<21) , PROTECTION ,MAP_SHARED | MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB , 0, 0) == MAP_FAILED){
+			printf("Unable to allocate memory at %p (i = %d)\n",NULL, i);
+			return 1;
+		}
+		printf("memory at %p (i = %d)\n", ADDR + (i * (1<<21)), i);
+		
+	}
+	//getchar(); 
+>>>>>>> Stashed changes
 
 	// Write an identifier to each unique physical page
 	// The identifier will be returned when this code is executed
 	volatile unsigned char *p1;
+<<<<<<< Updated upstream
 	for (i = 0; i < unique_pages; i++)
 	{
 		p1 = BASE + (4096 * i);
@@ -314,6 +351,22 @@ int main(int argc, char *argv[])
 		p1[12] = 0xc3;
 	}
 
+=======
+	for(i = 0; i < 10; i++){
+		printf("debugging 1 i= %d \n", i);
+		p1 = ADDR + (i * (1<<21));
+		printf("debugging 2 \n");
+		*(uint16_t *)p1 = 0x9090;
+		printf("debugging 3 \n");
+		p1[2] = 0x48; p1[3] = 0xb8;
+		printf("debugging 4 \n");
+		*(uint64_t *)(&p1[4]) = i;
+		printf("debugging 5 \n");
+		p1[12] = 0xc3;		
+		printf("debugging 6 \n");
+	}  
+	
+>>>>>>> Stashed changes
 	int res;
 	// printf("This tool tests TLB properties. It will disable all but one core per physical core. In addition, kernel preemption and interrupts will be disabled while testing. YOU MAY LOSE CONTROL OVER YOUR MACHINE DURING TESTING. Please save important work before proceeding. Do you want to continue [y|n]?\n");
 	// if(read_response() != 'y'){
