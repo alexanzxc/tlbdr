@@ -11,7 +11,8 @@
 #define MMUCTL_PTE (1 << 4)
 #define NXBIT (1ULL << 63)
 
-struct ptwalk {
+struct ptwalk
+{
 	pgd_t *pgd;
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
 	p4d_t *p4d;

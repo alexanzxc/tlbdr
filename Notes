@@ -31,7 +31,8 @@ htop / search
 echo 10 > /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
 [root@m1 alex]# cat /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
 
-
+grep -i huge /proc/mounts
+ipcs -m
 
 
 

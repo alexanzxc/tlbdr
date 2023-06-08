@@ -344,11 +344,11 @@ int main(int argc, char *argv[])
 	for (i = 0; i < unique_pages; i++)
 	{
 		p1 = BASE + (4096 * i);
-		*(uint16_t *)p1 = 0x9090;
-		p1[2] = 0x48;
-		p1[3] = 0xb8;
+		*(uint16_t *)p1 = 0x9090; // double nop?
+		p1[2] = 0x48;			  // decrement by one ?
+		p1[3] = 0xb8;			  // Move a 32-bit constant into register eax
 		*(uint64_t *)(&p1[4]) = i;
-		p1[12] = 0xc3;
+		p1[12] = 0xc3; // Returns from current function // 	Return from near procedure
 	}
 
 =======
