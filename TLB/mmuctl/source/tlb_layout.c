@@ -48,17 +48,18 @@ int non_inclusivity(void)
 
 	int original = read(addr);
 
-	// Desync TLB
+	// Desync TLB --- why pte + 1 ?
 	switch_pages(walk.pte, walk.pte + 1);
 
 	// Will executions evict the PTE?
+	// why evict ?
 	volatile int i;
 	for (i = 0; i < 10000; i++)
 	{
-		execute((void *)BASE + (4096 * i));
+		execute((void *)BASE + (4096 * i)); // not understand
 	}
 
-	int curr = read(addr);
+	int curr = read(addr); // uaccess again
 
 	give_up_cpu();
 
@@ -70,6 +71,7 @@ int non_inclusivity(void)
 	setcr3(cr3k);
 
 	// Return 1 if PTE was still cached
+	// why !! ???
 	return !!(original == curr);
 }
 
