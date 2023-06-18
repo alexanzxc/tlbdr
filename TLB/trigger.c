@@ -298,7 +298,7 @@ int main(int argc, char *argv[])
 
 	for (i = 0; i < number_of_pages / unique_pages; i++)
 	{ // i max 2048 - MAP_PRIVATE FLAG crashes with OOM
-		if (mmap(BASE + (PAGE_SIZE * unique_pages * i), PAGE_SIZE * unique_pages, BUF_PROT, MAP_SHARED | MAP_POPULATE | MAP_HUGETLB, fd_shm, 0) == MAP_FAILED)
+		if (mmap(BASE + (PAGE_SIZE * unique_pages * i), PAGE_SIZE * unique_pages, BUF_PROT, MAP_SHARED | MAP_POPULATE, fd_shm, 0) == MAP_FAILED)
 		{
 			printf("Unable to allocate memory at %p (i = %d)\n", BASE + (PAGE_SIZE * unique_pages * i), i);
 			return 1;
@@ -318,22 +318,6 @@ int main(int argc, char *argv[])
 		p1[3] = 0xb8;			  // Move a 32-bit constant into register eax
 		*(uint64_t *)(&p1[4]) = i;
 		p1[12] = 0xc3; // Returns from current function // 	Return from near procedure
-	}
-
-	for (i = 0; i < 10; i++)
-	{
-		printf("debugging 1 i= %d \n", i);
-		p1 = ADDR + (i * (1 << 21));
-		printf("debugging 2 \n");
-		*(uint16_t *)p1 = 0x9090;
-		printf("debugging 3 \n");
-		p1[2] = 0x48;
-		p1[3] = 0xb8;
-		printf("debugging 4 \n");
-		*(uint64_t *)(&p1[4]) = i;
-		printf("debugging 5 \n");
-		p1[12] = 0xc3;
-		printf("debugging 6 \n");
 	}
 
 	int res;
