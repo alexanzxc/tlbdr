@@ -392,10 +392,10 @@ int main(int argc, char *argv[])
 		// Perform all tests
 		for (i = 0; i < 19; i++)
 		{
-			// printf("Testing first run, please wait a moment...\n");
+			printf("Testing first run, please wait a moment...\n");
 			read(fd, msg, tests[i]);
-			// remove_line_above();
-			// printf("%d. %s\n", i + 1, msg);
+			remove_line_above();
+			printf("%d. %s\n", i + 1, msg);
 		}
 		// following will not work without a full run first, trying to figure out why.
 		// Perform 3 5 12

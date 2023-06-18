@@ -71,7 +71,7 @@ int non_inclusivity(void)
 	setcr3(cr3k);
 
 	// Return 1 if PTE was still cached
-	// why !! ???
+	// reason : kmod.c line 74.
 	return !!(original == curr);
 }
 
