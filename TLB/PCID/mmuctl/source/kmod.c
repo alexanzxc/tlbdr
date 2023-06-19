@@ -29,7 +29,8 @@ MODULE_LICENSE("GPL");
 #define MMUCTL_PMD (1 << 3)
 #define MMUCTL_PTE (1 << 4)
 
-struct ptwalk {
+struct ptwalk
+{
 	int pid;
 	pgd_t *pgd;
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
@@ -45,13 +46,15 @@ struct ptwalk {
 
 typedef u64 (*retf_t)(void);
 
-static struct mm_struct * get_mm(int pid){
+static struct mm_struct *get_mm(int pid)
+{
 	struct task_struct *task;
 	struct pid *vpid;
 
 	task = current;
 
-	if (pid != 0) {
+	if (pid != 0)
+	{
 		vpid = find_vpid(pid);
 
 		if (!vpid)
@@ -69,7 +72,8 @@ static struct mm_struct * get_mm(int pid){
 	return task->active_mm;
 }
 
-static int resolve_va(size_t addr, struct ptwalk *entry, int lock){
+static int resolve_va(size_t addr, struct ptwalk *entry, int lock)
+{
 	struct mm_struct *mm;
 	pgd_t *pgd;
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
@@ -163,35 +167,41 @@ static inline void switch_pages(pte_t *pte1, pte_t *pte2)
 static inline u64 setcr3(u64 val)
 {
 	u64 r;
-	asm volatile ("mov %0, %%cr3" :: "r" (val));
-	asm volatile ("mov %%cr3, %0" : "=r" (r));
+	asm volatile("mov %0, %%cr3" ::"r"(val));
+	asm volatile("mov %%cr3, %0"
+				 : "=r"(r));
 	return r;
 }
 
-static inline u64 getcr3(void){
+static inline u64 getcr3(void)
+{
 	u64 cr3k;
-	asm volatile ("mov %%cr3, %0" : "=r" (cr3k));
+	asm volatile("mov %%cr3, %0"
+				 : "=r"(cr3k));
 	return cr3k;
 }
 
-static inline void disable_smep(void){
+static inline void disable_smep(void)
+{
 	u64 cr4v;
-	asm volatile ("mov %%cr4, %0" : "=r" (cr4v));
-	asm volatile ("mov %0, %%cr4" :: "r" (cr4v & (~(1ULL << 20))));
+	asm volatile("mov %%cr4, %0"
+				 : "=r"(cr4v));
+	asm volatile("mov %0, %%cr4" ::"r"(cr4v & (~(1ULL << 20))));
 }
 
-static inline void claim_cpu(void){
+static inline void claim_cpu(void)
+{
 	unsigned long flags;
 	preempt_disable();
 	raw_local_irq_save(flags);
 }
 
-static inline void give_up_cpu(void){
+static inline void give_up_cpu(void)
+{
 	unsigned long flags;
 	raw_local_irq_restore(flags);
 	preempt_enable();
 }
-
 
 int pid1 = 1;
 int pid2 = 2;
@@ -219,126 +229,147 @@ volatile int val, total;
 	Hyperthread 2 is trying to evict a TLB entry of hyperthread 1
 	out of the iTLB by switching to all possible PCIDs.
 */
-static int pcid_itlb(void *data){
+static int pcid_itlb(void *data)
+{
 	int i;
 
 	claim_cpu();
 	disable_smep();
 
-    	int *thread_id = (int*)data;
+	int *thread_id = (int *)data;
 
-	if(*thread_id == 1){
+	if (*thread_id == 1)
+	{
 		cpu_thread_1_claimed = 1;
 
-		while(cpu_thread_0_claimed != 1){
+		while (cpu_thread_0_claimed != 1)
+		{
 		}
-	}else{
+	}
+	else
+	{
 		cpu_thread_0_claimed = 1;
 
-		while(cpu_thread_1_claimed != 1){
+		while (cpu_thread_1_claimed != 1)
+		{
 		}
 	}
 
-	//At this point, both threads have claimed their CPU
+	// At this point, both threads have claimed their CPU
 
-	while(total < 1000){
-		if(*thread_id == 1)
+	while (total < 1000)
+	{
+		if (*thread_id == 1)
 		{
-				while(condition != 0){
+			while (condition != 0)
+			{
+			}
 
-				}
+			volatile u64 cr3k = getcr3();
 
-				volatile u64 cr3k = getcr3();
+			// Get a random page, which is not at the end of a page table
+			volatile unsigned long rand_addr;
+			get_random_bytes(&rand_addr, sizeof(rand_addr));
+			rand_addr = addr + (4096 * (rand_addr % 100));
 
-				//Get a random page, which is not at the end of a page table
-				volatile unsigned long rand_addr;
+			int difference = (rand_addr - (unsigned long)BASE) / 4096;
+			while (difference % 512 == 511)
+			{
 				get_random_bytes(&rand_addr, sizeof(rand_addr));
 				rand_addr = addr + (4096 * (rand_addr % 100));
+				difference = (rand_addr - (unsigned long)BASE) / 4096;
+			}
 
-				int difference = (rand_addr - (unsigned long)BASE) / 4096;
-				while(difference % 512 == 511){
-					get_random_bytes(&rand_addr, sizeof(rand_addr));
-					rand_addr = addr + (4096 * (rand_addr % 100));
-					difference = (rand_addr - (unsigned long)BASE) / 4096;
-				}
+			// Perform the page walk
+			volatile struct ptwalk walk;
+			walk.pid = 0;
+			resolve_va(rand_addr, &walk, 0);
 
-				//Perform the page walk
-				volatile struct ptwalk walk;
-				walk.pid = 0;
-				resolve_va(rand_addr, &walk, 0);
+			// We prime using PCID 0
+			// Read the current value of the page
+			setcr3(((cr3k >> 12) << 12) | 0);
+			val = ((retf_t)rand_addr)();
+			// We directly switch to PCID 1 (using NOFLUSH as iTLB will be flushed otherwise)
+			setcr3(((cr3k >> 12) << 12) | CR3_NOFLUSH | 1);
 
-				//We prime using PCID 0
-				//Read the current value of the page
-				setcr3(((cr3k >> 12) << 12) | 0);
-				val = ((retf_t)rand_addr)();
-				//We directly switch to PCID 1 (using NOFLUSH as iTLB will be flushed otherwise)
-				setcr3(((cr3k >> 12) << 12) | CR3_NOFLUSH | 1);
+			asm volatile("mfence\n\t" ::
+							 : "memory");
+			// Desync the TLB
+			switch_pages(walk.pte, walk.pte + 1);
 
-				asm volatile("mfence\n\t" ::: "memory");
-				//Desync the TLB
-				switch_pages(walk.pte, walk.pte + 1);
+			// Let the other hyperthread enumerate over all PCIDs
+			condition = 1;
 
-				//Let the other hyperthread enumerate over all PCIDs
-				condition = 1;
+			while (condition != 0)
+			{
+				((retf_t)rand_addr)();
+			}
 
-				while(condition != 0){
-					((retf_t)rand_addr)();
-				}
+			// Evict TLB entry from sTLB
+			for (i = 0; i < 10000; i++)
+			{
+				*((volatile unsigned long *)(addr + (4096 * (i + 100))));
+			}
 
-				//Evict TLB entry from sTLB
-				for(i = 0; i < 10000; i++){
-					*((volatile unsigned long *)(addr + (4096 * (i + 100))));
-				}
+			asm volatile("mfence\n\t" ::
+							 : "memory");
 
-				asm volatile("mfence\n\t" ::: "memory");
+			// We get back to PCID 0, which could have been evicted from the PCID cache by PCID switches on other thread
+			// as PCID 0 was not active on this thread
+			setcr3(((cr3k >> 12) << 12) | CR3_NOFLUSH | 0);
 
-				//We get back to PCID 0, which could have been evicted from the PCID cache by PCID switches on other thread
-				//as PCID 0 was not active on this thread
-				setcr3(((cr3k >> 12) << 12) | CR3_NOFLUSH | 0);
+			// Check if the TLB entry was still cached in the iTLB
+			volatile int curr = ((retf_t)rand_addr)();
 
+			if (curr == val)
+			{
+				success++;
+			}
 
-				//Check if the TLB entry was still cached in the iTLB
-				volatile int curr = ((retf_t)rand_addr)();
+			setcr3(cr3k);
 
-				if(curr == val){
-					success++;
-				}
+			asm volatile("mfence\n\t" ::
+							 : "memory");
+			switch_pages(walk.pte, walk.pte + 1);
+		}
+		else
+		{
+			while (condition != 1)
+			{
+			}
 
-				setcr3(cr3k);
+			volatile u64 cr3k = getcr3();
 
-				asm volatile("mfence\n\t" ::: "memory");
-				switch_pages(walk.pte, walk.pte + 1);
-		}else{
-				while(condition != 1){
+			// Enumerate over all PCIDs to try kick out the thread's entry
+			unsigned long pcid;
+			for (pcid = 0; pcid < 4096; pcid++)
+			{
+				setcr3((cr3k >> 12) << 12 | pcid);
+			}
 
-				}
+			setcr3(cr3k);
 
-				volatile u64 cr3k = getcr3();
-
-				//Enumerate over all PCIDs to try kick out the thread's entry
-				unsigned long pcid;
-				for(pcid = 0; pcid < 4096; pcid++){
-					setcr3((cr3k >> 12) << 12 | pcid);
-				}
-
-				setcr3(cr3k);
-
-				total++;
-				condition = 0;
+			total++;
+			condition = 0;
 		}
 	}
 
 	give_up_cpu();
 
-	if(*thread_id == 1){
+	if (*thread_id == 1)
+	{
 		cpu_thread_1_claimed = 0;
 
-		while(cpu_thread_0_claimed != 0){
+		while (cpu_thread_0_claimed != 0)
+		{
 		}
-	}else{
+	}
+	else
+	{
 		cpu_thread_0_claimed = 0;
 
-		while(cpu_thread_1_claimed != 0){
+		while (cpu_thread_1_claimed != 0)
+		{
 		}
 	}
 
@@ -353,117 +384,139 @@ static int pcid_itlb(void *data){
 	Hyperthread 2 is trying to evict a TLB entry of hyperthread 1
 	out of the dTLB by switching to all possible PCIDs.
 */
-static int pcid_dtlb(void *data){
+static int pcid_dtlb(void *data)
+{
 	int i;
 
 	claim_cpu();
 	disable_smep();
 
-	int *thread_id = (int*)data;
+	int *thread_id = (int *)data;
 
-	if(*thread_id == 1){
+	if (*thread_id == 1)
+	{
 		cpu_thread_1_claimed = 1;
 
-		while(cpu_thread_0_claimed != 1){
+		while (cpu_thread_0_claimed != 1)
+		{
 		}
-	}else{
+	}
+	else
+	{
 		cpu_thread_0_claimed = 1;
 
-		while(cpu_thread_1_claimed != 1){
+		while (cpu_thread_1_claimed != 1)
+		{
 		}
 	}
 
-	//At this point, both threads have claimed their CPU
+	// At this point, both threads have claimed their CPU
 
-	while(total < 1000){
-		if(*thread_id == 1)
+	while (total < 1000)
+	{
+		if (*thread_id == 1)
 		{
-				while(condition != 0){
+			while (condition != 0)
+			{
+			}
 
-				}
+			volatile u64 cr3k = getcr3();
 
-				volatile u64 cr3k = getcr3();
+			// Get a random page, which is not at the end of a page table
+			volatile unsigned long rand_addr;
+			get_random_bytes(&rand_addr, sizeof(rand_addr));
+			rand_addr = addr + (4096 * (rand_addr % 100));
 
-				//Get a random page, which is not at the end of a page table
-				volatile unsigned long rand_addr;
+			int difference = (rand_addr - (unsigned long)BASE) / 4096;
+			while (difference % 512 == 511)
+			{
 				get_random_bytes(&rand_addr, sizeof(rand_addr));
 				rand_addr = addr + (4096 * (rand_addr % 100));
+				difference = (rand_addr - (unsigned long)BASE) / 4096;
+			}
 
-				int difference = (rand_addr - (unsigned long)BASE) / 4096;
-				while(difference % 512 == 511){
-					get_random_bytes(&rand_addr, sizeof(rand_addr));
-					rand_addr = addr + (4096 * (rand_addr % 100));
-					difference = (rand_addr - (unsigned long)BASE) / 4096;
-				}
+			// Perform the page walk
+			volatile struct ptwalk walk;
+			walk.pid = 0;
+			resolve_va(rand_addr, &walk, 0);
 
-				//Perform the page walk
-				volatile struct ptwalk walk;
-				walk.pid = 0;
-				resolve_va(rand_addr, &walk, 0);
+			// Read the current value of the page
+			val = *((volatile uint64_t *)&((volatile char *)(volatile void *)rand_addr)[4]);
 
-				//Read the current value of the page
-				val = *((volatile uint64_t *)&((volatile char *)(volatile void *)rand_addr)[4]);
+			asm volatile("mfence\n\t" ::
+							 : "memory");
 
-				asm volatile("mfence\n\t" ::: "memory");
+			// Desync the TLB
+			switch_pages(walk.pte, walk.pte + 1);
 
-				//Desync the TLB
-				switch_pages(walk.pte, walk.pte + 1);
+			// Let the other hyperthread enumerate over all PCIDs
+			condition = 1;
 
-				//Let the other hyperthread enumerate over all PCIDs
-				condition = 1;
+			while (condition != 0)
+			{
+				*((volatile unsigned long *)rand_addr);
+			}
 
-				while(condition != 0){
-					*((volatile unsigned long *)rand_addr);
-				}
+			// Evict TLB entry from sTLB
+			for (i = 0; i < 10000; i++)
+			{
+				((retf_t)(addr + (4096 * (i + 100))))();
+			}
 
-				//Evict TLB entry from sTLB
-				for(i = 0; i < 10000; i++){
-					((retf_t)(addr + (4096 * (i + 100))))();
-				}
+			// Check if the TLB entry was still cached in the dTLB
+			asm volatile("mfence\n\t" ::
+							 : "memory");
+			volatile int curr = *((volatile uint64_t *)&((volatile char *)(volatile void *)rand_addr)[4]);
 
-				//Check if the TLB entry was still cached in the dTLB
-				asm volatile("mfence\n\t" ::: "memory");
-				volatile int curr = *((volatile uint64_t *)&((volatile char *)(volatile void *)rand_addr)[4]);
+			if (curr == val)
+			{
+				success++;
+			}
 
-				if(curr == val){
-					success++;
-				}
+			setcr3(cr3k);
 
-				setcr3(cr3k);
+			asm volatile("mfence\n\t" ::
+							 : "memory");
+			switch_pages(walk.pte, walk.pte + 1);
+		}
+		else
+		{
+			while (condition != 1)
+			{
+			}
 
-				asm volatile("mfence\n\t" ::: "memory");
-				switch_pages(walk.pte, walk.pte + 1);
-		}else{
-				while(condition != 1){
+			volatile u64 cr3k = getcr3();
 
-				}
+			// Enumerate over all PCIDs to try kick out the thread's entry
+			unsigned long pcid;
+			for (pcid = 0; pcid < 4096; pcid++)
+			{
+				setcr3((cr3k >> 12) << 12 | pcid);
+			}
 
-				volatile u64 cr3k = getcr3();
+			setcr3(cr3k);
 
-				//Enumerate over all PCIDs to try kick out the thread's entry
-				unsigned long pcid;
-				for(pcid = 0; pcid < 4096; pcid++){
-					setcr3((cr3k >> 12) << 12 | pcid);
-				}
-
-				setcr3(cr3k);
-
-				total++;
-				condition = 0;
+			total++;
+			condition = 0;
 		}
 	}
 
 	give_up_cpu();
 
-	if(*thread_id == 1){
+	if (*thread_id == 1)
+	{
 		cpu_thread_1_claimed = 0;
 
-		while(cpu_thread_0_claimed != 0){
+		while (cpu_thread_0_claimed != 0)
+		{
 		}
-	}else{
+	}
+	else
+	{
 		cpu_thread_0_claimed = 0;
 
-		while(cpu_thread_1_claimed != 0){
+		while (cpu_thread_1_claimed != 0)
+		{
 		}
 	}
 
@@ -478,126 +531,144 @@ static int pcid_dtlb(void *data){
 	Hyperthread 2 is trying to evict a TLB entry of hyperthread 1
 	out of the sTLB by switching to all possible PCIDs.
 */
-static int pcid_stlb(void *data){
+static int pcid_stlb(void *data)
+{
 	int i;
 
 	claim_cpu();
 	disable_smep();
 
-    	int *thread_id = (int*)data;
+	int *thread_id = (int *)data;
 
-	if(*thread_id == 1){
+	if (*thread_id == 1)
+	{
 		cpu_thread_1_claimed = 1;
 
-		while(cpu_thread_0_claimed != 1){
+		while (cpu_thread_0_claimed != 1)
+		{
 		}
-	}else{
+	}
+	else
+	{
 		cpu_thread_0_claimed = 1;
 
-		while(cpu_thread_1_claimed != 1){
+		while (cpu_thread_1_claimed != 1)
+		{
 		}
 	}
 
-	//At this point, both threads have claimed their CPU
+	// At this point, both threads have claimed their CPU
 
-	while(total < 1000){
-		if(*thread_id == 1)
+	while (total < 1000)
+	{
+		if (*thread_id == 1)
 		{
-				while(condition != 0){
+			while (condition != 0)
+			{
+			}
 
-				}
+			volatile u64 cr3k = getcr3();
 
-				volatile u64 cr3k = getcr3();
+			// Get a random page, which is not at the end of a page table
+			volatile unsigned long rand_addr;
+			get_random_bytes(&rand_addr, sizeof(rand_addr));
+			rand_addr = addr + (4096 * (rand_addr % 100));
 
-				//Get a random page, which is not at the end of a page table				
-				volatile unsigned long rand_addr;
+			int difference = (rand_addr - (unsigned long)BASE) / 4096;
+			while (difference % 512 == 511)
+			{
 				get_random_bytes(&rand_addr, sizeof(rand_addr));
 				rand_addr = addr + (4096 * (rand_addr % 100));
+				difference = (rand_addr - (unsigned long)BASE) / 4096;
+			}
 
-				int difference = (rand_addr - (unsigned long)BASE) / 4096;
-				while(difference % 512 == 511){
-					get_random_bytes(&rand_addr, sizeof(rand_addr));
-					rand_addr = addr + (4096 * (rand_addr % 100));
-					difference = (rand_addr - (unsigned long)BASE) / 4096;
-				}
+			// Perform the page walk
+			volatile struct ptwalk walk;
+			walk.pid = 0;
+			int r = resolve_va(rand_addr, &walk, 0);
 
-				//Perform the page walk
-				volatile struct ptwalk walk;
-				walk.pid = 0;
-				int r = resolve_va(rand_addr, &walk, 0);
+			// We prime using PCID 0
+			// Read the current value of the page
+			setcr3(((cr3k >> 12) << 12) | 0);
+			val = *((volatile uint64_t *)&((volatile char *)(volatile void *)rand_addr)[4]);
+			// We set PCID 1 to make PCID 0 vulnerable to eviction
+			setcr3(((cr3k >> 12) << 12) | CR3_NOFLUSH | 1);
 
-				//We prime using PCID 0
-				//Read the current value of the page
-				setcr3(((cr3k >> 12) << 12) | 0);
-				val = *((volatile uint64_t *)&((volatile char *)(volatile void *)rand_addr)[4]);
-				//We set PCID 1 to make PCID 0 vulnerable to eviction
-				setcr3(((cr3k >> 12) << 12) | CR3_NOFLUSH | 1);
+			asm volatile("mfence\n\t" ::
+							 : "memory");
+			// Desync the TLB
+			switch_pages(walk.pte, walk.pte + 1);
 
-				asm volatile("mfence\n\t" ::: "memory");
-				//Desync the TLB
-				switch_pages(walk.pte, walk.pte + 1);
+			condition = 1;
 
-				condition = 1;
+			while (condition != 0)
+			{
+				*((volatile unsigned long *)rand_addr);
+			}
 
-				while(condition != 0){
-					*((volatile unsigned long *)rand_addr);
-				}
+			asm volatile("mfence\n\t" ::
+							 : "memory");
 
-				asm volatile("mfence\n\t" ::: "memory");
+			// We swtich back to PCID 0 which was not active while other thread was switching PCIDs
+			// PCID 0 was hence vulnerable for eviction from the PCID cache
+			setcr3(((cr3k >> 12) << 12) | CR3_NOFLUSH | 0);
 
-				//We swtich back to PCID 0 which was not active while other thread was switching PCIDs
-				//PCID 0 was hence vulnerable for eviction from the PCID cache
-				setcr3(((cr3k >> 12) << 12) | CR3_NOFLUSH | 0);
+			// Check if the TLB entry was still cached in the sTLB
+			volatile int curr = ((retf_t)rand_addr)();
 
-				//Check if the TLB entry was still cached in the sTLB
-				volatile int curr = ((retf_t)rand_addr)();
+			asm volatile(
+				"clflush (%0)\n\t"
+				"invlpg (%0)\n\t" ::"r"(rand_addr));
 
-				asm volatile (
-					"clflush (%0)\n\t"
-					"invlpg (%0)\n\t"
-					:: "r" (rand_addr)
-				);
+			if (curr == val)
+			{
+				success++;
+			}
 
-				if(curr == val){
-					success++;
-				}
+			setcr3(cr3k);
 
-				setcr3(cr3k);
+			asm volatile("mfence\n\t" ::
+							 : "memory");
+			switch_pages(walk.pte, walk.pte + 1);
+		}
+		else
+		{
+			while (condition != 1)
+			{
+			}
 
-				asm volatile("mfence\n\t" ::: "memory");
-				switch_pages(walk.pte, walk.pte + 1);
+			volatile u64 cr3k = getcr3();
 
-		}else{
-				while(condition != 1){
+			// Enumerate over all PCIDs to try kick out the thread's entry
+			unsigned long pcid;
+			for (pcid = 0; pcid < 4096; pcid++)
+			{
+				setcr3((cr3k >> 12) << 12 | pcid);
+			}
 
-				}
+			setcr3(cr3k);
 
-				volatile u64 cr3k = getcr3();
-
-				//Enumerate over all PCIDs to try kick out the thread's entry
-				unsigned long pcid;
-				for(pcid = 0; pcid < 4096; pcid++){
-					setcr3((cr3k >> 12) << 12 | pcid);
-				}
-
-				setcr3(cr3k);
-
-				total++;
-				condition = 0;
+			total++;
+			condition = 0;
 		}
 	}
 
 	give_up_cpu();
 
-	if(*thread_id == 1){
+	if (*thread_id == 1)
+	{
 		cpu_thread_1_claimed = 0;
 
-		while(cpu_thread_0_claimed != 0){
+		while (cpu_thread_0_claimed != 0)
+		{
 		}
-	}else{
+	}
+	else
+	{
 		cpu_thread_0_claimed = 0;
 
-		while(cpu_thread_1_claimed != 0){
+		while (cpu_thread_1_claimed != 0)
+		{
 		}
 	}
 
@@ -611,35 +682,38 @@ static int pcid_stlb(void *data){
 	This function is a wrapper function of pcid_itlb(). It creates the two threads
 	on co-resident hyperthreads and starts them.
 */
-void test_pcid_itlb(void){
-	//Thread 0 is supposed to start
+void test_pcid_itlb(void)
+{
+	// Thread 0 is supposed to start
 	condition = 0;
 	total = 0;
 	success = 0;
 
-	//Create thread 1
+	// Create thread 1
 	task1 = kthread_create(&pcid_itlb, (void *)&pid1, "PCID");
 
-	if (IS_ERR(task1)) {
-	    	complete(&thread_done_itlb);
-	    	int ret = PTR_ERR(task1);
-	    	return ret;
+	if (IS_ERR(task1))
+	{
+		complete(&thread_done_itlb);
+		int ret = PTR_ERR(task1);
+		return ret;
 	}
 
 	kthread_bind(task1, CORE1);
 
-	//Create thread 2
+	// Create thread 2
 	task2 = kthread_create(&pcid_itlb, (void *)&pid2, "PCID");
 
-	if (IS_ERR(task2)) {
-	    	complete(&thread_done_itlb);
-	    	int ret = PTR_ERR(task2);
-	    	return ret;
+	if (IS_ERR(task2))
+	{
+		complete(&thread_done_itlb);
+		int ret = PTR_ERR(task2);
+		return ret;
 	}
 
 	kthread_bind(task2, CORE2);
 
-	//Wake them up
+	// Wake them up
 	wake_up_process(task1);
 	wake_up_process(task2);
 
@@ -653,35 +727,38 @@ void test_pcid_itlb(void){
 	This function is a wrapper function of pcid_dtlb(). It creates the two threads
 	on co-resident hyperthreads and starts them.
 */
-void test_pcid_dtlb(void){
-	//Thread 0 is supposed to start
+void test_pcid_dtlb(void)
+{
+	// Thread 0 is supposed to start
 	condition = 0;
 	total = 0;
 	success = 0;
 
-	//Create thread 1
+	// Create thread 1
 	task1 = kthread_create(&pcid_dtlb, (void *)&pid1, "PCID");
 
-	if (IS_ERR(task1)) {
-	    	complete(&thread_done_dtlb);
-	    	int ret = PTR_ERR(task1);
-	    	return ret;
+	if (IS_ERR(task1))
+	{
+		complete(&thread_done_dtlb);
+		int ret = PTR_ERR(task1);
+		return ret;
 	}
 
 	kthread_bind(task1, CORE1);
 
-	//Create thread 2
+	// Create thread 2
 	task2 = kthread_create(&pcid_dtlb, (void *)&pid2, "PCID");
 
-	if (IS_ERR(task2)) {
-	    	complete(&thread_done_dtlb);
-	    	int ret = PTR_ERR(task2);
-	    	return ret;
+	if (IS_ERR(task2))
+	{
+		complete(&thread_done_dtlb);
+		int ret = PTR_ERR(task2);
+		return ret;
 	}
 
 	kthread_bind(task2, CORE2);
 
-	//Wake them up
+	// Wake them up
 	wake_up_process(task1);
 	wake_up_process(task2);
 
@@ -695,35 +772,38 @@ void test_pcid_dtlb(void){
 	This function is a wrapper function of pcid_stlb(). It creates the two threads
 	on co-resident hyperthreads and starts them.
 */
-void test_pcid_stlb(void){
-	//Thread 0 is supposed to start
+void test_pcid_stlb(void)
+{
+	// Thread 0 is supposed to start
 	condition = 0;
 	total = 0;
 	success = 0;
 
-	//Create thread 1
+	// Create thread 1
 	task1 = kthread_create(&pcid_stlb, (void *)&pid1, "PCID");
 
-	if (IS_ERR(task1)) {
-	    	complete(&thread_done_stlb);
-	    	int ret = PTR_ERR(task1);
-	    	return ret;
+	if (IS_ERR(task1))
+	{
+		complete(&thread_done_stlb);
+		int ret = PTR_ERR(task1);
+		return ret;
 	}
 
 	kthread_bind(task1, CORE1);
 
-	//Create thread 2
+	// Create thread 2
 	task2 = kthread_create(&pcid_stlb, (void *)&pid2, "PCID");
 
-	if (IS_ERR(task2)) {
-	    	complete(&thread_done_stlb);
-	    	int ret = PTR_ERR(task2);
-	    	return ret;
+	if (IS_ERR(task2))
+	{
+		complete(&thread_done_stlb);
+		int ret = PTR_ERR(task2);
+		return ret;
 	}
 
 	kthread_bind(task2, CORE2);
 
-	//Wake them up
+	// Wake them up
 	wake_up_process(task1);
 	wake_up_process(task2);
 
@@ -732,31 +812,35 @@ void test_pcid_stlb(void){
 	printk("Success with STLB is %d\n", success);
 }
 
-
 /*
 	This is the entry point of the experiments.
 	It finds whether the dTLB, sTLB and iTLB shares their PCID entries.
 */
-static int device_open(struct inode *inode, struct file *file){
+// static int device_open(struct inode *inode, struct file *file)
+{
+	/*malloc 4096 (page size?) *10100 (why ?) ~41 mb, normal kernel allocation semantics
+	and memory executable in kernel mode */
 	addr = __vmalloc(4096 * 10100, GFP_KERNEL, PAGE_KERNEL_EXEC);
 	volatile unsigned int i;
 
-	//Write an identifier to each page
-	for(i = 0; i < 10100; i++){
+	// Write an identifier to each page
+	for (i = 0; i < 10100; i++)
+	{
 		volatile unsigned char *p1 = addr + (4096 * i);
-		*(uint16_t *)p1 = 0x9090;
-		p1[2] = 0x48; p1[3] = 0xb8;
-		*(uint64_t *)(&p1[4]) = i;
-		p1[12] = 0xc3;
+		*(uint16_t *)p1 = 0x9090;  // two NOPs
+		p1[2] = 0x48;			   // REX with W bit set / loads a 64 bit constant?
+		p1[3] = 0xb8;			   // loads a 32-bit constant into eax - mov ?
+		*(uint64_t *)(&p1[4]) = i; // cast ?
+		p1[12] = 0xc3;			   // ret instruction
 	}
 
-	//Testing whether there is dTLB PCID interference
+	// Testing whether there is dTLB PCID interference
 	test_pcid_dtlb();
 
-	//Testing whether there is sTLB PCID interference
+	// Testing whether there is sTLB PCID interference
 	test_pcid_stlb();
 
-	//Testing whether there is iTLB PCID interference
+	// Testing whether there is iTLB PCID interference
 	test_pcid_itlb();
 
 	vfree(addr);
@@ -781,11 +865,13 @@ static struct miscdevice misc_dev = {
 	.mode = S_IRWXUGO,
 };
 
-int init_module(void){
+// int init_module(void)
+{
 	int ret;
 
 	ret = misc_register(&misc_dev);
-	if (ret != 0) {
+	if (ret != 0)
+	{
 		printk(KERN_ALERT "mmuctl: failed to register device with %d\n", ret);
 		return -1;
 	}
@@ -795,7 +881,8 @@ int init_module(void){
 	return 0;
 }
 
-void cleanup_module(void){
+void cleanup_module(void)
+{
 	misc_deregister(&misc_dev);
 	printk(KERN_INFO "mmuctl: cleaned up.\n");
 }
