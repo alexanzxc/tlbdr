@@ -107,6 +107,12 @@ static ssize_t device_read(struct file *file, char __user *buf, size_t count, lo
 		{
 			snprintf(return_message, MESSAGE_BUFFER_SIZE, "sTLB is non-exclusive of iTLB and dTLB: Yes (success rate " BOLD_BLACK "%d / %d" RESET ").\n", non_exclusive, iterations);
 			tlb.shared_component = &shared_level;
+			pr_info("shared_component mem %p \n", tlb.shared_component);
+			pr_info("hash_function %d \n", tlb.shared_component->hash_function);
+			pr_info("set_bits %d \n", tlb.shared_component->set_bits);
+			pr_info("ways %d \n", tlb.shared_component->ways);
+			pr_info("pcids_supported %d \n", tlb.shared_component->pcids_supported);
+			pr_info("pcids_supported_no_flush %d \n", tlb.shared_component->pcids_supported_no_flush);
 		}
 		else
 		{
@@ -127,7 +133,7 @@ static ssize_t device_read(struct file *file, char __user *buf, size_t count, lo
 		int smallest_ways = 99;
 		int smallest_set_bits = 99;
 		int success = 0;
-		// TODO 18/6 TLB STRUCTS
+		// if tlb.shared_component successfully allocated, do:
 		if (tlb.shared_component)
 		{
 			for (set_bits = 3; set_bits < 9; set_bits++)
@@ -135,7 +141,7 @@ static ssize_t device_read(struct file *file, char __user *buf, size_t count, lo
 				for (ways = 1; ways < 30; ways++)
 				{
 					int res = 0;
-					for (i = 0; i < iterations; i++)
+					for (i = 0; i < iterations; i++) // iterations are 1000
 					{
 						res += test_lin_stlb(set_bits, ways);
 					}

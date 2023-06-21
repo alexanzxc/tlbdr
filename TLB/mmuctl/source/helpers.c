@@ -3,6 +3,8 @@
 /*
 	Computes 2^set_bits,
 	i.e. how many sets we can index into with 'set_bits' bits.
+
+starting for STLB_HAS set_bits=3
 */
 long int set_bits_to_sets(int set_bits)
 {

@@ -6,7 +6,10 @@
 	This function tests whether accessing 'ways + 1' pages
 	mapping to the same sTLB set (assuming a linear hash function and 2^set_bits sets)
 	causes at least one sTLB eviction. It is explained in Section 4.2 of the paper.
+
+Starting set_bits = 3, ways=1
 */
+
 int test_lin_stlb(int set_bits, int ways)
 {
 	int sets = set_bits_to_sets(set_bits);
@@ -22,9 +25,11 @@ int test_lin_stlb(int set_bits, int ways)
 	volatile unsigned long left_mask = 0;
 	for (i = 0; i < set_bits; i++)
 	{
-		/* bitwise or .e.g for set_bits = 4 :
-		 0 bitwise OR 0x001 << 0 +12 + setbits) for 4 loops gives us left_mask = 0xF0000
-		 how do we fill the TLB and TLB_LEVEL structs?*/
+		/* bitwise or .e.g for set_bits = 3 :
+		 0 bitwise OR 0x001 << 0 +12 + setbits) for 3 loops gives us left_mask = 0xF0000
+		 how do we fill the TLB and TLB_LEVEL structs?
+
+		 starting set_bits for STLB_HAS is 3*/
 		left_mask |= (0x1 << (i + 12 + set_bits));
 	}
 
@@ -33,6 +38,7 @@ int test_lin_stlb(int set_bits, int ways)
 
 	volatile unsigned long *addrs = vmalloc(sizeof(unsigned long) * ways + 1 + (ways * 2));
 
+	// TODO 21/6 study PTW walks.
 	volatile struct ptwalk walks[ways + 1];
 	volatile int values[ways + 1];
 
