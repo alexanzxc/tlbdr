@@ -22,13 +22,8 @@ int non_inclusivity(void)
 	setcr3(cr3k);
 
 	volatile unsigned long addr;
-<<<<<<< Updated upstream
-	unsigned long random_offset;
-	get_random_bytes(&random_offset, sizeof(random_offset));
-=======
     unsigned long random_offset;
 	get_random_bytes(&random_offset, sizeof(random_offset));//kernel function for random numbers.
->>>>>>> Stashed changes
 
 	// Take a random page out of the first 1000 ones
 	addr = (void *)BASE + (4096 * (random_offset % 1000));
@@ -36,13 +31,8 @@ int non_inclusivity(void)
 	// We should not use an address whose PTE is the last entry of a page table,
 	// as we would swap with arbritary memory (not necessarily a PTE)
 	int difference = ((addr - (unsigned long)BASE) / 4096) % 512;
-<<<<<<< Updated upstream
-	while (difference % 512 == 511)
-	{
-=======
 	while(difference % 512 == 511){
 		//study PTE architecture
->>>>>>> Stashed changes
 		get_random_bytes(&random_offset, sizeof(random_offset));
 		addr = (void *)BASE + (4096 * (random_offset % 1000));
 		difference = ((addr - (unsigned long)BASE) / 4096) % 512;
