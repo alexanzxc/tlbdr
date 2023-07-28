@@ -303,8 +303,9 @@ int main(int argc, char *argv[])
 			printf("Unable to allocate memory at %p (i = %d)\n", BASE + (PAGE_SIZE * unique_pages * i), i);
 			return 1;
 		}
-		printf("memory at %p (i = %d)\n", BASE + (PAGE_SIZE * unique_pages * i), i);
-		sleep(0.1);
+		// memory print for debug
+		// printf("memory at %p (i = %d)\n", BASE + (PAGE_SIZE * unique_pages * i), i);
+		// sleep(0.1);
 	}
 
 	// Write an identifier to each unique physical page
