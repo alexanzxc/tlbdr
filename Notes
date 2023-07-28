@@ -50,3 +50,16 @@ why do we allocate the sizes we do ?
 ut of memory: Killed process 28983 (trigger) total-vm:10258884kB, anon-rss:10247808kB, file-rss:256kB, shmem-rss:0kB, UID:0 pgtables:20104kB oom_score_adj:200
 
 with MAP_SHARED
+
+
+
+
+
+QEMU commands :
+
+qemu-img create -f qcow2 ubuntu.img 20G
+qemu-system-x86_64 -m 8G -hda ubuntu.img -cdrom ubuntu-20.04.4-desktop-amd64.iso -boot d -enable-kvm -nic user,hostfwd=tcp::22222-:22
+qemu-system-x86_64 -m 8G -smp 4 -hda ubuntu.img  -enable-kvm -nic user,hostfwd=tcp::22222-:22 -cpu host
+qemu-system-x86_64 -m 8G -smp cores=6,threads=2,sockets=1 -hda ubuntu.img  -enable-kvm -nic user,hostfwd=tcp::22222-:22 -cpu host
+
+123qwe
