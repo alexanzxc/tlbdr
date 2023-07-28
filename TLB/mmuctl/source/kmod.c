@@ -1033,354 +1033,354 @@ static ssize_t device_read(struct file *file, char __user *buf, size_t count, lo
 			snprintf(return_message, MESSAGE_BUFFER_SIZE, "iTLB permutation vectors: Unable to test.\n");
 		}
 	}
-	else if (count == STLB_PCID)
-	{
-		/*
-			Find the maximum number of PCIDs that the sTLB can keep track of.
-			Corresponds to Section 4.5 of the paper.
-		*/
-
-		if (tlb.shared_component && tlb.split_component_data)
-		{
-			u64 cr3k = getcr3();
-
-			int pcid_writes;
-			int smallest_pcid_noflush = 4096;
-			int smallest_pcid = 4096;
-			int evictions[100] = {[0 ... 99] = 0};
-			int evictions_no_flush[100] = {[0 ... 99] = 0};
-
-			// Find the limit without the NOFLUSH bit set
-			for (pcid_writes = 0; pcid_writes < 4095; pcid_writes++)
-			{
-				int res = 0;
-				for (i = 0; i < iterations; i++)
-				{
-					res += stlb_pcid_limit(pcid_writes, 0);
-				}
-
-				evictions[pcid_writes] = res;
-
-				// If we have a miss every iteration, we found the limit
-				if (res == iterations)
-				{
-					smallest_pcid = pcid_writes;
-					break;
-				}
-			}
-
-			// Find the limit with the NOFLUSH bit set
-			for (pcid_writes = 0; pcid_writes < 4095; pcid_writes++)
-			{
-				int res = 0;
-				for (i = 0; i < iterations; i++)
-				{
-					res += stlb_pcid_limit(pcid_writes, 1);
-				}
-
-				evictions_no_flush[pcid_writes] = res;
-
-				// If we have a miss every iteration, we found the limit
-				if (res == iterations)
-				{
-					smallest_pcid_noflush = pcid_writes;
-					break;
-				}
-			}
-
-			tlb.shared_component->pcids_supported = smallest_pcid;
-			tlb.shared_component->pcids_supported_no_flush = smallest_pcid_noflush;
-
-			// Write result to output buffer
-			snprintf(return_message, MESSAGE_BUFFER_SIZE, "STLB PCID limit: %d (with the NOFLUSH bit: %d)\nDistribution:\n", smallest_pcid, smallest_pcid_noflush);
-
-			for (i = 0; i < smallest_pcid + 1; i++)
-			{
-				snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d PCIDs: %d / %d.\n", i, evictions[i], iterations);
-			}
-
-			snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "Distribution NOFLUSH:\n");
-
-			for (i = 0; i < smallest_pcid_noflush + 1; i++)
-			{
-				snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d PCIDs: %d / %d.\n", i, evictions_no_flush[i], iterations);
-			}
-
-			setcr3(cr3k);
-		}
-		else
-		{
-			snprintf(return_message, MESSAGE_BUFFER_SIZE, "STLB PCID limit: Not present.\n");
-		}
-	}
-	else if (count == DTLB_PCID)
-	{
-		/*
-			Find the maximum number of PCIDs that the dTLB can keep track of.
-			Corresponds to Section 4.5 of the paper.
-		*/
-
-		if (tlb.split_component_data && tlb.shared_component)
-		{
-			u64 cr3k = getcr3();
-			int pcid_writes, i;
-			int smallest_pcid_noflush = 4096;
-			int smallest_pcid = 4096;
-			int evictions[100] = {[0 ... 99] = 0};
-			int evictions_no_flush[100] = {[0 ... 99] = 0};
-
-			// Find the limit without the NOFLUSH bit set
-			for (pcid_writes = 0; pcid_writes < 4095; pcid_writes++)
-			{
-				int res = 0;
-				for (i = 0; i < iterations; i++)
-				{
-					if (tlb.shared_component)
-					{
-						res += dtlb_pcid_limit(pcid_writes, 0);
-					}
-				}
-
-				evictions[pcid_writes] = res;
-
-				// If we have a miss every iteration, we found the limit
-				if (res == iterations)
-				{
-					smallest_pcid = pcid_writes;
-					break;
-				}
-			}
-
-			// Find the limit with the NOFLUSH bit set
-			for (pcid_writes = 0; pcid_writes < 4095; pcid_writes++)
-			{
-				int res = 0;
-				for (i = 0; i < iterations; i++)
-				{
-					if (tlb.shared_component)
-					{
-						res += dtlb_pcid_limit(pcid_writes, 1);
-					}
-				}
-
-				evictions_no_flush[pcid_writes] = res;
-
-				// If we have a miss every iteration, we found the limit
-				if (res == iterations)
-				{
-					smallest_pcid_noflush = pcid_writes;
-					break;
-				}
-			}
-
-			// Write result to output buffer
-			snprintf(return_message, MESSAGE_BUFFER_SIZE, "dTLB PCID limit: %d (with the NOFLUSH bit: %d).\nDistribution:\n", smallest_pcid, smallest_pcid_noflush);
-
-			for (i = 0; i < smallest_pcid + 1; i++)
-			{
-				snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d PCIDs: %d / %d.\n", i, evictions[i], iterations);
-			}
-
-			snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "Distribution NOFLUSH:\n");
-
-			for (i = 0; i < smallest_pcid_noflush + 1; i++)
-			{
-				snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d PCIDs: %d / %d.\n", i, evictions_no_flush[i], iterations);
-			}
-
-			setcr3(cr3k);
-		}
-		else
-		{
-			snprintf(return_message, MESSAGE_BUFFER_SIZE, "dTLB PCID limit: Unable to test.\n");
-		}
-	}
-	else if (count == ITLB_PCID)
-	{
-		/*
-			Find the maximum number of PCIDs that the iTLB can keep track of.
-			Corresponds to Section 4.5 of the paper.
-		*/
-
-		if (tlb.split_component_instruction && tlb.shared_component)
-		{
-			u64 cr3k = getcr3();
-			int pcid_writes, i;
-			int smallest_pcid_noflush = 4096;
-			int smallest_pcid = 4096;
-			int evictions[100] = {[0 ... 99] = 0};
-			int evictions_no_flush[100] = {[0 ... 99] = 0};
-
-			// Find the limit without the NOFLUSH bit set
-			for (pcid_writes = 0; pcid_writes < 4095; pcid_writes++)
-			{
-				int res = 0;
-				for (i = 0; i < iterations; i++)
-				{
-					if (tlb.shared_component)
-					{
-						res += itlb_pcid_limit(pcid_writes, 0);
-					}
-				}
-
-				evictions[pcid_writes] = res;
-
-				// If we have a miss every iteration, we found the limit
-				if (res == iterations)
-				{
-					smallest_pcid = pcid_writes;
-					break;
-				}
-			}
-
-			// Find the limit with the NOFLUSH bit set
-			for (pcid_writes = 0; pcid_writes < 4095; pcid_writes++)
-			{
-				int res = 0;
-				for (i = 0; i < iterations; i++)
-				{
-					if (tlb.shared_component)
-					{
-						res += itlb_pcid_limit(pcid_writes, 1);
-					}
-				}
-
-				evictions_no_flush[pcid_writes] = res;
-
-				// If we have a miss every iteration, we found the limit
-				if (res == iterations)
-				{
-					smallest_pcid_noflush = pcid_writes;
-					break;
-				}
-			}
-
-			// Write result to output buffer
-			snprintf(return_message, MESSAGE_BUFFER_SIZE, "iTLB PCID limit: %d (with the NOFLUSH bit: %d).\nDistribution:\n", smallest_pcid, smallest_pcid_noflush);
-
-			for (i = 0; i < smallest_pcid + 1; i++)
-			{
-				snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d PCIDs: %d / %d.\n", i, evictions[i], iterations);
-			}
-
-			snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "Distribution NOFLUSH:\n");
-
-			for (i = 0; i < smallest_pcid_noflush + 1; i++)
-			{
-				snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d PCIDs: %d / %d.\n", i, evictions_no_flush[i], iterations);
-			}
-
-			setcr3(cr3k);
-		}
-		else
-		{
-			snprintf(return_message, MESSAGE_BUFFER_SIZE, "iTLB PCID limit: Unable to test.\n");
-		}
-	}
-	else if (count == STLB_PCID_PERMUTATION)
-	{
-		/*
-			Find the (sTLB) PCID cache replacement policy,
-			Corresponds to Section 4.6 of the paper.
-		*/
-
-		// We set iterations low, this test takes way too long otherwise
-		iterations = 5;
-
-		if (tlb.shared_component && tlb.split_component_data)
-		{
-			u64 cr3k = getcr3();
-			int vector_index, i;
-
-			int broken;
-
-			snprintf(return_message, MESSAGE_BUFFER_SIZE, "sTLB PCID permutation vectors: \n");
-
-			// Find each permutation vector (without NOFLUSH)
-			for (vector_index = 0; vector_index < tlb.shared_component->pcids_supported; vector_index++)
-			{
-				int agreement = 0;
-
-				int vector[tlb.shared_component->pcids_supported];
-
-				for (i = 0; i < tlb.shared_component->pcids_supported; i++)
-				{
-					vector[i] = -1;
-				}
-
-				snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "\u03C0%d: ", vector_index);
-
-				// Find the permutation vector (without NOFLUSH)
-				detect_stlb_pcid_permutation(vector_index, vector, &agreement, 0);
-
-				broken = 0;
-
-				// Write the result to the output buffer
-				for (i = 0; i < tlb.shared_component->pcids_supported - 1; i++)
-				{
-					snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d, ", vector[i]);
-
-					if (vector[i] == -1)
-					{
-						broken = 1;
-					}
-				}
-
-				snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d (agreement %d / %d)\n", vector[tlb.shared_component->pcids_supported - 1], agreement, iterations * tlb.shared_component->pcids_supported);
-			}
-
-			if (broken)
-			{
-				snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "WARNING: not all positions filled.\n");
-			}
-
-			snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "sTLB PCID permutation vectors NOFLUSH: \n");
-
-			// Find each permutation vector (with NOFLUSH)
-			for (vector_index = 0; vector_index < tlb.shared_component->pcids_supported_no_flush; vector_index++)
-			{
-				int agreement = 0;
-
-				int vector[tlb.shared_component->pcids_supported_no_flush];
-
-				for (i = 0; i < tlb.shared_component->pcids_supported_no_flush; i++)
-				{
-					vector[i] = -1;
-				}
-
-				snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "\u03C0%d: ", vector_index);
-
-				// Find the permutation vector (with NOFLUSH)
-				detect_stlb_pcid_permutation(vector_index, vector, &agreement, 1);
-
-				broken = 0;
-
-				// Write the result to the output buffer
-				for (i = 0; i < tlb.shared_component->pcids_supported_no_flush - 1; i++)
-				{
-					snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d, ", vector[i]);
-
-					if (vector[i] == -1)
-					{
-						broken = 1;
-					}
-				}
-
-				snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d (agreement %d / %d)\n", vector[tlb.shared_component->pcids_supported_no_flush - 1], agreement, iterations * tlb.shared_component->pcids_supported_no_flush);
-			}
-
-			if (broken)
-			{
-				snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "WARNING: not all positions filled.\n");
-			}
-
-			setcr3(cr3k);
-		}
-		else
-		{
-			snprintf(return_message, MESSAGE_BUFFER_SIZE, "sTLB PCID permutation vectors: Unable to test.\n");
-		}
-	}
+	// else if (count == STLB_PCID)
+	// {
+	// 	/*
+	// 		Find the maximum number of PCIDs that the sTLB can keep track of.
+	// 		Corresponds to Section 4.5 of the paper.
+	// 	*/
+
+	// 	if (tlb.shared_component && tlb.split_component_data)
+	// 	{
+	// 		u64 cr3k = getcr3();
+
+	// 		int pcid_writes;
+	// 		int smallest_pcid_noflush = 4096;
+	// 		int smallest_pcid = 4096;
+	// 		int evictions[100] = {[0 ... 99] = 0};
+	// 		int evictions_no_flush[100] = {[0 ... 99] = 0};
+
+	// 		// Find the limit without the NOFLUSH bit set
+	// 		for (pcid_writes = 0; pcid_writes < 4095; pcid_writes++)
+	// 		{
+	// 			int res = 0;
+	// 			for (i = 0; i < iterations; i++)
+	// 			{
+	// 				res += stlb_pcid_limit(pcid_writes, 0);
+	// 			}
+
+	// 			evictions[pcid_writes] = res;
+
+	// 			// If we have a miss every iteration, we found the limit
+	// 			if (res == iterations)
+	// 			{
+	// 				smallest_pcid = pcid_writes;
+	// 				break;
+	// 			}
+	// 		}
+
+	// 		// Find the limit with the NOFLUSH bit set
+	// 		for (pcid_writes = 0; pcid_writes < 4095; pcid_writes++)
+	// 		{
+	// 			int res = 0;
+	// 			for (i = 0; i < iterations; i++)
+	// 			{
+	// 				res += stlb_pcid_limit(pcid_writes, 1);
+	// 			}
+
+	// 			evictions_no_flush[pcid_writes] = res;
+
+	// 			// If we have a miss every iteration, we found the limit
+	// 			if (res == iterations)
+	// 			{
+	// 				smallest_pcid_noflush = pcid_writes;
+	// 				break;
+	// 			}
+	// 		}
+
+	// 		tlb.shared_component->pcids_supported = smallest_pcid;
+	// 		tlb.shared_component->pcids_supported_no_flush = smallest_pcid_noflush;
+
+	// 		// Write result to output buffer
+	// 		snprintf(return_message, MESSAGE_BUFFER_SIZE, "STLB PCID limit: %d (with the NOFLUSH bit: %d)\nDistribution:\n", smallest_pcid, smallest_pcid_noflush);
+
+	// 		for (i = 0; i < smallest_pcid + 1; i++)
+	// 		{
+	// 			snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d PCIDs: %d / %d.\n", i, evictions[i], iterations);
+	// 		}
+
+	// 		snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "Distribution NOFLUSH:\n");
+
+	// 		for (i = 0; i < smallest_pcid_noflush + 1; i++)
+	// 		{
+	// 			snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d PCIDs: %d / %d.\n", i, evictions_no_flush[i], iterations);
+	// 		}
+
+	// 		setcr3(cr3k);
+	// 	}
+	// 	else
+	// 	{
+	// 		snprintf(return_message, MESSAGE_BUFFER_SIZE, "STLB PCID limit: Not present.\n");
+	// 	}
+	// }
+	// else if (count == DTLB_PCID)
+	// {
+	// 	/*
+	// 		Find the maximum number of PCIDs that the dTLB can keep track of.
+	// 		Corresponds to Section 4.5 of the paper.
+	// 	*/
+
+	// 	if (tlb.split_component_data && tlb.shared_component)
+	// 	{
+	// 		u64 cr3k = getcr3();
+	// 		int pcid_writes, i;
+	// 		int smallest_pcid_noflush = 4096;
+	// 		int smallest_pcid = 4096;
+	// 		int evictions[100] = {[0 ... 99] = 0};
+	// 		int evictions_no_flush[100] = {[0 ... 99] = 0};
+
+	// 		// Find the limit without the NOFLUSH bit set
+	// 		for (pcid_writes = 0; pcid_writes < 4095; pcid_writes++)
+	// 		{
+	// 			int res = 0;
+	// 			for (i = 0; i < iterations; i++)
+	// 			{
+	// 				if (tlb.shared_component)
+	// 				{
+	// 					res += dtlb_pcid_limit(pcid_writes, 0);
+	// 				}
+	// 			}
+
+	// 			evictions[pcid_writes] = res;
+
+	// 			// If we have a miss every iteration, we found the limit
+	// 			if (res == iterations)
+	// 			{
+	// 				smallest_pcid = pcid_writes;
+	// 				break;
+	// 			}
+	// 		}
+
+	// 		// Find the limit with the NOFLUSH bit set
+	// 		for (pcid_writes = 0; pcid_writes < 4095; pcid_writes++)
+	// 		{
+	// 			int res = 0;
+	// 			for (i = 0; i < iterations; i++)
+	// 			{
+	// 				if (tlb.shared_component)
+	// 				{
+	// 					res += dtlb_pcid_limit(pcid_writes, 1);
+	// 				}
+	// 			}
+
+	// 			evictions_no_flush[pcid_writes] = res;
+
+	// 			// If we have a miss every iteration, we found the limit
+	// 			if (res == iterations)
+	// 			{
+	// 				smallest_pcid_noflush = pcid_writes;
+	// 				break;
+	// 			}
+	// 		}
+
+	// 		// Write result to output buffer
+	// 		snprintf(return_message, MESSAGE_BUFFER_SIZE, "dTLB PCID limit: %d (with the NOFLUSH bit: %d).\nDistribution:\n", smallest_pcid, smallest_pcid_noflush);
+
+	// 		for (i = 0; i < smallest_pcid + 1; i++)
+	// 		{
+	// 			snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d PCIDs: %d / %d.\n", i, evictions[i], iterations);
+	// 		}
+
+	// 		snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "Distribution NOFLUSH:\n");
+
+	// 		for (i = 0; i < smallest_pcid_noflush + 1; i++)
+	// 		{
+	// 			snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d PCIDs: %d / %d.\n", i, evictions_no_flush[i], iterations);
+	// 		}
+
+	// 		setcr3(cr3k);
+	// 	}
+	// 	else
+	// 	{
+	// 		snprintf(return_message, MESSAGE_BUFFER_SIZE, "dTLB PCID limit: Unable to test.\n");
+	// 	}
+	// }
+	// else if (count == ITLB_PCID)
+	// {
+	// 	/*
+	// 		Find the maximum number of PCIDs that the iTLB can keep track of.
+	// 		Corresponds to Section 4.5 of the paper.
+	// 	*/
+
+	// 	if (tlb.split_component_instruction && tlb.shared_component)
+	// 	{
+	// 		u64 cr3k = getcr3();
+	// 		int pcid_writes, i;
+	// 		int smallest_pcid_noflush = 4096;
+	// 		int smallest_pcid = 4096;
+	// 		int evictions[100] = {[0 ... 99] = 0};
+	// 		int evictions_no_flush[100] = {[0 ... 99] = 0};
+
+	// 		// Find the limit without the NOFLUSH bit set
+	// 		for (pcid_writes = 0; pcid_writes < 4095; pcid_writes++)
+	// 		{
+	// 			int res = 0;
+	// 			for (i = 0; i < iterations; i++)
+	// 			{
+	// 				if (tlb.shared_component)
+	// 				{
+	// 					res += itlb_pcid_limit(pcid_writes, 0);
+	// 				}
+	// 			}
+
+	// 			evictions[pcid_writes] = res;
+
+	// 			// If we have a miss every iteration, we found the limit
+	// 			if (res == iterations)
+	// 			{
+	// 				smallest_pcid = pcid_writes;
+	// 				break;
+	// 			}
+	// 		}
+
+	// 		// Find the limit with the NOFLUSH bit set
+	// 		for (pcid_writes = 0; pcid_writes < 4095; pcid_writes++)
+	// 		{
+	// 			int res = 0;
+	// 			for (i = 0; i < iterations; i++)
+	// 			{
+	// 				if (tlb.shared_component)
+	// 				{
+	// 					res += itlb_pcid_limit(pcid_writes, 1);
+	// 				}
+	// 			}
+
+	// 			evictions_no_flush[pcid_writes] = res;
+
+	// 			// If we have a miss every iteration, we found the limit
+	// 			if (res == iterations)
+	// 			{
+	// 				smallest_pcid_noflush = pcid_writes;
+	// 				break;
+	// 			}
+	// 		}
+
+	// 		// Write result to output buffer
+	// 		snprintf(return_message, MESSAGE_BUFFER_SIZE, "iTLB PCID limit: %d (with the NOFLUSH bit: %d).\nDistribution:\n", smallest_pcid, smallest_pcid_noflush);
+
+	// 		for (i = 0; i < smallest_pcid + 1; i++)
+	// 		{
+	// 			snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d PCIDs: %d / %d.\n", i, evictions[i], iterations);
+	// 		}
+
+	// 		snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "Distribution NOFLUSH:\n");
+
+	// 		for (i = 0; i < smallest_pcid_noflush + 1; i++)
+	// 		{
+	// 			snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d PCIDs: %d / %d.\n", i, evictions_no_flush[i], iterations);
+	// 		}
+
+	// 		setcr3(cr3k);
+	// 	}
+	// 	else
+	// 	{
+	// 		snprintf(return_message, MESSAGE_BUFFER_SIZE, "iTLB PCID limit: Unable to test.\n");
+	// 	}
+	// }
+	// else if (count == STLB_PCID_PERMUTATION)
+	// {
+	// 	/*
+	// 		Find the (sTLB) PCID cache replacement policy,
+	// 		Corresponds to Section 4.6 of the paper.
+	// 	*/
+
+	// 	// We set iterations low, this test takes way too long otherwise
+	// 	iterations = 5;
+
+	// 	if (tlb.shared_component && tlb.split_component_data)
+	// 	{
+	// 		u64 cr3k = getcr3();
+	// 		int vector_index, i;
+
+	// 		int broken;
+
+	// 		snprintf(return_message, MESSAGE_BUFFER_SIZE, "sTLB PCID permutation vectors: \n");
+
+	// 		// Find each permutation vector (without NOFLUSH)
+	// 		for (vector_index = 0; vector_index < tlb.shared_component->pcids_supported; vector_index++)
+	// 		{
+	// 			int agreement = 0;
+
+	// 			int vector[tlb.shared_component->pcids_supported];
+
+	// 			for (i = 0; i < tlb.shared_component->pcids_supported; i++)
+	// 			{
+	// 				vector[i] = -1;
+	// 			}
+
+	// 			snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "\u03C0%d: ", vector_index);
+
+	// 			// Find the permutation vector (without NOFLUSH)
+	// 			detect_stlb_pcid_permutation(vector_index, vector, &agreement, 0);
+
+	// 			broken = 0;
+
+	// 			// Write the result to the output buffer
+	// 			for (i = 0; i < tlb.shared_component->pcids_supported - 1; i++)
+	// 			{
+	// 				snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d, ", vector[i]);
+
+	// 				if (vector[i] == -1)
+	// 				{
+	// 					broken = 1;
+	// 				}
+	// 			}
+
+	// 			snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d (agreement %d / %d)\n", vector[tlb.shared_component->pcids_supported - 1], agreement, iterations * tlb.shared_component->pcids_supported);
+	// 		}
+
+	// 		if (broken)
+	// 		{
+	// 			snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "WARNING: not all positions filled.\n");
+	// 		}
+
+	// 		snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "sTLB PCID permutation vectors NOFLUSH: \n");
+
+	// 		// Find each permutation vector (with NOFLUSH)
+	// 		for (vector_index = 0; vector_index < tlb.shared_component->pcids_supported_no_flush; vector_index++)
+	// 		{
+	// 			int agreement = 0;
+
+	// 			int vector[tlb.shared_component->pcids_supported_no_flush];
+
+	// 			for (i = 0; i < tlb.shared_component->pcids_supported_no_flush; i++)
+	// 			{
+	// 				vector[i] = -1;
+	// 			}
+
+	// 			snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "\u03C0%d: ", vector_index);
+
+	// 			// Find the permutation vector (with NOFLUSH)
+	// 			detect_stlb_pcid_permutation(vector_index, vector, &agreement, 1);
+
+	// 			broken = 0;
+
+	// 			// Write the result to the output buffer
+	// 			for (i = 0; i < tlb.shared_component->pcids_supported_no_flush - 1; i++)
+	// 			{
+	// 				snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d, ", vector[i]);
+
+	// 				if (vector[i] == -1)
+	// 				{
+	// 					broken = 1;
+	// 				}
+	// 			}
+
+	// 			snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "%d (agreement %d / %d)\n", vector[tlb.shared_component->pcids_supported_no_flush - 1], agreement, iterations * tlb.shared_component->pcids_supported_no_flush);
+	// 		}
+
+	// 		if (broken)
+	// 		{
+	// 			snprintf(return_message + strlen(return_message), MESSAGE_BUFFER_SIZE, "WARNING: not all positions filled.\n");
+	// 		}
+
+	// 		setcr3(cr3k);
+	// 	}
+	// 	else
+	// 	{
+	// 		snprintf(return_message, MESSAGE_BUFFER_SIZE, "sTLB PCID permutation vectors: Unable to test.\n");
+	// 	}
+	// }
 	else if (count == RESET_SETTINGS)
 	{
 		// Resets the setting to default
