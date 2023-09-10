@@ -62,4 +62,12 @@ qemu-system-x86_64 -m 8G -hda ubuntu.img -cdrom ubuntu-20.04.4-desktop-amd64.iso
 qemu-system-x86_64 -m 8G -smp 4 -hda ubuntu.img  -enable-kvm -nic user,hostfwd=tcp::22222-:22 -cpu host
 qemu-system-x86_64 -m 8G -smp cores=6,threads=2,sockets=1 -hda ubuntu.img  -enable-kvm -nic user,hostfwd=tcp::22222-:22 -cpu host
 
+raptor lake kernel fix ibt=off ( https://www.reddit.com/r/archlinux/comments/y4746k/ibtoff/ )
+
+
+
+
+
 123qwe
+
+
