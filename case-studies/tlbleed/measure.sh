@@ -3,8 +3,8 @@
 # TWEAKABLES
 # Pair of co-resident logical cores to run the experiments on
 # Recommended to isolate them from the rest of the scheduler w/ cpusets
-RECVCORE=4
-SENDCORE=5
+RECVCORE=8
+SENDCORE=10
 
 # END TWEAKABLES
 
