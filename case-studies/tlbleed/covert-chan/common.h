@@ -20,7 +20,7 @@
 #include <pthread.h>
 #include <sched.h>
 
-#define PAGE 4096
+#define PAGE 2097152
 #define SHAREFILE  "/tmp/.tlb-covert-channel-shared-file"
 #define SYNCFILE   "/tmp/.tlb-covert-channel-sync-file"
 #define SECRETBITS 256

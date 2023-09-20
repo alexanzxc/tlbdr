@@ -18,8 +18,8 @@
 
 // THRESHOLD TWEAKS
 
-#define TIMETHRESH_NAIVE (500)
-#define TIMETHRESH_NINJA (108)
+#define TIMETHRESH_NAIVE (461)
+#define TIMETHRESH_NINJA (112)
 #define NINJA_MASK (0x1ff)
 
 // END OF TWEAKS
@@ -144,7 +144,7 @@ void allocate_buffer(int *fdarray, volatile char *firstpage_d)
 #define EVBSZ (calc_pageno(0, 32)*PAGE)
 static void setup_tbuf(void)
 {
-	if (mmap((void *)VTARGET, EVBSZ, PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0) == MAP_FAILED) {
+	if (mmap((void *)VTARGET, EVBSZ, PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE| MAP_HUGETLB |MAP_ANONYMOUS|MAP_POPULATE, -1, 0) == MAP_FAILED) {
         perror("mmap");
         exit(1);
     }
@@ -184,7 +184,7 @@ static unsigned char *mmap_safe(uint64_t safeset)
     assert((uint64_t) safe_probe >= VTARGET); // check for wrap
 
     // actually allocate the page
-    unsigned char *ret = mmap(safe_probe, PAGE, PROT_READ|PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE | MAP_FIXED, -1, 0);
+    unsigned char *ret = mmap(safe_probe, PAGE, PROT_READ|PROT_WRITE, MAP_ANONYMOUS | MAP_HUGETLB | MAP_PRIVATE | MAP_FIXED, -1, 0);
 
     if(ret == MAP_FAILED) {
 				fprintf(stderr, "failed at mmap_safe\n");
@@ -674,7 +674,7 @@ int main(int argc, char *argv[])
      int goodwords=0;
      //for(;;) {
      ninja_sync(SET_DATA, SET_DATA+WORDLEN);
-     for (long att = 0; time <= 100000; att++) {
+     for (long att = 0; time <= 150; att++) {
 
     #ifdef USE_NINJA
          if (!(att & NINJA_MASK)) {
