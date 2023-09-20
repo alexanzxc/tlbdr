@@ -1,46 +1,60 @@
 Notes :
 
-- check hugepages:
+QEMU commands :
 
-grep Huge /proc/meminfo
-cat /sys/devices/system/node/node*/meminfo | grep Huge
+qemu-img create -f qcow2 ubuntu.img 20G
+qemu-system-x86_64 -m 8G -hda ubuntu.img -cdrom ubuntu-20.04.4-desktop-amd64.iso -boot d -enable-kvm -nic user,hostfwd=tcp::22222-:22
+qemu-system-x86_64 -m 8G -smp 4 -hda ubuntu.img  -enable-kvm -nic user,hostfwd=tcp::22222-:22 -cpu host
+qemu-system-x86_64 -m 8G -smp cores=6,threads=2,sockets=1 -hda ubuntu.img  -enable-kvm -nic user,hostfwd=tcp::22222-:22 -cpu host -nographic
+raptor lake kernel fix ibt=off ( https://www.reddit.com/r/archlinux/comments/y4746k/ibtoff/ )
+PW : 123qwe
+
+- check if hugepages are enabled in kernel:
+zcat /proc/config.gz | grep "CONFIG_SYS_SUPPORTS_HUGETLBFS=y"
+
+
+- check current memory status:
+grep Huge /proc/meminfo or cat /sys/devices/system/node/node*/meminfo | grep Huge
+grep -i huge /proc/mounts
+ipcs -m  -for shared memory-
 
 - enable/disable hugepages:
 https://www.kernel.org/doc/html/latest/admin-guide/mm/transhuge.html
+https://www.kernel.org/doc/Documentation/vm/transhuge.txt
 
 echo always >/sys/kernel/mm/transparent_hugepage/enabled
 echo madvise >/sys/kernel/mm/transparent_hugepage/enabled
 echo never >/sys/kernel/mm/transparent_hugepage/enabled
-
 echo 1 >/sys/kernel/mm/transparent_hugepage/khugepaged/defrag
 
-- buddyinfo
-
-cat /proc/buddyinfo
-
-- kernel print or control the kernel ring buffer
-
-dmesg -wH
-
-- htop find process
-
-htop / search
-
-- huge pages
+- allocate huge pages:
 
 echo 10 > /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
 [root@m1 alex]# cat /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
 
-grep -i huge /proc/mounts
-ipcs -m
+-core pin on physical cores:
 
+0/2/4/6/8/10
 
+grep -H . /sys/devices/system/cpu/cpu*/topology/thread_siblings_list
 
+-actual check to see if the program is using them:
 
+/proc/<pid>/smaps
 
+- buddyinfo:
+
+cat /proc/buddyinfo
+
+- kernel print or control the kernel ring buffer:
+
+dmesg -wH
+
+- htop find process:
+
+htop / searchhttps://www.kernel.org/doc/html/v4.18/admin-guide/mm/transhuge.html
 
 why do we allocate the sizes we do ?
-
 
 0x133801000000
 0x133802000000
@@ -48,26 +62,5 @@ why do we allocate the sizes we do ?
 16777216 = 16MB*2048
 
 ut of memory: Killed process 28983 (trigger) total-vm:10258884kB, anon-rss:10247808kB, file-rss:256kB, shmem-rss:0kB, UID:0 pgtables:20104kB oom_score_adj:200
-
-with MAP_SHARED
-
-
-
-
-
-QEMU commands :
-
-qemu-img create -f qcow2 ubuntu.img 20G
-qemu-system-x86_64 -m 8G -hda ubuntu.img -cdrom ubuntu-20.04.4-desktop-amd64.iso -boot d -enable-kvm -nic user,hostfwd=tcp::22222-:22
-qemu-system-x86_64 -m 8G -smp 4 -hda ubuntu.img  -enable-kvm -nic user,hostfwd=tcp::22222-:22 -cpu host
-qemu-system-x86_64 -m 8G -smp cores=6,threads=2,sockets=1 -hda ubuntu.img  -enable-kvm -nic user,hostfwd=tcp::22222-:22 -cpu host
-
-raptor lake kernel fix ibt=off ( https://www.reddit.com/r/archlinux/comments/y4746k/ibtoff/ )
-
-
-
-
-
-123qwe
 
 

@@ -1,0 +1,9 @@
+madtlb notes :
+
+map_huge_2mb worked.
+map_hugetlb, map_hugetlb+map_huge_2mb not.
+flags worked , commiting changes.
+
+TODO:
+
+rn2/rj2 seg fault.

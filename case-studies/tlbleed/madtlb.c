@@ -4,11 +4,12 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include <assert.h>
-
+#include <linux/mman.h>
 #include <time.h>
 #include <unistd.h>
 #include <sys/mman.h>
 
+#include <errno.h>
 
 #define USE_L2 (0)
 #define NINJA (0)
@@ -28,8 +29,8 @@ static inline long usecdiff(struct timespec *t0, struct timespec *t)
 #define _M (_K * _K)
 #define _G (_K * _M)
 
-#define PAGESZ (4*_K)
-#define EVBN (1L << 18)
+#define PAGESZ (2*_M)
+#define EVBN (1L << 8)
 #define EVBSZ (EVBN * PAGESZ)
 
 #define TBUFBASE ((void *)0x13370000000L)
@@ -38,12 +39,14 @@ static inline long usecdiff(struct timespec *t0, struct timespec *t)
 
 static void *setup_evbuf(void)
 {
-	return mmap(NULL, EVBSZ, PROT_READ, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
+	return mmap(NULL, EVBSZ, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE|MAP_ANONYMOUS|MAP_HUGETLB|MAP_HUGE_2MB|MAP_POPULATE, -1, 0);
 }
 static void *setup_tbuf(void)
 {
-	assert((char *)TBUFBASE + EVBSZ > TARGET);
-	return mmap(TBUFBASE, EVBSZ, PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
+	// asserting?
+	//assert((char *)TBUFBASE + EVBSZ > TARGET);
+	printf("trying mmap!\n");
+	return mmap(TBUFBASE, EVBSZ, MAP_HUGE_2MB|PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE|MAP_ANONYMOUS|MAP_HUGETLB|MAP_HUGE_2MB|MAP_POPULATE, -1, 0);
 }
 
 #define TLLINE(x) ((x) >> 12)
@@ -59,7 +62,10 @@ static inline uintptr_t TSL2(uintptr_t va)
 static void *tlb_nexthit(void *cur, uintptr_t l1t, uintptr_t l2t)
 {
 	uintptr_t p = (uintptr_t)cur;
+	int c = 0;
 	do {
+		c++;
+		printf("DEBUG 1    %d\n", c);
 		p += PAGESZ;
 	} while (TDL1(p) != l1t || TSL2(p) != l2t);
 	return (void *)p;
@@ -68,6 +74,7 @@ static void *tlb_nexthit_l1(void *cur, uintptr_t l1t)
 {
 	uintptr_t p = (uintptr_t)cur;
 	do {
+		printf("DEBUG 2\n");
 		p += PAGESZ;
 	} while (TDL1(p) != l1t);
 	return (void *)p;
@@ -78,6 +85,7 @@ static inline void tlb_evrun(void *base, uintptr_t targ, size_t n)
 	uintptr_t l1t = TDL1(targ);
 	uintptr_t l2t = TSL2(targ);
 	void *p = base;
+	printf("DEBUG 3\n");
 	for (size_t i = 0; i < n; i++) {
 		p = tlb_nexthit(p, l1t, l2t);
 		//fprintf(stderr, "*%p\n", p);
@@ -1190,9 +1198,11 @@ int main(int argc, char *argv[])
 
 		if (setup_tbuf() == MAP_FAILED) {
 			perror("Error mapping target buffer");
+			fprintf(stderr, "~~~~Error in mmap for setup_tbuf: %s\n", strerror(errno));
 			return 2;
 		}
 		if ((tebuf = setup_evbuf()) == MAP_FAILED) {
+			fprintf(stderr, "###Error in mmap for setup_evbuf: %s\n", strerror(errno));
 			perror("Error setting up eviction buf");
 			return 2;
 		}

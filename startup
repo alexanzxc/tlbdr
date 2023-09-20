@@ -1,0 +1,12 @@
+Startup:
+
+qemu-system-x86_64 -m 8G -smp cores=6,threads=2,sockets=1 -hda ubuntu.img  -enable-kvm -nic user,hostfwd=tcp::22222-:22 -cpu host -nographic
+
+cpusets 2,4
+taskset ?
+
+echo always >/sys/kernel/mm/transparent_hugepage/enabled
+echo 1 >/sys/kernel/mm/transparent_hugepage/khugepaged/defrag
+reboot ?
+
+echo 512 > /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
