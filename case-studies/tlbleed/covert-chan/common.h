@@ -24,6 +24,7 @@
 #define SHAREFILE  "/tmp/.tlb-covert-channel-shared-file"
 #define SYNCFILE   "/tmp/.tlb-covert-channel-sync-file"
 #define SECRETBITS 256
+#define MAP_HUGE_2MB    (21 << MAP_HUGE_SHIFT)
 
 #define MAGIC 0x31337
 
@@ -73,7 +74,8 @@ static int createfile(const char *fnprefix, int setno)
 static volatile struct sharestruct *get_sharestruct()
 {
     int fd = createfile(SYNCFILE, 0);
-	volatile struct sharestruct *ret = (volatile struct sharestruct *) mmap(NULL, PAGE, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_FILE, fd, 0);
+    //adding huge tlb , huge 2mb
+	volatile struct sharestruct *ret = (volatile struct sharestruct *) mmap(NULL, PAGE, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_FILE | MAP_HUGETLB | MAP_HUGE_2MB, fd, 0);
 	if(ret == MAP_FAILED) {
 		perror("mmap");
 		exit(1);

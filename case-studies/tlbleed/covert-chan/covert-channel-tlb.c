@@ -15,6 +15,7 @@
 #include "profile.h"
 #include "common.h"
 
+#define MAP_HUGE_2MB    (21 << MAP_HUGE_SHIFT)
 
 // THRESHOLD TWEAKS
 
@@ -71,7 +72,8 @@ static inline unsigned crc8(unsigned crc, unsigned char const *data, size_t len)
 #define HARDWARESETS 128
 #define SETLIMIT 128
 // uarch dependencies: TLB set size is a runtime setting but we want to know a maximum possible value
-#define SETSIZE_MAX  64
+#define SETSIZE_MAX  32
+//changed to 32 for 2mb pages probably
 static const int use_setsize = 12; // !! uarch dependency: tlb set size, set at runtime
 
 /* These are TLB set number used for specific communication purposes. */
@@ -128,9 +130,11 @@ void allocate_buffer(int *fdarray, volatile char *firstpage_d)
             unsigned long long p = calc_pageno(set, i);
             target_d = (void *) (firstpage_d+p*PAGE);
     		char *ret;
-
-    		ret = mmap((void *) target_d, PAGE, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_SHARED|MAP_FILE|MAP_FIXED, fdarray[set], 0);
+            fprintf(stderr, "i is : %d, set is %d , target_d is %p \n",i, set, target_d);
+//adding hugetlb and huge 2mb
+    		ret = mmap((void *) target_d, PAGE, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_SHARED| MAP_FILE | MAP_FIXED | MAP_HUGE_2MB, fdarray[set], 0);
     		if(ret == MAP_FAILED) {
+				fprintf(stderr, "allocate buffer mmap\n");
 				fprintf(stderr, "failed at allocate_buffer\n");
 			perror("mmap");
     			exit(1);
@@ -144,7 +148,10 @@ void allocate_buffer(int *fdarray, volatile char *firstpage_d)
 #define EVBSZ (calc_pageno(0, 32)*PAGE)
 static void setup_tbuf(void)
 {
-	if (mmap((void *)VTARGET, EVBSZ, PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE| MAP_HUGETLB |MAP_ANONYMOUS|MAP_POPULATE, -1, 0) == MAP_FAILED) {
+    //adding map huge 2mb
+	if (mmap((void *)VTARGET, EVBSZ, PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE| MAP_HUGETLB | MAP_HUGE_2MB |MAP_ANONYMOUS|MAP_POPULATE, -1, 0) == MAP_FAILED) {
+        fprintf(stderr, "allocate target mmap\n");
+		fprintf(stderr, "failed at target_buffer\n");
         perror("mmap");
         exit(1);
     }
@@ -184,7 +191,9 @@ static unsigned char *mmap_safe(uint64_t safeset)
     assert((uint64_t) safe_probe >= VTARGET); // check for wrap
 
     // actually allocate the page
-    unsigned char *ret = mmap(safe_probe, PAGE, PROT_READ|PROT_WRITE, MAP_ANONYMOUS | MAP_HUGETLB | MAP_PRIVATE | MAP_FIXED, -1, 0);
+    //adding huge 2mb
+    fprintf(stderr, "mmap safe allocating....\n");
+    unsigned char *ret = mmap(safe_probe, PAGE, PROT_READ|PROT_WRITE, MAP_ANONYMOUS | MAP_HUGETLB | MAP_HUGE_2MB | MAP_PRIVATE | MAP_FIXED, -1, 0);
 
     if(ret == MAP_FAILED) {
 				fprintf(stderr, "failed at mmap_safe\n");
@@ -378,6 +387,7 @@ static void _mtouchset(uint64_t set)
 
 
 // set up TLB eviction sets for all tlb sets. SETLIMIT is the number of hardware tlb sets.
+//12*128=1536 entries STLB.
 void setup_buffer(void)
 {
 	uint64_t set;
