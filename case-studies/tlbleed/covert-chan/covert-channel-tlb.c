@@ -18,8 +18,8 @@
 
 // THRESHOLD TWEAKS
 
-#define TIMETHRESH_NAIVE (461)
-#define TIMETHRESH_NINJA (112)
+#define TIMETHRESH_NAIVE (500)
+#define TIMETHRESH_NINJA (165)
 #define NINJA_MASK (0x1ff)
 
 // END OF TWEAKS
@@ -674,7 +674,7 @@ int main(int argc, char *argv[])
      int goodwords=0;
      //for(;;) {
      ninja_sync(SET_DATA, SET_DATA+WORDLEN);
-     for (long att = 0; time <= 150; att++) {
+     for (long att = 0; time <= 100000; att++) {
 
     #ifdef USE_NINJA
          if (!(att & NINJA_MASK)) {

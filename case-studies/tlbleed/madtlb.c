@@ -29,29 +29,60 @@ static inline long usecdiff(struct timespec *t0, struct timespec *t)
 #define _M (_K * _K)
 #define _G (_K * _M)
 
+//change size to 4*_K for 4k pages
 #define PAGESZ (2*_M)
-#define EVBN (1L << 8)
-#define EVBSZ (EVBN * PAGESZ)
+//change to 1L<<18
+#define EVBN (1L << 11)
+#define EVBSZ (EVBN * PAGESZ)//4GB
 
 #define TBUFBASE ((void *)0x13370000000L)
-#define TARGOFF (0x887L * PAGESZ)
+//#define TARGOFF (0x887L * PAGESZ)
+#define TARGOFF ((1 * _G)/2)  // This is 2GB
 #define TARGET ((char *)TBUFBASE + TARGOFF)
 
 static void *setup_evbuf(void)
-{
+{	
+	printf("trying EVBUF!\n");
 	return mmap(NULL, EVBSZ, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE|MAP_ANONYMOUS|MAP_HUGETLB|MAP_HUGE_2MB|MAP_POPULATE, -1, 0);
 }
 static void *setup_tbuf(void)
 {
-	// asserting?
-	//assert((char *)TBUFBASE + EVBSZ > TARGET);
-	printf("trying mmap!\n");
-	return mmap(TBUFBASE, EVBSZ, MAP_HUGE_2MB|PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE|MAP_ANONYMOUS|MAP_HUGETLB|MAP_HUGE_2MB|MAP_POPULATE, -1, 0);
+    void *mapped_address;
+
+    // asserting?
+    assert((char *)TBUFBASE + EVBSZ > TARGET);
+    printf("trying TBUF!\n");
+
+    mapped_address = mmap(TBUFBASE, EVBSZ, PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE|MAP_ANONYMOUS|MAP_HUGETLB|MAP_HUGE_2MB|MAP_POPULATE, -1, 0);
+
+    // Print the mapped address and size
+    if (mapped_address != MAP_FAILED) {
+        printf("Mapped address: %p\n", mapped_address);
+        printf("Size: %ld bytes\n", (long) EVBSZ);
+    } else {
+        perror("Failed to mmap"); // Print why the mapping failed
+    }
+
+    return mapped_address;
 }
 
-#define TLLINE(x) ((x) >> 12)
+// calls for 4k pages :
+// static void *setup_evbuf(void)
+// {
+// 	return mmap(NULL, EVBSZ, PROT_READ, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
+// }
+// static void *setup_tbuf(void)
+// {
+// 	assert((char *)TBUFBASE + EVBSZ > TARGET);
+// 	return mmap(TBUFBASE, EVBSZ, PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
+// }
 
-static inline uintptr_t TDL1(uintptr_t va) {return TLLINE(va) & 0xf;}
+//Maybe required for 2mb pages.
+//#define TLLINE(x) ((x) >> 12)
+#define TLLINE(x) ((x) >> 21)
+
+//change TDL1 from 0xf to 0x8 along with the above TLLINE change.
+static inline uintptr_t TDL1(uintptr_t va) {return TLLINE(va) & 0x8;}
 static inline uintptr_t TIL1(uintptr_t va) {return TLLINE(va) & 0x7;}
 static inline uintptr_t TSL2(uintptr_t va)
 {
@@ -67,7 +98,14 @@ static void *tlb_nexthit(void *cur, uintptr_t l1t, uintptr_t l2t)
 		c++;
 		printf("DEBUG 1    %d\n", c);
 		p += PAGESZ;
+		printf("P as uintptr_t in hex: %" PRIxPTR "\n", p);
+        printf("P as uintptr_t in unsigned int: %" PRIuPTR "\n", p);
+		printf("l1t as uintptr_t in hex: %" PRIxPTR "\n", l1t);
+        printf("l1t as uintptr_t in unsigned int: %" PRIuPTR "\n", l1t);
+		printf("l2t as uintptr_t in hex: %" PRIxPTR "\n", l2t);
+        printf("l2t as uintptr_t in unsigned int: %" PRIuPTR "\n", l2t);
 	} while (TDL1(p) != l1t || TSL2(p) != l2t);
+
 	return (void *)p;
 }
 static void *tlb_nexthit_l1(void *cur, uintptr_t l1t)
@@ -256,7 +294,7 @@ static void **tlb_prepninja(void *base, uintptr_t targ)
 
 	ev[7][0] = &ev[4][1];
 	ev[7][1] = &ev[0][4];
-
+	printf("seg inc\n");
 	ev[8][0] = &ev[6][1];
 	ev[8][1] = &ev[1][4];
 
@@ -583,6 +621,7 @@ static void do_walkup(void *tebuf)
 	//uint16_t rn = 0xace1;
 	fputs("Walking up sets...\n", stderr);
 	for (;;) {
+		printf("change sets as well ?\n");
 		for (int i = 0; i < 128; i++) {
 			volatile char *targ = (volatile char *)TBUFBASE + i*PAGESZ;
 			for (int rep = 4096; rep-- >0;) *targ;
@@ -627,6 +666,7 @@ static void do_recv(void *tebuf, const int oneshot, const int use_l2, const int 
 	njcur = njhead;
 
 	if (!oneshot) {
+		printf("DEBUG 4\n");
 		fprintf(stderr, "%s mode:\n", evmode);
 		pprint(njhead, evpplen);
 		//fputs("Ready to recv...", stderr);
@@ -695,8 +735,9 @@ static void do_recv(void *tebuf, const int oneshot, const int use_l2, const int 
 	} while (!oneshot && --it);
 }
 
-
-#define L1DSETS (16)
+//4kb 64 entries 4way 
+//2mb 32 entries 4way, changing values accordinly.
+#define L1DSETS (8)
 #define L2SSETS (128)
 
 #define PROBEROUNDS (4096)
