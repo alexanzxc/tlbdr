@@ -587,3 +587,9 @@ Recv'd 33554432 bits in 962029 us (rate: 34878815 / sec ~= 34.9 M / sec)
 Recv'd 33554432 bits in 964168 us (rate: 34801437 / sec ~= 34.8 M / sec)
 Recv'd 33554432 bits in 962637 us (rate: 34856786 / sec ~= 34.9 M / sec)
 Recv'd 33554432 bits in 963291 us (rate: 34833121 / sec ~= 34.8 M / sec)
+Failed to mmap: Cannot allocate memory
+Error mapping target buffer: Invalid argument
+~~~~Error in mmap for setup_tbuf: Invalid argument
+Failed to mmap: Cannot allocate memory
+Error mapping target buffer: Invalid argument
+~~~~Error in mmap for setup_tbuf: Invalid argument

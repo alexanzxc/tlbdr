@@ -410,7 +410,7 @@ local_invlpg(void *addr)
 #if defined(__i386__) || defined(__x86_64__)
 	int pcid;
 
-	if (cpu_feature_enabled(X86_FEATURE_INVPCID_SINGLE)) {
+	if (cpu_feature_enabled(X86_FEATURE_INVPCID)) {
 		for (pcid = 0; pcid < 4096; pcid++) {
 			invpcid_flush_one(pcid, (long unsigned int)addr);
 		}
@@ -507,7 +507,7 @@ resolve_va(size_t addr, struct ptwalk *entry, int lock)
 	if (pmd_large(*pmd))
 		goto err;
 
-	pte = pte_offset_map(pmd, addr);
+	pte = pte_offset_kernel(pmd, addr);
 
 	entry->pte = pte;
 	entry->valid |= MMUCTL_PTE;

@@ -32,8 +32,8 @@ static inline long usecdiff(struct timespec *t0, struct timespec *t)
 //change size to 4*_K for 4k pages
 #define PAGESZ (2*_M)
 //change to 1L<<18
-#define EVBN (1L << 11)
-#define EVBSZ (EVBN * PAGESZ)//4GB
+#define EVBN (1L << 9)
+#define EVBSZ (EVBN * PAGESZ)//1GB
 
 #define TBUFBASE ((void *)0x13370000000L)
 //#define TARGOFF (0x887L * PAGESZ)
@@ -96,14 +96,14 @@ static void *tlb_nexthit(void *cur, uintptr_t l1t, uintptr_t l2t)
 	int c = 0;
 	do {
 		c++;
-		printf("DEBUG 1    %d\n", c);
+		// printf("DEBUG 1    %d\n", c);
 		p += PAGESZ;
-		printf("P as uintptr_t in hex: %" PRIxPTR "\n", p);
-        printf("P as uintptr_t in unsigned int: %" PRIuPTR "\n", p);
-		printf("l1t as uintptr_t in hex: %" PRIxPTR "\n", l1t);
-        printf("l1t as uintptr_t in unsigned int: %" PRIuPTR "\n", l1t);
-		printf("l2t as uintptr_t in hex: %" PRIxPTR "\n", l2t);
-        printf("l2t as uintptr_t in unsigned int: %" PRIuPTR "\n", l2t);
+		// printf("P as uintptr_t in hex: %" PRIxPTR "\n", p);
+        // printf("P as uintptr_t in unsigned int: %" PRIuPTR "\n", p);
+		// printf("l1t as uintptr_t in hex: %" PRIxPTR "\n", l1t);
+        // printf("l1t as uintptr_t in unsigned int: %" PRIuPTR "\n", l1t);
+		// printf("l2t as uintptr_t in hex: %" PRIxPTR "\n", l2t);
+        // printf("l2t as uintptr_t in unsigned int: %" PRIuPTR "\n", l2t);
 	} while (TDL1(p) != l1t || TSL2(p) != l2t);
 
 	return (void *)p;
@@ -112,7 +112,7 @@ static void *tlb_nexthit_l1(void *cur, uintptr_t l1t)
 {
 	uintptr_t p = (uintptr_t)cur;
 	do {
-		printf("DEBUG 2\n");
+		// printf("DEBUG 2\n");
 		p += PAGESZ;
 	} while (TDL1(p) != l1t);
 	return (void *)p;
@@ -233,6 +233,7 @@ static void **tlb_prepnaive(void *base, uintptr_t targ)
 		p = ev[i];
 	}
 	for (int i = 0; i < TLB_PREPSZ - 1; i++) {
+		//segfault with -rn2
 		*(ev[i]) = ev[i+1];
 	}
 	*(ev[TLB_PREPSZ-1]) = ev[0];
@@ -256,6 +257,7 @@ static void **tlb_prepninja(void *base, uintptr_t targ)
 		p = tlb_nexthit(p, l1t, l2t);
 		ev[i] = (void **)p;
 	}
+	//segmentation occurs in these ops with -rj2
 	ev[0][0] = &ev[1][0];
 	ev[0][1] = &ev[2][1];
 	ev[0][2] = &ev[2][2];
@@ -294,7 +296,6 @@ static void **tlb_prepninja(void *base, uintptr_t targ)
 
 	ev[7][0] = &ev[4][1];
 	ev[7][1] = &ev[0][4];
-	printf("seg inc\n");
 	ev[8][0] = &ev[6][1];
 	ev[8][1] = &ev[1][4];
 
