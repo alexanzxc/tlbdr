@@ -1,482 +1,30 @@
 Naive L1 (TLBleed-like) mode:
-0x13370007000
-0x13370017000
-0x13370027000
-0x13370037000
-0x13370007000
-
-Recv'd 33554432 bits in 1048975 us (rate: 31987828 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048291 us (rate: 32008699 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048902 us (rate: 31990054 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048169 us (rate: 32012425 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048671 us (rate: 31997101 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048284 us (rate: 32008913 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048706 us (rate: 31996033 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048530 us (rate: 32001403 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048663 us (rate: 31997345 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048496 us (rate: 32002441 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048384 us (rate: 32005860 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048799 us (rate: 31993196 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048850 us (rate: 31991640 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1049122 us (rate: 31983346 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048799 us (rate: 31993196 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1049249 us (rate: 31979474 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1049487 us (rate: 31972222 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048990 us (rate: 31987370 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048943 us (rate: 31988803 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1049092 us (rate: 31984260 / sec ~= 32.0 M / sec)
-Naive L2 mode:
-0x13370097000
-0x13370887000
-0x133710b7000
-0x133718a7000
-0x133720d7000
-0x133728c7000
-0x133730f7000
-0x133738e7000
-0x13374097000
-0x13374887000
-0x133750b7000
-0x133758a7000
-0x13370097000
-
-Recv'd 33554432 bits in 1875584 us (rate: 17890124 / sec ~= 17.9 M / sec)
-Recv'd 33554432 bits in 1875187 us (rate: 17893912 / sec ~= 17.9 M / sec)
-Recv'd 33554432 bits in 1875256 us (rate: 17893254 / sec ~= 17.9 M / sec)
-Recv'd 33554432 bits in 1876657 us (rate: 17879896 / sec ~= 17.9 M / sec)
-Recv'd 33554432 bits in 1875429 us (rate: 17891603 / sec ~= 17.9 M / sec)
-Recv'd 33554432 bits in 1876187 us (rate: 17884375 / sec ~= 17.9 M / sec)
-Recv'd 33554432 bits in 1876920 us (rate: 17877390 / sec ~= 17.9 M / sec)
-Recv'd 33554432 bits in 1876312 us (rate: 17883183 / sec ~= 17.9 M / sec)
-Recv'd 33554432 bits in 1877464 us (rate: 17872210 / sec ~= 17.9 M / sec)
-Recv'd 33554432 bits in 1875744 us (rate: 17888598 / sec ~= 17.9 M / sec)
-Recv'd 33554432 bits in 1874502 us (rate: 17900451 / sec ~= 17.9 M / sec)
-Recv'd 33554432 bits in 1882054 us (rate: 17828623 / sec ~= 17.8 M / sec)
-Recv'd 33554432 bits in 1873456 us (rate: 17910445 / sec ~= 17.9 M / sec)
-Recv'd 33554432 bits in 1873487 us (rate: 17910149 / sec ~= 17.9 M / sec)
-Recv'd 33554432 bits in 1873724 us (rate: 17907883 / sec ~= 17.9 M / sec)
-Recv'd 33554432 bits in 1873325 us (rate: 17911698 / sec ~= 17.9 M / sec)
-Recv'd 33554432 bits in 1873364 us (rate: 17911325 / sec ~= 17.9 M / sec)
-Recv'd 33554432 bits in 1873277 us (rate: 17912157 / sec ~= 17.9 M / sec)
-Recv'd 33554432 bits in 1873386 us (rate: 17911114 / sec ~= 17.9 M / sec)
-Recv'd 33554432 bits in 1873363 us (rate: 17911334 / sec ~= 17.9 M / sec)
-Ninja L1 mode:
-0x13370007000
-0x13370017000
-0x13370027000
-0x13370037000
-0x13370027008
-0x13370037008
-0x13370007008
-0x13370037010
-0x13370007010
-0x13370017008
-0x13370007018
-0x13370017010
-0x13370027010
-
-Recv'd 33554432 bits in 1014738 us (rate: 33067089 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014501 us (rate: 33074814 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014470 us (rate: 33075824 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014650 us (rate: 33069957 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014686 us (rate: 33068783 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014474 us (rate: 33075694 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014461 us (rate: 33076118 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014624 us (rate: 33070804 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014583 us (rate: 33072140 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014473 us (rate: 33075727 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014511 us (rate: 33074488 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014659 us (rate: 33069663 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014428 us (rate: 33077194 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014903 us (rate: 33061713 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014509 us (rate: 33074553 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014593 us (rate: 33071815 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014482 us (rate: 33075433 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014465 us (rate: 33075987 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014646 us (rate: 33070087 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014500 us (rate: 33074846 / sec ~= 33.1 M / sec)
-Ninja L2 mode:
-0x13370097000
-0x13370887000
-0x133710b7000
-0x133718a7000
-0x133720d7000
-0x133728c7000
-0x13370097008
-0x133710b7008
-0x13370887008
-0x133730f7000
-0x133718a7008
-0x13370097010
-0x133710b7010
-0x133738e7000
-0x133720d7008
-0x13370887010
-0x13370097018
-0x13374097000
-0x133730f7008
-
-Recv'd 33554432 bits in 1201400 us (rate: 27929442 / sec ~= 27.9 M / sec)
-Recv'd 33554432 bits in 1202715 us (rate: 27898905 / sec ~= 27.9 M / sec)
-Recv'd 33554432 bits in 1202783 us (rate: 27897328 / sec ~= 27.9 M / sec)
-Recv'd 33554432 bits in 1203161 us (rate: 27888563 / sec ~= 27.9 M / sec)
-Recv'd 33554432 bits in 1203892 us (rate: 27871629 / sec ~= 27.9 M / sec)
-Recv'd 33554432 bits in 1203912 us (rate: 27871166 / sec ~= 27.9 M / sec)
-Recv'd 33554432 bits in 1204009 us (rate: 27868921 / sec ~= 27.9 M / sec)
-Recv'd 33554432 bits in 1203444 us (rate: 27882005 / sec ~= 27.9 M / sec)
-Recv'd 33554432 bits in 1203330 us (rate: 27884646 / sec ~= 27.9 M / sec)
-Recv'd 33554432 bits in 1202864 us (rate: 27895449 / sec ~= 27.9 M / sec)
-Recv'd 33554432 bits in 1203988 us (rate: 27869407 / sec ~= 27.9 M / sec)
-Recv'd 33554432 bits in 1203749 us (rate: 27874940 / sec ~= 27.9 M / sec)
-Recv'd 33554432 bits in 1203633 us (rate: 27877627 / sec ~= 27.9 M / sec)
-Recv'd 33554432 bits in 1203095 us (rate: 27890093 / sec ~= 27.9 M / sec)
-Recv'd 33554432 bits in 1203910 us (rate: 27871212 / sec ~= 27.9 M / sec)
-Recv'd 33554432 bits in 1203112 us (rate: 27889699 / sec ~= 27.9 M / sec)
-Recv'd 33554432 bits in 1204130 us (rate: 27866120 / sec ~= 27.9 M / sec)
-Recv'd 33554432 bits in 1204389 us (rate: 27860128 / sec ~= 27.9 M / sec)
-Recv'd 33554432 bits in 1204054 us (rate: 27867879 / sec ~= 27.9 M / sec)
-Recv'd 33554432 bits in 1204875 us (rate: 27848890 / sec ~= 27.8 M / sec)
-Naive L1 (TLBleed-like) mode:
-0x13370007000
-0x13370017000
-0x13370027000
-0x13370037000
-0x13370007000
-
-Recv'd 33554432 bits in 1048417 us (rate: 32004853 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1047888 us (rate: 32021009 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048065 us (rate: 32015602 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048328 us (rate: 32007570 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048391 us (rate: 32005646 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048291 us (rate: 32008699 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1054582 us (rate: 31817755 / sec ~= 31.8 M / sec)
-Recv'd 33554432 bits in 1056237 us (rate: 31767900 / sec ~= 31.8 M / sec)
-Recv'd 33554432 bits in 1051848 us (rate: 31900457 / sec ~= 31.9 M / sec)
-Recv'd 33554432 bits in 1052135 us (rate: 31891755 / sec ~= 31.9 M / sec)
-Recv'd 33554432 bits in 1049628 us (rate: 31967927 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1053896 us (rate: 31838466 / sec ~= 31.8 M / sec)
-Recv'd 33554432 bits in 1076409 us (rate: 31172567 / sec ~= 31.2 M / sec)
-Recv'd 33554432 bits in 1048686 us (rate: 31996643 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048699 us (rate: 31996246 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1047632 us (rate: 32028834 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1047674 us (rate: 32027550 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1047633 us (rate: 32028803 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048368 us (rate: 32006348 / sec ~= 32.0 M / sec)
-Naive L1 (TLBleed-like) mode:
-0x13370007000
-0x13370017000
-0x13370027000
-0x13370037000
-0x13370007000
-
-Recv'd 33554432 bits in 1051314 us (rate: 31916660 / sec ~= 31.9 M / sec)
-Recv'd 33554432 bits in 1049565 us (rate: 31969846 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1050113 us (rate: 31953163 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1050407 us (rate: 31944219 / sec ~= 31.9 M / sec)
-Recv'd 33554432 bits in 1050717 us (rate: 31934795 / sec ~= 31.9 M / sec)
-Recv'd 33554432 bits in 1049957 us (rate: 31957910 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1049912 us (rate: 31959280 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1050516 us (rate: 31940905 / sec ~= 31.9 M / sec)
-Recv'd 33554432 bits in 1050024 us (rate: 31955871 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1050613 us (rate: 31937956 / sec ~= 31.9 M / sec)
-Recv'd 33554432 bits in 1050110 us (rate: 31953254 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1049642 us (rate: 31967501 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1049755 us (rate: 31964060 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1054878 us (rate: 31808827 / sec ~= 31.8 M / sec)
-Recv'd 33554432 bits in 1050242 us (rate: 31949238 / sec ~= 31.9 M / sec)
-Recv'd 33554432 bits in 1048057 us (rate: 32015846 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048020 us (rate: 32016976 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048841 us (rate: 31991914 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048900 us (rate: 31990115 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1052895 us (rate: 31868735 / sec ~= 31.9 M / sec)
-Naive L2 mode:
-0x13370097000
-0x13370887000
-0x133710b7000
-0x133718a7000
-0x133720d7000
-0x133728c7000
-0x133730f7000
-0x133738e7000
-0x13374097000
-0x13374887000
-0x133750b7000
-0x133758a7000
-0x13370097000
-
-Recv'd 33554432 bits in 1324498 us (rate: 25333697 / sec ~= 25.3 M / sec)
-Recv'd 33554432 bits in 1321798 us (rate: 25385446 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1325017 us (rate: 25323774 / sec ~= 25.3 M / sec)
-Recv'd 33554432 bits in 1329234 us (rate: 25243434 / sec ~= 25.2 M / sec)
-Recv'd 33554432 bits in 1323661 us (rate: 25349717 / sec ~= 25.3 M / sec)
-Recv'd 33554432 bits in 1321726 us (rate: 25386829 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1321658 us (rate: 25388135 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1322050 us (rate: 25380607 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1322519 us (rate: 25371606 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1325715 us (rate: 25310441 / sec ~= 25.3 M / sec)
-Recv'd 33554432 bits in 1321007 us (rate: 25400646 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1321113 us (rate: 25398608 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1321592 us (rate: 25389403 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1321285 us (rate: 25395302 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1321643 us (rate: 25388423 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1322032 us (rate: 25380952 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1322934 us (rate: 25363647 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1322330 us (rate: 25375233 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1322634 us (rate: 25369400 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1323628 us (rate: 25350349 / sec ~= 25.4 M / sec)
-Ninja L1 mode:
-0x13370007000
-0x13370017000
-0x13370027000
-0x13370037000
-0x13370027008
-0x13370037008
-0x13370007008
-0x13370037010
-0x13370007010
-0x13370017008
-0x13370007018
-0x13370017010
-0x13370027010
-
-Recv'd 33554432 bits in 1016121 us (rate: 33022082 / sec ~= 33.0 M / sec)
-Recv'd 33554432 bits in 1015130 us (rate: 33054320 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014955 us (rate: 33060019 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014827 us (rate: 33064189 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1015033 us (rate: 33057478 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014750 us (rate: 33066698 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014820 us (rate: 33064417 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1015051 us (rate: 33056892 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1016739 us (rate: 33002011 / sec ~= 33.0 M / sec)
-Recv'd 33554432 bits in 1015389 us (rate: 33045888 / sec ~= 33.0 M / sec)
-Recv'd 33554432 bits in 1015023 us (rate: 33057804 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014986 us (rate: 33059009 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014909 us (rate: 33061517 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014732 us (rate: 33067284 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014845 us (rate: 33063602 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014625 us (rate: 33070771 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014702 us (rate: 33068262 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1014646 us (rate: 33070087 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1015748 us (rate: 33034209 / sec ~= 33.0 M / sec)
-Recv'd 33554432 bits in 1014794 us (rate: 33065264 / sec ~= 33.1 M / sec)
-Ninja L2 mode:
-0x13370097000
-0x13370887000
-0x133710b7000
-0x133718a7000
-0x133720d7000
-0x133728c7000
-0x13370097008
-0x133710b7008
-0x13370887008
-0x133730f7000
-0x133718a7008
-0x13370097010
-0x133710b7010
-0x133738e7000
-0x133720d7008
-0x13370887010
-0x13370097018
-0x13374097000
-0x133730f7008
-
-Recv'd 33554432 bits in 1155571 us (rate: 29037101 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1155188 us (rate: 29046728 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1155261 us (rate: 29044892 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1155126 us (rate: 29048287 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1156415 us (rate: 29015908 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1155107 us (rate: 29048765 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1154947 us (rate: 29052789 / sec ~= 29.1 M / sec)
-Recv'd 33554432 bits in 1157301 us (rate: 28993694 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1155138 us (rate: 29047985 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1155108 us (rate: 29048740 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1155206 us (rate: 29046275 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1155213 us (rate: 29046099 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1155095 us (rate: 29049066 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1154623 us (rate: 29060941 / sec ~= 29.1 M / sec)
-Recv'd 33554432 bits in 1155257 us (rate: 29044993 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1155240 us (rate: 29045420 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1155801 us (rate: 29031322 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1155486 us (rate: 29039237 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1155070 us (rate: 29049695 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1155241 us (rate: 29045395 / sec ~= 29.0 M / sec)
-Naive L1 (TLBleed-like) mode:
-0x13370007000
-0x13370017000
-0x13370027000
-0x13370037000
-0x13370007000
-
-Recv'd 33554432 bits in 1048047 us (rate: 32016151 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1047629 us (rate: 32028926 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1047191 us (rate: 32042322 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1047573 us (rate: 32030638 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1047920 us (rate: 32020032 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1047997 us (rate: 32017679 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1053349 us (rate: 31854999 / sec ~= 31.9 M / sec)
-Recv'd 33554432 bits in 1051464 us (rate: 31912107 / sec ~= 31.9 M / sec)
-Recv'd 33554432 bits in 1049033 us (rate: 31986059 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1050247 us (rate: 31949086 / sec ~= 31.9 M / sec)
-Recv'd 33554432 bits in 1049716 us (rate: 31965247 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048772 us (rate: 31994019 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048986 us (rate: 31987492 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1051456 us (rate: 31912350 / sec ~= 31.9 M / sec)
-Recv'd 33554432 bits in 1048076 us (rate: 32015266 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048818 us (rate: 31992616 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1048473 us (rate: 32003143 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1050069 us (rate: 31954502 / sec ~= 32.0 M / sec)
-Recv'd 33554432 bits in 1056352 us (rate: 31764442 / sec ~= 31.8 M / sec)
-Recv'd 33554432 bits in 1053485 us (rate: 31850887 / sec ~= 31.9 M / sec)
-Naive L2 mode:
-0x13370097000
-0x13370887000
-0x133710b7000
-0x133718a7000
-0x133720d7000
-0x133728c7000
-0x133730f7000
-0x133738e7000
-0x13374097000
-0x13374887000
-0x133750b7000
-0x133758a7000
-0x13370097000
-
-Recv'd 33554432 bits in 1321426 us (rate: 25392592 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1321962 us (rate: 25382296 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1321977 us (rate: 25382008 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1321489 us (rate: 25391381 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1325104 us (rate: 25322112 / sec ~= 25.3 M / sec)
-Recv'd 33554432 bits in 1326027 us (rate: 25304486 / sec ~= 25.3 M / sec)
-Recv'd 33554432 bits in 1321280 us (rate: 25395398 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1320886 us (rate: 25402973 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1320993 us (rate: 25400915 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1325475 us (rate: 25315024 / sec ~= 25.3 M / sec)
-Recv'd 33554432 bits in 1321556 us (rate: 25390094 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1324329 us (rate: 25336930 / sec ~= 25.3 M / sec)
-Recv'd 33554432 bits in 1329327 us (rate: 25241668 / sec ~= 25.2 M / sec)
-Recv'd 33554432 bits in 1333954 us (rate: 25154114 / sec ~= 25.2 M / sec)
-Recv'd 33554432 bits in 1324371 us (rate: 25336127 / sec ~= 25.3 M / sec)
-Recv'd 33554432 bits in 1325927 us (rate: 25306394 / sec ~= 25.3 M / sec)
-Recv'd 33554432 bits in 1326969 us (rate: 25286522 / sec ~= 25.3 M / sec)
-Recv'd 33554432 bits in 1324208 us (rate: 25339245 / sec ~= 25.3 M / sec)
-Recv'd 33554432 bits in 1323036 us (rate: 25361692 / sec ~= 25.4 M / sec)
-Recv'd 33554432 bits in 1322532 us (rate: 25371357 / sec ~= 25.4 M / sec)
-Ninja L1 mode:
-0x13370007000
-0x13370017000
-0x13370027000
-0x13370037000
-0x13370027008
-0x13370037008
-0x13370007008
-0x13370037010
-0x13370007010
-0x13370017008
-0x13370007018
-0x13370017010
-0x13370027010
-
-Recv'd 33554432 bits in 1017100 us (rate: 32990297 / sec ~= 33.0 M / sec)
-Recv'd 33554432 bits in 1016361 us (rate: 33014285 / sec ~= 33.0 M / sec)
-Recv'd 33554432 bits in 1017163 us (rate: 32988254 / sec ~= 33.0 M / sec)
-Recv'd 33554432 bits in 1019422 us (rate: 32915153 / sec ~= 32.9 M / sec)
-Recv'd 33554432 bits in 1020766 us (rate: 32871815 / sec ~= 32.9 M / sec)
-Recv'd 33554432 bits in 1020673 us (rate: 32874811 / sec ~= 32.9 M / sec)
-Recv'd 33554432 bits in 1019063 us (rate: 32926749 / sec ~= 32.9 M / sec)
-Recv'd 33554432 bits in 1017996 us (rate: 32961261 / sec ~= 33.0 M / sec)
-Recv'd 33554432 bits in 1015931 us (rate: 33028258 / sec ~= 33.0 M / sec)
-Recv'd 33554432 bits in 1014941 us (rate: 33060475 / sec ~= 33.1 M / sec)
-Recv'd 33554432 bits in 1017668 us (rate: 32971884 / sec ~= 33.0 M / sec)
-Recv'd 33554432 bits in 1020386 us (rate: 32884057 / sec ~= 32.9 M / sec)
-Recv'd 33554432 bits in 1018262 us (rate: 32952650 / sec ~= 33.0 M / sec)
-Recv'd 33554432 bits in 1024213 us (rate: 32761185 / sec ~= 32.8 M / sec)
-Recv'd 33554432 bits in 1016593 us (rate: 33006750 / sec ~= 33.0 M / sec)
-Recv'd 33554432 bits in 1016734 us (rate: 33002173 / sec ~= 33.0 M / sec)
-Recv'd 33554432 bits in 1016589 us (rate: 33006880 / sec ~= 33.0 M / sec)
-Recv'd 33554432 bits in 1015377 us (rate: 33046279 / sec ~= 33.0 M / sec)
-Recv'd 33554432 bits in 1025964 us (rate: 32705272 / sec ~= 32.7 M / sec)
-Recv'd 33554432 bits in 1016742 us (rate: 33001913 / sec ~= 33.0 M / sec)
-Ninja L2 mode:
-0x13370097000
-0x13370887000
-0x133710b7000
-0x133718a7000
-0x133720d7000
-0x133728c7000
-0x13370097008
-0x133710b7008
-0x13370887008
-0x133730f7000
-0x133718a7008
-0x13370097010
-0x133710b7010
-0x133738e7000
-0x133720d7008
-0x13370887010
-0x13370097018
-0x13374097000
-0x133730f7008
-
-Recv'd 33554432 bits in 1151836 us (rate: 29131258 / sec ~= 29.1 M / sec)
-Recv'd 33554432 bits in 1151207 us (rate: 29147175 / sec ~= 29.1 M / sec)
-Recv'd 33554432 bits in 1150939 us (rate: 29153962 / sec ~= 29.2 M / sec)
-Recv'd 33554432 bits in 1150804 us (rate: 29157382 / sec ~= 29.2 M / sec)
-Recv'd 33554432 bits in 1149934 us (rate: 29179441 / sec ~= 29.2 M / sec)
-Recv'd 33554432 bits in 1148784 us (rate: 29208651 / sec ~= 29.2 M / sec)
-Recv'd 33554432 bits in 1157482 us (rate: 28989160 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1158458 us (rate: 28964737 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1153885 us (rate: 29079528 / sec ~= 29.1 M / sec)
-Recv'd 33554432 bits in 1155704 us (rate: 29033759 / sec ~= 29.0 M / sec)
-Recv'd 33554432 bits in 1153460 us (rate: 29090243 / sec ~= 29.1 M / sec)
-Recv'd 33554432 bits in 1154384 us (rate: 29066958 / sec ~= 29.1 M / sec)
-Recv'd 33554432 bits in 1154046 us (rate: 29075471 / sec ~= 29.1 M / sec)
-Recv'd 33554432 bits in 1153295 us (rate: 29094405 / sec ~= 29.1 M / sec)
-Recv'd 33554432 bits in 1150173 us (rate: 29173378 / sec ~= 29.2 M / sec)
-Recv'd 33554432 bits in 1149545 us (rate: 29189315 / sec ~= 29.2 M / sec)
-Recv'd 33554432 bits in 1148376 us (rate: 29219029 / sec ~= 29.2 M / sec)
-Recv'd 33554432 bits in 1148868 us (rate: 29206516 / sec ~= 29.2 M / sec)
-Recv'd 33554432 bits in 1150706 us (rate: 29159865 / sec ~= 29.2 M / sec)
-Recv'd 33554432 bits in 1148580 us (rate: 29213839 / sec ~= 29.2 M / sec)
-Error mapping target buffer: Cannot allocate memory
-~~~~Error in mmap for setup_tbuf: Invalid argument
-###Error in mmap for setup_evbuf: Cannot allocate memory
-Error setting up eviction buf: Cannot allocate memory
-###Error in mmap for setup_evbuf: Cannot allocate memory
-Error setting up eviction buf: Cannot allocate memory
-###Error in mmap for setup_evbuf: Cannot allocate memory
-Error setting up eviction buf: Cannot allocate memory
-madtlb: madtlb.c:47: setup_tbuf: Assertion `(char *)TBUFBASE + EVBSZ > TARGET' failed.
-###Error in mmap for setup_evbuf: Cannot allocate memory
-Error setting up eviction buf: Cannot allocate memory
-madtlb: madtlb.c:47: setup_tbuf: Assertion `(char *)TBUFBASE + EVBSZ > TARGET' failed.
-Naive L1 (TLBleed-like) mode:
 0x13370200000
 0x13370400000
 0x13370600000
 0x13370800000
 0x13370200000
 
+Recv'd 33554432 bits in 984533 us (rate: 34081571 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 981223 us (rate: 34196540 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 986076 us (rate: 34028241 / sec ~= 34.0 M / sec)
+Recv'd 33554432 bits in 982338 us (rate: 34157725 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 983851 us (rate: 34105196 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 983430 us (rate: 34119797 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 983953 us (rate: 34101661 / sec ~= 34.1 M / sec)
 Recv'd 33554432 bits in 984876 us (rate: 34069702 / sec ~= 34.1 M / sec)
-Recv'd 33554432 bits in 975877 us (rate: 34383874 / sec ~= 34.4 M / sec)
-Recv'd 33554432 bits in 974787 us (rate: 34422322 / sec ~= 34.4 M / sec)
-Recv'd 33554432 bits in 985101 us (rate: 34061920 / sec ~= 34.1 M / sec)
-Recv'd 33554432 bits in 1002212 us (rate: 33480373 / sec ~= 33.5 M / sec)
-Recv'd 33554432 bits in 966151 us (rate: 34730008 / sec ~= 34.7 M / sec)
-Recv'd 33554432 bits in 1034087 us (rate: 32448364 / sec ~= 32.4 M / sec)
-Recv'd 33554432 bits in 1039021 us (rate: 32294277 / sec ~= 32.3 M / sec)
-Recv'd 33554432 bits in 995471 us (rate: 33707091 / sec ~= 33.7 M / sec)
-Recv'd 33554432 bits in 1082816 us (rate: 30988119 / sec ~= 31.0 M / sec)
-Recv'd 33554432 bits in 983245 us (rate: 34126216 / sec ~= 34.1 M / sec)
-Recv'd 33554432 bits in 1015663 us (rate: 33036973 / sec ~= 33.0 M / sec)
-Recv'd 33554432 bits in 972349 us (rate: 34508630 / sec ~= 34.5 M / sec)
-Recv'd 33554432 bits in 985028 us (rate: 34064444 / sec ~= 34.1 M / sec)
-Recv'd 33554432 bits in 1034255 us (rate: 32443093 / sec ~= 32.4 M / sec)
-Recv'd 33554432 bits in 993362 us (rate: 33778654 / sec ~= 33.8 M / sec)
-Recv'd 33554432 bits in 976752 us (rate: 34353072 / sec ~= 34.4 M / sec)
-Recv'd 33554432 bits in 998394 us (rate: 33608407 / sec ~= 33.6 M / sec)
-Recv'd 33554432 bits in 964782 us (rate: 34779289 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 964899 us (rate: 34775071 / sec ~= 34.8 M / sec)
+Recv'd 33554432 bits in 985274 us (rate: 34055939 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 981237 us (rate: 34196052 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 984964 us (rate: 34066658 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 980314 us (rate: 34228249 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 980988 us (rate: 34204732 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 982028 us (rate: 34168508 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 979916 us (rate: 34242151 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 979452 us (rate: 34258373 / sec ~= 34.3 M / sec)
+Recv'd 33554432 bits in 982776 us (rate: 34142502 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 986946 us (rate: 33998245 / sec ~= 34.0 M / sec)
+Recv'd 33554432 bits in 1024301 us (rate: 32758370 / sec ~= 32.8 M / sec)
+Recv'd 33554432 bits in 987946 us (rate: 33963832 / sec ~= 34.0 M / sec)
 Naive L1 (TLBleed-like) mode:
 0x13370200000
 0x13370400000
@@ -484,26 +32,28 @@ Naive L1 (TLBleed-like) mode:
 0x13370800000
 0x13370200000
 
-Recv'd 33554432 bits in 965615 us (rate: 34749286 / sec ~= 34.7 M / sec)
-Recv'd 33554432 bits in 964878 us (rate: 34775828 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 965201 us (rate: 34764191 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 963667 us (rate: 34819529 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 964507 us (rate: 34789205 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 962577 us (rate: 34858958 / sec ~= 34.9 M / sec)
-Recv'd 33554432 bits in 962486 us (rate: 34862254 / sec ~= 34.9 M / sec)
-Recv'd 33554432 bits in 964324 us (rate: 34795807 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 964227 us (rate: 34799307 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 964603 us (rate: 34785742 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 962441 us (rate: 34863884 / sec ~= 34.9 M / sec)
-Recv'd 33554432 bits in 962053 us (rate: 34877945 / sec ~= 34.9 M / sec)
-Recv'd 33554432 bits in 966952 us (rate: 34701238 / sec ~= 34.7 M / sec)
-Recv'd 33554432 bits in 968619 us (rate: 34641517 / sec ~= 34.6 M / sec)
-Recv'd 33554432 bits in 1003576 us (rate: 33434868 / sec ~= 33.4 M / sec)
-Recv'd 33554432 bits in 966907 us (rate: 34702853 / sec ~= 34.7 M / sec)
-Recv'd 33554432 bits in 969313 us (rate: 34616715 / sec ~= 34.6 M / sec)
-Recv'd 33554432 bits in 966351 us (rate: 34722820 / sec ~= 34.7 M / sec)
-Recv'd 33554432 bits in 964858 us (rate: 34776549 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 963821 us (rate: 34813966 / sec ~= 34.8 M / sec)
+Recv'd 33554432 bits in 985035 us (rate: 34064202 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 983962 us (rate: 34101349 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 984611 us (rate: 34078871 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982053 us (rate: 34167638 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 983831 us (rate: 34105890 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982373 us (rate: 34156508 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 980468 us (rate: 34222873 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 983147 us (rate: 34129618 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 981283 us (rate: 34194449 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 983201 us (rate: 34127743 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 983392 us (rate: 34121115 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 980771 us (rate: 34212300 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 982479 us (rate: 34152823 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 982277 us (rate: 34159846 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 981827 us (rate: 34175503 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 981545 us (rate: 34185322 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 981317 us (rate: 34193264 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 979621 us (rate: 34252462 / sec ~= 34.3 M / sec)
+Recv'd 33554432 bits in 981831 us (rate: 34175364 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 981530 us (rate: 34185844 / sec ~= 34.2 M / sec)
+###Error in mmap for setup_evbuf: Operation not permitted
+Error setting up eviction buf: Operation not permitted
 Naive L1 (TLBleed-like) mode:
 0x13370200000
 0x13370400000
@@ -511,26 +61,26 @@ Naive L1 (TLBleed-like) mode:
 0x13370800000
 0x13370200000
 
-Recv'd 33554432 bits in 971335 us (rate: 34544654 / sec ~= 34.5 M / sec)
-Recv'd 33554432 bits in 966026 us (rate: 34734501 / sec ~= 34.7 M / sec)
-Recv'd 33554432 bits in 965835 us (rate: 34741370 / sec ~= 34.7 M / sec)
-Recv'd 33554432 bits in 967552 us (rate: 34679719 / sec ~= 34.7 M / sec)
-Recv'd 33554432 bits in 965702 us (rate: 34746155 / sec ~= 34.7 M / sec)
-Recv'd 33554432 bits in 967766 us (rate: 34672050 / sec ~= 34.7 M / sec)
-Recv'd 33554432 bits in 963421 us (rate: 34828420 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 963888 us (rate: 34811546 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 965218 us (rate: 34763578 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 964769 us (rate: 34779757 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 966688 us (rate: 34710715 / sec ~= 34.7 M / sec)
-Recv'd 33554432 bits in 971156 us (rate: 34551021 / sec ~= 34.6 M / sec)
-Recv'd 33554432 bits in 968317 us (rate: 34652321 / sec ~= 34.7 M / sec)
-Recv'd 33554432 bits in 968601 us (rate: 34642161 / sec ~= 34.6 M / sec)
-Recv'd 33554432 bits in 972055 us (rate: 34519067 / sec ~= 34.5 M / sec)
-Recv'd 33554432 bits in 966665 us (rate: 34711541 / sec ~= 34.7 M / sec)
-Recv'd 33554432 bits in 964221 us (rate: 34799524 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 964854 us (rate: 34776693 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 966659 us (rate: 34711756 / sec ~= 34.7 M / sec)
-Recv'd 33554432 bits in 967478 us (rate: 34682372 / sec ~= 34.7 M / sec)
+Recv'd 33554432 bits in 998058 us (rate: 33619721 / sec ~= 33.6 M / sec)
+Recv'd 33554432 bits in 1014627 us (rate: 33070706 / sec ~= 33.1 M / sec)
+Recv'd 33554432 bits in 986174 us (rate: 34024859 / sec ~= 34.0 M / sec)
+Recv'd 33554432 bits in 986176 us (rate: 34024790 / sec ~= 34.0 M / sec)
+Recv'd 33554432 bits in 984310 us (rate: 34089293 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 986618 us (rate: 34009547 / sec ~= 34.0 M / sec)
+Recv'd 33554432 bits in 987636 us (rate: 33974492 / sec ~= 34.0 M / sec)
+Recv'd 33554432 bits in 984947 us (rate: 34067246 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 986210 us (rate: 34023617 / sec ~= 34.0 M / sec)
+Recv'd 33554432 bits in 984545 us (rate: 34081156 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 985609 us (rate: 34044364 / sec ~= 34.0 M / sec)
+Recv'd 33554432 bits in 984611 us (rate: 34078871 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 983987 us (rate: 34100483 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 985994 us (rate: 34031071 / sec ~= 34.0 M / sec)
+Recv'd 33554432 bits in 984375 us (rate: 34087042 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 984736 us (rate: 34074545 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 985224 us (rate: 34057668 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 986980 us (rate: 33997073 / sec ~= 34.0 M / sec)
+Recv'd 33554432 bits in 984668 us (rate: 34076899 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 986217 us (rate: 34023376 / sec ~= 34.0 M / sec)
 Naive L1 (TLBleed-like) mode:
 0x13370200000
 0x13370400000
@@ -538,28 +88,61 @@ Naive L1 (TLBleed-like) mode:
 0x13370800000
 0x13370200000
 
-Recv'd 33554432 bits in 976093 us (rate: 34376265 / sec ~= 34.4 M / sec)
-Recv'd 33554432 bits in 965710 us (rate: 34745867 / sec ~= 34.7 M / sec)
-Recv'd 33554432 bits in 965912 us (rate: 34738601 / sec ~= 34.7 M / sec)
-Recv'd 33554432 bits in 965183 us (rate: 34764839 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 964280 us (rate: 34797394 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 962130 us (rate: 34875154 / sec ~= 34.9 M / sec)
-Recv'd 33554432 bits in 962942 us (rate: 34845745 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 963947 us (rate: 34809415 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 962013 us (rate: 34879395 / sec ~= 34.9 M / sec)
-Recv'd 33554432 bits in 964104 us (rate: 34803747 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 963808 us (rate: 34814436 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 962846 us (rate: 34849219 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 962370 us (rate: 34866456 / sec ~= 34.9 M / sec)
-Recv'd 33554432 bits in 964679 us (rate: 34783002 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 962332 us (rate: 34867833 / sec ~= 34.9 M / sec)
-Recv'd 33554432 bits in 963084 us (rate: 34840607 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 963437 us (rate: 34827842 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 965132 us (rate: 34766676 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 964160 us (rate: 34801725 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 963115 us (rate: 34839486 / sec ~= 34.8 M / sec)
-###Error in mmap for setup_evbuf: Cannot allocate memory
-Error setting up eviction buf: Cannot allocate memory
+Recv'd 33554432 bits in 997206 us (rate: 33648445 / sec ~= 33.6 M / sec)
+Recv'd 33554432 bits in 983615 us (rate: 34113379 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982708 us (rate: 34144865 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 983345 us (rate: 34122746 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 983796 us (rate: 34107103 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 983913 us (rate: 34103047 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982656 us (rate: 34146671 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 983367 us (rate: 34121982 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982939 us (rate: 34136840 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982583 us (rate: 34149208 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 988492 us (rate: 33945071 / sec ~= 33.9 M / sec)
+Recv'd 33554432 bits in 982638 us (rate: 34147297 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 983035 us (rate: 34133506 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982645 us (rate: 34147054 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982621 us (rate: 34147888 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982494 us (rate: 34152302 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 982199 us (rate: 34162559 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 982379 us (rate: 34156300 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 981577 us (rate: 34184207 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 981916 us (rate: 34172405 / sec ~= 34.2 M / sec)
+Ninja L1 mode:
+0x13370200000
+0x13370400000
+0x13370600000
+0x13370800000
+0x13370600008
+0x13370800008
+0x13370200008
+0x13370800010
+0x13370200010
+0x13370400008
+0x13370200018
+0x13370400010
+0x13370600010
+
+Recv'd 33554432 bits in 958665 us (rate: 35001206 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 957455 us (rate: 35045440 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 958012 us (rate: 35025064 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 957587 us (rate: 35040609 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 957964 us (rate: 35026819 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 957399 us (rate: 35047490 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 957080 us (rate: 35059171 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 956802 us (rate: 35069358 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 957349 us (rate: 35049320 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 957139 us (rate: 35057010 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 957020 us (rate: 35061369 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 957090 us (rate: 35058805 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 955553 us (rate: 35115197 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 956276 us (rate: 35088648 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 955692 us (rate: 35110089 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 955794 us (rate: 35106342 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 955902 us (rate: 35102376 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 956116 us (rate: 35094519 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 955665 us (rate: 35111081 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 959793 us (rate: 34960071 / sec ~= 35.0 M / sec)
 Naive L1 (TLBleed-like) mode:
 0x13370200000
 0x13370400000
@@ -567,29 +150,182 @@ Naive L1 (TLBleed-like) mode:
 0x13370800000
 0x13370200000
 
-Recv'd 33554432 bits in 964878 us (rate: 34775828 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 977821 us (rate: 34315515 / sec ~= 34.3 M / sec)
-Recv'd 33554432 bits in 963620 us (rate: 34821228 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 964186 us (rate: 34800787 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 962719 us (rate: 34853817 / sec ~= 34.9 M / sec)
-Recv'd 33554432 bits in 963644 us (rate: 34820361 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 965156 us (rate: 34765811 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 962155 us (rate: 34874247 / sec ~= 34.9 M / sec)
-Recv'd 33554432 bits in 961620 us (rate: 34893650 / sec ~= 34.9 M / sec)
-Recv'd 33554432 bits in 963812 us (rate: 34814291 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 961239 us (rate: 34907480 / sec ~= 34.9 M / sec)
-Recv'd 33554432 bits in 963502 us (rate: 34825492 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 965727 us (rate: 34745256 / sec ~= 34.7 M / sec)
-Recv'd 33554432 bits in 962874 us (rate: 34848206 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 963029 us (rate: 34842597 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 963325 us (rate: 34831891 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 962029 us (rate: 34878815 / sec ~= 34.9 M / sec)
-Recv'd 33554432 bits in 964168 us (rate: 34801437 / sec ~= 34.8 M / sec)
-Recv'd 33554432 bits in 962637 us (rate: 34856786 / sec ~= 34.9 M / sec)
-Recv'd 33554432 bits in 963291 us (rate: 34833121 / sec ~= 34.8 M / sec)
-Failed to mmap: Cannot allocate memory
-Error mapping target buffer: Invalid argument
-~~~~Error in mmap for setup_tbuf: Invalid argument
-Failed to mmap: Cannot allocate memory
-Error mapping target buffer: Invalid argument
-~~~~Error in mmap for setup_tbuf: Invalid argument
+Recv'd 33554432 bits in 987666 us (rate: 33973460 / sec ~= 34.0 M / sec)
+Recv'd 33554432 bits in 983415 us (rate: 34120317 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 983551 us (rate: 34115599 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982913 us (rate: 34137743 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 983630 us (rate: 34112859 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 983250 us (rate: 34126043 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 983716 us (rate: 34109877 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 984729 us (rate: 34074788 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 983049 us (rate: 34133020 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 984194 us (rate: 34093310 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 984041 us (rate: 34098611 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 981474 us (rate: 34187795 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 982480 us (rate: 34152788 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 982728 us (rate: 34144170 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982830 us (rate: 34140626 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 981439 us (rate: 34189014 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 982957 us (rate: 34136215 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 983239 us (rate: 34126425 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 981917 us (rate: 34172370 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 981506 us (rate: 34186680 / sec ~= 34.2 M / sec)
+Ninja L1 mode:
+0x13370200000
+0x13370400000
+0x13370600000
+0x13370800000
+0x13370600008
+0x13370800008
+0x13370200008
+0x13370800010
+0x13370200010
+0x13370400008
+0x13370200018
+0x13370400010
+0x13370600010
+
+Recv'd 33554432 bits in 958813 us (rate: 34995804 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 957207 us (rate: 35054520 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 957192 us (rate: 35055069 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 957402 us (rate: 35047380 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 957579 us (rate: 35040902 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 957242 us (rate: 35053238 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 958039 us (rate: 35024077 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 958740 us (rate: 34998468 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 957839 us (rate: 35031390 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 958186 us (rate: 35018704 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 959045 us (rate: 34987338 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 956308 us (rate: 35087473 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 956544 us (rate: 35078817 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 955576 us (rate: 35114351 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 955275 us (rate: 35125416 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 955903 us (rate: 35102339 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 956675 us (rate: 35074013 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 955363 us (rate: 35122180 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 956424 us (rate: 35083218 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 956012 us (rate: 35098337 / sec ~= 35.1 M / sec)
+Naive L1 (TLBleed-like) mode:
+0x13370200000
+0x13370400000
+0x13370600000
+0x13370800000
+0x13370200000
+
+Recv'd 33554432 bits in 984541 us (rate: 34081294 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 1002886 us (rate: 33457872 / sec ~= 33.5 M / sec)
+Recv'd 33554432 bits in 1057190 us (rate: 31739263 / sec ~= 31.7 M / sec)
+Recv'd 33554432 bits in 1002048 us (rate: 33485852 / sec ~= 33.5 M / sec)
+Recv'd 33554432 bits in 986484 us (rate: 34014167 / sec ~= 34.0 M / sec)
+Recv'd 33554432 bits in 985448 us (rate: 34049926 / sec ~= 34.0 M / sec)
+Recv'd 33554432 bits in 982953 us (rate: 34136354 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982619 us (rate: 34147957 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 983547 us (rate: 34115738 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982650 us (rate: 34146880 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 983287 us (rate: 34124759 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 981384 us (rate: 34190930 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 982356 us (rate: 34157099 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 982107 us (rate: 34165759 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 982844 us (rate: 34140140 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982496 us (rate: 34152232 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 982319 us (rate: 34158386 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 982323 us (rate: 34158247 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 982718 us (rate: 34144517 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982078 us (rate: 34166768 / sec ~= 34.2 M / sec)
+Ninja L1 mode:
+0x13370200000
+0x13370400000
+0x13370600000
+0x13370800000
+0x13370600008
+0x13370800008
+0x13370200008
+0x13370800010
+0x13370200010
+0x13370400008
+0x13370200018
+0x13370400010
+0x13370600010
+
+Recv'd 33554432 bits in 959845 us (rate: 34958177 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 959018 us (rate: 34988323 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 957025 us (rate: 35061186 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 957837 us (rate: 35031463 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 957086 us (rate: 35058951 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 955547 us (rate: 35115417 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 957457 us (rate: 35045367 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 956644 us (rate: 35075150 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 956901 us (rate: 35065729 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 957371 us (rate: 35048515 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 956549 us (rate: 35078633 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 957108 us (rate: 35058145 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 964263 us (rate: 34798008 / sec ~= 34.8 M / sec)
+Recv'd 33554432 bits in 956755 us (rate: 35071080 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 956507 us (rate: 35080174 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 956752 us (rate: 35071190 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 956884 us (rate: 35066352 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 956564 us (rate: 35078083 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 955819 us (rate: 35105424 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 956781 us (rate: 35070127 / sec ~= 35.1 M / sec)
+Naive L1 (TLBleed-like) mode:
+0x13370200000
+0x13370400000
+0x13370600000
+0x13370800000
+0x13370200000
+
+Recv'd 33554432 bits in 984487 us (rate: 34083164 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982827 us (rate: 34140730 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 983199 us (rate: 34127813 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 984671 us (rate: 34076795 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 985492 us (rate: 34048406 / sec ~= 34.0 M / sec)
+Recv'd 33554432 bits in 983830 us (rate: 34105924 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 984034 us (rate: 34098854 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982840 us (rate: 34140279 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982671 us (rate: 34146150 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982922 us (rate: 34137431 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982883 us (rate: 34138785 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982164 us (rate: 34163777 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 981757 us (rate: 34177940 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 981148 us (rate: 34199154 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 982413 us (rate: 34155118 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 982314 us (rate: 34158560 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 982298 us (rate: 34159116 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 982610 us (rate: 34148270 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 982092 us (rate: 34166281 / sec ~= 34.2 M / sec)
+Recv'd 33554432 bits in 982426 us (rate: 34154666 / sec ~= 34.2 M / sec)
+Ninja L1 mode:
+0x13370200000
+0x13370400000
+0x13370600000
+0x13370800000
+0x13370600008
+0x13370800008
+0x13370200008
+0x13370800010
+0x13370200010
+0x13370400008
+0x13370200018
+0x13370400010
+0x13370600010
+
+Recv'd 33554432 bits in 958027 us (rate: 35024516 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 958225 us (rate: 35017278 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 957810 us (rate: 35032451 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 958499 us (rate: 35007268 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 957413 us (rate: 35046977 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 957328 us (rate: 35050089 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 959164 us (rate: 34982997 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 956581 us (rate: 35077460 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 956423 us (rate: 35083255 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 957141 us (rate: 35056937 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 956633 us (rate: 35075553 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 957050 us (rate: 35060270 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 957353 us (rate: 35049174 / sec ~= 35.0 M / sec)
+Recv'd 33554432 bits in 956442 us (rate: 35082558 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 955974 us (rate: 35099732 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 955509 us (rate: 35116814 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 956080 us (rate: 35095841 / sec ~= 35.1 M / sec)
+Recv'd 33554432 bits in 967952 us (rate: 34665388 / sec ~= 34.7 M / sec)
+Recv'd 33554432 bits in 983911 us (rate: 34103117 / sec ~= 34.1 M / sec)
+Recv'd 33554432 bits in 955816 us (rate: 35105534 / sec ~= 35.1 M / sec)

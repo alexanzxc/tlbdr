@@ -21,17 +21,21 @@ function madit {
 
 function madrun_max {
 	madit -rn1 $1
-	madit -rn2 $1
+#	madit -rn2 $1
 	madit -rj1 $1
-	madit -rj2 $1
+#	madit -rj2 $1
 }
 
 function madrun_probe {
+	echo 1
 	madit "-Pn1 /dev/null 7 86" $1
-	madit "-Pn2 /dev/null 7 86" $1
+#	madit "-Pn2 /dev/null 7 86" $1
+echo 2
 	madit "-Pj1 /dev/null 7 86" $1
-	madit "-Pj2 /dev/null 7 86" $1
+#	madit "-Pj2 /dev/null 7 86" $1
+echo 3
 	madit "-Sn /dev/null 7 86" $1
+echo 4
 	madit "-Sj /dev/null 7 86" $1
 }
 

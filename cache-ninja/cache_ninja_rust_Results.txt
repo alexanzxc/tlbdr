@@ -1,0 +1,1345 @@
+Cache replacement policy simulator
+====================
+
+ TREE-PLRU4
+
+====================
+Kickout max 100 rounds; RP: PLRU4
+
+---------------------------
+Round 0; init state:
+PVec([T, X, X, X])
+Pathfinding...
+Found eviction in 4 accesses
+
+1: Miss(P(0, false), Origin { isnfetch: false })
+PVec([P(0, false), T, X, X])
+
+2: Miss(P(1, false), Origin { isnfetch: false })
+PVec([P(1, false), P(0, false), T, X])
+
+3: Hit(0, P(0, false), Origin { isnfetch: false })
+PVec([P(0, false), P(1, false), X, T])
+
+4: Miss(P(2, false), Origin { isnfetch: false })
+PVec([P(2, false), P(0, false), P(1, false), X])
+
+Trying self-sync
+
+Applying sequence to initial state:
+PVec([X, X, X, X])
+
+P(0, false): Miss(P(0, false), Origin { isnfetch: false })
+PVec([P(0, false), X, X, X])
+
+P(1, false): Miss(P(1, false), Origin { isnfetch: false })
+PVec([P(1, false), P(0, false), X, X])
+
+P(0, false): Hit(0, P(0, false), Origin { isnfetch: false })
+PVec([P(0, false), P(1, false), X, X])
+
+P(2, false): Miss(P(2, false), Origin { isnfetch: false })
+PVec([P(2, false), P(0, false), P(1, false), X])
+
+End states MATCH!
+
+---------------------------
+Round 1; init state:
+PVec([T, P(2, false), P(0, false), P(1, false)])
+Pathfinding...
+Found eviction in 3 accesses
+
+1: Hit(0, P(0, false), Origin { isnfetch: false })
+PVec([P(0, false), P(2, false), T, P(1, false)])
+
+2: Hit(0, P(2, false), Origin { isnfetch: false })
+PVec([P(2, false), P(0, false), P(1, false), T])
+
+3: Miss(P(3, false), Origin { isnfetch: false })
+PVec([P(3, false), P(2, false), P(0, false), P(1, false)])
+
+Trying self-sync
+
+Applying sequence to initial state:
+PVec([P(2, false), P(0, false), P(1, false), X])
+
+P(0, false): Hit(0, P(0, false), Origin { isnfetch: false })
+PVec([P(0, false), P(2, false), X, P(1, false)])
+
+P(2, false): Hit(0, P(2, false), Origin { isnfetch: false })
+PVec([P(2, false), P(0, false), P(1, false), X])
+
+P(3, false): Miss(P(3, false), Origin { isnfetch: false })
+PVec([P(3, false), P(2, false), P(0, false), P(1, false)])
+
+End states MATCH!
+
+---------------------------
+Round 2; init state:
+PVec([T, P(3, false), P(2, false), P(0, false)])
+Pathfinding...
+Found eviction in 3 accesses
+
+1: Hit(0, P(2, false), Origin { isnfetch: false })
+PVec([P(2, false), P(3, false), T, P(0, false)])
+
+2: Hit(0, P(3, false), Origin { isnfetch: false })
+PVec([P(3, false), P(2, false), P(0, false), T])
+
+3: Miss(P(1, false), Origin { isnfetch: false })
+PVec([P(1, false), P(3, false), P(2, false), P(0, false)])
+
+Trying self-sync
+
+Applying sequence to initial state:
+PVec([P(3, false), P(2, false), P(0, false), P(1, false)])
+
+P(2, false): Hit(0, P(2, false), Origin { isnfetch: false })
+PVec([P(2, false), P(3, false), P(1, false), P(0, false)])
+
+P(3, false): Hit(0, P(3, false), Origin { isnfetch: false })
+PVec([P(3, false), P(2, false), P(0, false), P(1, false)])
+
+P(1, false): Hit(0, P(1, false), Origin { isnfetch: false })
+PVec([P(1, false), P(3, false), P(2, false), P(0, false)])
+
+End states MATCH!
+
+---------------------------
+Round 3; init state:
+PVec([T, P(1, false), P(3, false), P(2, false)])
+Pathfinding...
+Found eviction in 3 accesses
+
+1: Hit(0, P(3, false), Origin { isnfetch: false })
+PVec([P(3, false), P(1, false), T, P(2, false)])
+
+2: Hit(0, P(1, false), Origin { isnfetch: false })
+PVec([P(1, false), P(3, false), P(2, false), T])
+
+3: Miss(P(0, false), Origin { isnfetch: false })
+PVec([P(0, false), P(1, false), P(3, false), P(2, false)])
+
+Trying self-sync
+
+Applying sequence to initial state:
+PVec([P(1, false), P(3, false), P(2, false), P(0, false)])
+
+P(3, false): Hit(0, P(3, false), Origin { isnfetch: false })
+PVec([P(3, false), P(1, false), P(0, false), P(2, false)])
+
+P(1, false): Hit(0, P(1, false), Origin { isnfetch: false })
+PVec([P(1, false), P(3, false), P(2, false), P(0, false)])
+
+P(0, false): Hit(0, P(0, false), Origin { isnfetch: false })
+PVec([P(0, false), P(1, false), P(3, false), P(2, false)])
+
+End states MATCH!
+
+---------------------------
+Round 4; init state:
+PVec([T, P(0, false), P(1, false), P(3, false)])
+Pathfinding...
+Found eviction in 3 accesses
+
+1: Hit(0, P(1, false), Origin { isnfetch: false })
+PVec([P(1, false), P(0, false), T, P(3, false)])
+
+2: Hit(0, P(0, false), Origin { isnfetch: false })
+PVec([P(0, false), P(1, false), P(3, false), T])
+
+3: Miss(P(2, false), Origin { isnfetch: false })
+PVec([P(2, false), P(0, false), P(1, false), P(3, false)])
+
+Trying self-sync
+
+Applying sequence to initial state:
+PVec([P(0, false), P(1, false), P(3, false), P(2, false)])
+
+P(1, false): Hit(0, P(1, false), Origin { isnfetch: false })
+PVec([P(1, false), P(0, false), P(2, false), P(3, false)])
+
+P(0, false): Hit(0, P(0, false), Origin { isnfetch: false })
+PVec([P(0, false), P(1, false), P(3, false), P(2, false)])
+
+P(2, false): Hit(0, P(2, false), Origin { isnfetch: false })
+PVec([P(2, false), P(0, false), P(1, false), P(3, false)])
+
+End states MATCH!
+
+---------------------------
+Round 5; found init state previously in round 1
+PVec([T, P(2, false), P(0, false), P(1, false)])
+====================
+
+ KABY LAKE TLB
+
+====================
+Kickout max 100 rounds; RP: H2SRP { rp1i: PLRU8, rp1d: PLRU4, rp2: MRU3PLRU4, rxmem: false, miss_l1i: true, miss_l1d: true, miss_l2: true, prop_upi: true, prop_upd: true, prop_dn: false }
+
+---------------------------
+Round 0; init state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, X, X, X]), l2: PVec([T, X, X, X, X, X, X, X, X, X, X, X]) }
+Pathfinding...
+Found eviction in 10 accesses
+
+1: Miss(P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), T, X, X]), l2: PVec([P(0, false), T, X, X, X, X, X, X, X, X, X, X]) }
+
+2: Miss(P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(0, false), T, X]), l2: PVec([P(1, false), P(0, false), T, X, X, X, X, X, X, X, X, X]) }
+
+3: Miss(P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(1, false), P(0, false), T]), l2: PVec([P(2, false), P(1, false), P(0, false), T, X, X, X, X, X, X, X, X]) }
+
+4: Miss(P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(2, false), P(1, false), P(0, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), T, X, X, X, X, X, X, X]) }
+
+5: Miss(P(4, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(3, false), P(2, false), P(1, false)]), l2: PVec([P(4, false), P(3, false), P(2, false), P(1, false), P(0, false), T, X, X, X, X, X, X]) }
+
+6: Miss(P(5, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(4, false), P(3, false), P(2, false)]), l2: PVec([P(5, false), P(4, false), P(3, false), P(2, false), P(1, false), P(0, false), T, X, X, X, X, X]) }
+
+7: Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(5, false), P(4, false), P(3, false)]), l2: PVec([P(0, false), P(5, false), P(4, false), P(3, false), P(2, false), P(1, false), X, T, X, X, X, X]) }
+
+8: Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(5, false), P(4, false)]), l2: PVec([P(2, false), P(4, false), P(0, false), P(5, false), P(1, false), P(3, false), X, X, X, T, X, X]) }
+
+9: Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(0, false), P(5, false)]), l2: PVec([P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X, T]) }
+
+10: Miss(P(6, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(0, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X]) }
+
+Trying self-sync
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([X, X, X, X]), l2: PVec([X, X, X, X, X, X, X, X, X, X, X, X]) }
+
+P(0, false): Miss(P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), X, X, X]), l2: PVec([P(0, false), X, X, X, X, X, X, X, X, X, X, X]) }
+
+P(1, false): Miss(P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(0, false), X, X]), l2: PVec([P(1, false), P(0, false), X, X, X, X, X, X, X, X, X, X]) }
+
+P(2, false): Miss(P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(1, false), P(0, false), X]), l2: PVec([P(2, false), P(1, false), P(0, false), X, X, X, X, X, X, X, X, X]) }
+
+P(3, false): Miss(P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(2, false), P(1, false), P(0, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), X, X, X, X, X, X, X, X]) }
+
+P(4, false): Miss(P(4, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(3, false), P(2, false), P(1, false)]), l2: PVec([P(4, false), P(3, false), P(2, false), P(1, false), P(0, false), X, X, X, X, X, X, X]) }
+
+P(5, false): Miss(P(5, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(4, false), P(3, false), P(2, false)]), l2: PVec([P(5, false), P(4, false), P(3, false), P(2, false), P(1, false), P(0, false), X, X, X, X, X, X]) }
+
+P(0, false): Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(5, false), P(4, false), P(3, false)]), l2: PVec([P(0, false), P(5, false), P(4, false), P(3, false), P(2, false), P(1, false), X, X, X, X, X, X]) }
+
+P(2, false): Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(5, false), P(4, false)]), l2: PVec([P(2, false), P(4, false), P(0, false), P(5, false), P(1, false), P(3, false), X, X, X, X, X, X]) }
+
+P(1, false): Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(0, false), P(5, false)]), l2: PVec([P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X, X]) }
+
+P(6, false): Miss(P(6, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(0, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X]) }
+
+End states MATCH!
+
+---------------------------
+Round 1; init state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(6, false), P(1, false), P(2, false)]), l2: PVec([T, P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X]) }
+Pathfinding...
+Found eviction in 4 accesses
+
+1: Hit(2, P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), T, P(6, false), P(1, false)]), l2: PVec([P(3, false), P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), T, P(5, false), X, X, X, X]) }
+
+2: Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(3, false), T, P(6, false)]), l2: PVec([P(0, false), P(6, false), P(1, false), P(3, false), P(2, false), P(4, false), X, P(5, false), X, T, X, X]) }
+
+3: Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(3, false), T]), l2: PVec([P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X, T]) }
+
+4: Miss(P(7, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(2, false), P(0, false), P(3, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X]) }
+
+Trying self-sync
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(0, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X]) }
+
+P(3, false): Hit(2, P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(6, false), P(1, false), P(2, false)]), l2: PVec([P(3, false), P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), X, P(5, false), X, X, X, X]) }
+
+P(0, false): Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(3, false), P(6, false), P(1, false)]), l2: PVec([P(0, false), P(6, false), P(1, false), P(3, false), P(2, false), P(4, false), X, P(5, false), X, X, X, X]) }
+
+P(2, false): Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(3, false), P(6, false)]), l2: PVec([P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X, X]) }
+
+P(7, false): Miss(P(7, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(2, false), P(0, false), P(3, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X]) }
+
+End states MATCH!
+
+---------------------------
+Round 2; init state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(7, false), P(2, false), P(0, false)]), l2: PVec([T, P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false)]) }
+Pathfinding...
+Found eviction in 4 accesses
+
+1: Hit(2, P(4, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), T, P(7, false), P(2, false)]), l2: PVec([P(4, false), P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), T, P(3, false), X, X, X, P(5, false)]) }
+
+2: Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(4, false), T, P(7, false)]), l2: PVec([P(1, false), P(7, false), P(2, false), P(4, false), P(0, false), P(6, false), X, P(3, false), X, T, X, P(5, false)]) }
+
+3: Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(1, false), P(4, false), T]), l2: PVec([P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false), T]) }
+
+4: Miss(P(8, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), P(0, false), P(1, false), P(4, false)]), l2: PVec([P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false)]) }
+
+Trying self-sync
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(2, false), P(0, false), P(3, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X]) }
+
+P(4, false): Hit(2, P(4, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(7, false), P(2, false), P(0, false)]), l2: PVec([P(4, false), P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), X, P(3, false), X, X, X, P(5, false)]) }
+
+P(1, false): Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(4, false), P(7, false), P(2, false)]), l2: PVec([P(1, false), P(7, false), P(2, false), P(4, false), P(0, false), P(6, false), X, P(3, false), X, X, X, P(5, false)]) }
+
+P(0, false): Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(1, false), P(4, false), P(7, false)]), l2: PVec([P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false), X]) }
+
+P(8, false): Miss(P(8, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), P(0, false), P(1, false), P(4, false)]), l2: PVec([P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false)]) }
+
+End states MATCH!
+
+---------------------------
+Round 3; init state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(8, false), P(0, false), P(1, false)]), l2: PVec([T, P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false)]) }
+Pathfinding...
+Found eviction in 4 accesses
+
+1: Hit(2, P(6, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), T, P(8, false), P(0, false)]), l2: PVec([P(6, false), P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), T, P(4, false), X, X, X, P(3, false)]) }
+
+2: Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(6, false), T, P(8, false)]), l2: PVec([P(2, false), P(8, false), P(0, false), P(6, false), P(1, false), P(7, false), X, P(4, false), X, T, X, P(3, false)]) }
+
+3: Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(6, false), T]), l2: PVec([P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false), T]) }
+
+4: Miss(P(5, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(1, false), P(2, false), P(6, false)]), l2: PVec([P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false)]) }
+
+Trying self-sync
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), P(0, false), P(1, false), P(4, false)]), l2: PVec([P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false)]) }
+
+P(6, false): Hit(2, P(6, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(8, false), P(0, false), P(1, false)]), l2: PVec([P(6, false), P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(5, false), P(4, false), X, X, X, P(3, false)]) }
+
+P(2, false): Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(6, false), P(8, false), P(0, false)]), l2: PVec([P(2, false), P(8, false), P(0, false), P(6, false), P(1, false), P(7, false), X, P(4, false), X, P(5, false), X, P(3, false)]) }
+
+P(1, false): Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(6, false), P(8, false)]), l2: PVec([P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false), P(5, false)]) }
+
+P(5, false): Hit(2, P(5, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(1, false), P(2, false), P(6, false)]), l2: PVec([P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false)]) }
+
+End states MATCH!
+
+---------------------------
+Round 4; init state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(5, false), P(1, false), P(2, false)]), l2: PVec([T, P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false)]) }
+Pathfinding...
+Found eviction in 4 accesses
+
+1: Hit(2, P(7, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), T, P(5, false), P(1, false)]), l2: PVec([P(7, false), P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), T, P(6, false), X, X, X, P(4, false)]) }
+
+2: Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(7, false), T, P(5, false)]), l2: PVec([P(0, false), P(5, false), P(1, false), P(7, false), P(2, false), P(8, false), X, P(6, false), X, T, X, P(4, false)]) }
+
+3: Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(7, false), T]), l2: PVec([P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false), T]) }
+
+4: Miss(P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(2, false), P(0, false), P(7, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false)]) }
+
+Trying self-sync
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(1, false), P(2, false), P(6, false)]), l2: PVec([P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false)]) }
+
+P(7, false): Hit(2, P(7, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(5, false), P(1, false), P(2, false)]), l2: PVec([P(7, false), P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(3, false), P(6, false), X, X, X, P(4, false)]) }
+
+P(0, false): Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(7, false), P(5, false), P(1, false)]), l2: PVec([P(0, false), P(5, false), P(1, false), P(7, false), P(2, false), P(8, false), X, P(6, false), X, P(3, false), X, P(4, false)]) }
+
+P(2, false): Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(7, false), P(5, false)]), l2: PVec([P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false), P(3, false)]) }
+
+P(3, false): Hit(2, P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(2, false), P(0, false), P(7, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false)]) }
+
+End states MATCH!
+
+---------------------------
+Round 5; init state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(3, false), P(2, false), P(0, false)]), l2: PVec([T, P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false)]) }
+Pathfinding...
+Found eviction in 4 accesses
+
+1: Hit(2, P(8, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), T, P(3, false), P(2, false)]), l2: PVec([P(8, false), P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), T, P(7, false), X, X, X, P(6, false)]) }
+
+2: Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(8, false), T, P(3, false)]), l2: PVec([P(1, false), P(3, false), P(2, false), P(8, false), P(0, false), P(5, false), X, P(7, false), X, T, X, P(6, false)]) }
+
+3: Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(1, false), P(8, false), T]), l2: PVec([P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false), T]) }
+
+4: Miss(P(4, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(0, false), P(1, false), P(8, false)]), l2: PVec([P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false)]) }
+
+Trying self-sync
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(2, false), P(0, false), P(7, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false)]) }
+
+P(8, false): Hit(2, P(8, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), P(3, false), P(2, false), P(0, false)]), l2: PVec([P(8, false), P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(4, false), P(7, false), X, X, X, P(6, false)]) }
+
+P(1, false): Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(8, false), P(3, false), P(2, false)]), l2: PVec([P(1, false), P(3, false), P(2, false), P(8, false), P(0, false), P(5, false), X, P(7, false), X, P(4, false), X, P(6, false)]) }
+
+P(0, false): Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(1, false), P(8, false), P(3, false)]), l2: PVec([P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false), P(4, false)]) }
+
+P(4, false): Hit(2, P(4, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(0, false), P(1, false), P(8, false)]), l2: PVec([P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false)]) }
+
+End states MATCH!
+
+---------------------------
+Round 6; init state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(4, false), P(0, false), P(1, false)]), l2: PVec([T, P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false)]) }
+Pathfinding...
+Found eviction in 4 accesses
+
+1: Hit(2, P(5, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), T, P(4, false), P(0, false)]), l2: PVec([P(5, false), P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), T, P(8, false), X, X, X, P(7, false)]) }
+
+2: Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(5, false), T, P(4, false)]), l2: PVec([P(2, false), P(4, false), P(0, false), P(5, false), P(1, false), P(3, false), X, P(8, false), X, T, X, P(7, false)]) }
+
+3: Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(5, false), T]), l2: PVec([P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false), T]) }
+
+4: Miss(P(6, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(5, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false)]) }
+
+Trying self-sync
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(0, false), P(1, false), P(8, false)]), l2: PVec([P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false)]) }
+
+P(5, false): Hit(2, P(5, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(4, false), P(0, false), P(1, false)]), l2: PVec([P(5, false), P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(6, false), P(8, false), X, X, X, P(7, false)]) }
+
+P(2, false): Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(5, false), P(4, false), P(0, false)]), l2: PVec([P(2, false), P(4, false), P(0, false), P(5, false), P(1, false), P(3, false), X, P(8, false), X, P(6, false), X, P(7, false)]) }
+
+P(1, false): Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(5, false), P(4, false)]), l2: PVec([P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false), P(6, false)]) }
+
+P(6, false): Hit(2, P(6, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(5, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false)]) }
+
+End states MATCH!
+
+---------------------------
+Round 7; init state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(6, false), P(1, false), P(2, false)]), l2: PVec([T, P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false)]) }
+Pathfinding...
+Found eviction in 4 accesses
+
+1: Hit(2, P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), T, P(6, false), P(1, false)]), l2: PVec([P(3, false), P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), T, P(5, false), X, X, X, P(8, false)]) }
+
+2: Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(3, false), T, P(6, false)]), l2: PVec([P(0, false), P(6, false), P(1, false), P(3, false), P(2, false), P(4, false), X, P(5, false), X, T, X, P(8, false)]) }
+
+3: Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(3, false), T]), l2: PVec([P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), P(8, false), T]) }
+
+4: Miss(P(7, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(2, false), P(0, false), P(3, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), P(8, false)]) }
+
+Trying self-sync
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(5, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false)]) }
+
+P(3, false): Hit(2, P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(6, false), P(1, false), P(2, false)]), l2: PVec([P(3, false), P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(7, false), P(5, false), X, X, X, P(8, false)]) }
+
+P(0, false): Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(3, false), P(6, false), P(1, false)]), l2: PVec([P(0, false), P(6, false), P(1, false), P(3, false), P(2, false), P(4, false), X, P(5, false), X, P(7, false), X, P(8, false)]) }
+
+P(2, false): Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(3, false), P(6, false)]), l2: PVec([P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), P(8, false), P(7, false)]) }
+
+P(7, false): Hit(2, P(7, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(2, false), P(0, false), P(3, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), P(8, false)]) }
+
+End states MATCH!
+
+---------------------------
+Round 8; found init state previously in round 2
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(7, false), P(2, false), P(0, false)]), l2: PVec([T, P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false)]) }
+====================
+
+ KABY LAKE L1+L2
+
+====================
+Spliced kickout max 100 rounds; RP: H2SRP { rp1i: PLRU8, rp1d: PLRU4, rp2: MRU3PLRU4, rxmem: false, miss_l1i: true, miss_l1d: true, miss_l2: true, prop_upi: true, prop_upd: true, prop_dn: false }
+
+---------------------------
+Round 0; ist:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, X, X, X]), l2: PVec([T, X, X, X, X, X, X, X, X, X, X, X]) }
+pst:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([X, X, X, X]), l2: PVec([X, X, X, X, X, X, X, X, X, X, X, X]) }
+nst:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, X, X, X]), l2: PVec([X, X, X, X, X, X, X, X, X, X, X, X]) }
+
+L1 victim is X
+Uncontrollable victim
+
+=-=-=-=-=-=-=-=
+Phase L2; init state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, X, X, X]), l2: PVec([T, X, X, X, X, X, X, X, X, X, X, X]) }
+Pathfinding...
+Found eviction in 10 accesses
+
+1: Miss(P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), T, X, X]), l2: PVec([P(0, false), T, X, X, X, X, X, X, X, X, X, X]) }
+
+2: Miss(P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(0, false), T, X]), l2: PVec([P(1, false), P(0, false), T, X, X, X, X, X, X, X, X, X]) }
+
+3: Miss(P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(1, false), P(0, false), T]), l2: PVec([P(2, false), P(1, false), P(0, false), T, X, X, X, X, X, X, X, X]) }
+
+4: Miss(P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(2, false), P(1, false), P(0, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), T, X, X, X, X, X, X, X]) }
+
+5: Miss(P(4, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(3, false), P(2, false), P(1, false)]), l2: PVec([P(4, false), P(3, false), P(2, false), P(1, false), P(0, false), T, X, X, X, X, X, X]) }
+
+6: Miss(P(5, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(4, false), P(3, false), P(2, false)]), l2: PVec([P(5, false), P(4, false), P(3, false), P(2, false), P(1, false), P(0, false), T, X, X, X, X, X]) }
+
+7: Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(5, false), P(4, false), P(3, false)]), l2: PVec([P(0, false), P(5, false), P(4, false), P(3, false), P(2, false), P(1, false), X, T, X, X, X, X]) }
+
+8: Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(5, false), P(4, false)]), l2: PVec([P(2, false), P(4, false), P(0, false), P(5, false), P(1, false), P(3, false), X, X, X, T, X, X]) }
+
+9: Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(0, false), P(5, false)]), l2: PVec([P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X, T]) }
+
+10: Miss(P(6, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(0, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X]) }
+
+Trying self-sync w/ pst
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([X, X, X, X]), l2: PVec([X, X, X, X, X, X, X, X, X, X, X, X]) }
+
+P(0, false): Miss(P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), X, X, X]), l2: PVec([P(0, false), X, X, X, X, X, X, X, X, X, X, X]) }
+
+P(1, false): Miss(P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(0, false), X, X]), l2: PVec([P(1, false), P(0, false), X, X, X, X, X, X, X, X, X, X]) }
+
+P(2, false): Miss(P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(1, false), P(0, false), X]), l2: PVec([P(2, false), P(1, false), P(0, false), X, X, X, X, X, X, X, X, X]) }
+
+P(3, false): Miss(P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(2, false), P(1, false), P(0, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), X, X, X, X, X, X, X, X]) }
+
+P(4, false): Miss(P(4, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(3, false), P(2, false), P(1, false)]), l2: PVec([P(4, false), P(3, false), P(2, false), P(1, false), P(0, false), X, X, X, X, X, X, X]) }
+
+P(5, false): Miss(P(5, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(4, false), P(3, false), P(2, false)]), l2: PVec([P(5, false), P(4, false), P(3, false), P(2, false), P(1, false), P(0, false), X, X, X, X, X, X]) }
+
+P(0, false): Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(5, false), P(4, false), P(3, false)]), l2: PVec([P(0, false), P(5, false), P(4, false), P(3, false), P(2, false), P(1, false), X, X, X, X, X, X]) }
+
+P(2, false): Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(5, false), P(4, false)]), l2: PVec([P(2, false), P(4, false), P(0, false), P(5, false), P(1, false), P(3, false), X, X, X, X, X, X]) }
+
+P(1, false): Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(0, false), P(5, false)]), l2: PVec([P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X, X]) }
+
+P(6, false): Miss(P(6, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(0, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X]) }
+
+End states MATCH!
+
+Trying self-sync w/ l1 noise
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, X, X, X]), l2: PVec([X, X, X, X, X, X, X, X, X, X, X, X]) }
+
+P(0, false): Miss(P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), T, X, X]), l2: PVec([P(0, false), X, X, X, X, X, X, X, X, X, X, X]) }
+
+P(1, false): Miss(P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(0, false), T, X]), l2: PVec([P(1, false), P(0, false), X, X, X, X, X, X, X, X, X, X]) }
+
+P(2, false): Miss(P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(1, false), P(0, false), T]), l2: PVec([P(2, false), P(1, false), P(0, false), X, X, X, X, X, X, X, X, X]) }
+
+P(3, false): Miss(P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(2, false), P(1, false), P(0, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), X, X, X, X, X, X, X, X]) }
+
+P(4, false): Miss(P(4, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(3, false), P(2, false), P(1, false)]), l2: PVec([P(4, false), P(3, false), P(2, false), P(1, false), P(0, false), X, X, X, X, X, X, X]) }
+
+P(5, false): Miss(P(5, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(4, false), P(3, false), P(2, false)]), l2: PVec([P(5, false), P(4, false), P(3, false), P(2, false), P(1, false), P(0, false), X, X, X, X, X, X]) }
+
+P(0, false): Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(5, false), P(4, false), P(3, false)]), l2: PVec([P(0, false), P(5, false), P(4, false), P(3, false), P(2, false), P(1, false), X, X, X, X, X, X]) }
+
+P(2, false): Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(5, false), P(4, false)]), l2: PVec([P(2, false), P(4, false), P(0, false), P(5, false), P(1, false), P(3, false), X, X, X, X, X, X]) }
+
+P(1, false): Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(0, false), P(5, false)]), l2: PVec([P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X, X]) }
+
+P(6, false): Miss(P(6, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(0, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X]) }
+
+End states MATCH!
+
+---------------------------
+Round 1; ist:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(6, false), P(1, false), P(2, false)]), l2: PVec([T, P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X]) }
+pst:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(0, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X]) }
+nst:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(6, false), P(1, false), P(2, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X]) }
+
+L1 victim is P(0, false)
+Have controlled victim 0 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), T, P(6, false), P(1, false)]), l2: PVec([P(0, false), P(6, false), P(1, false), T, P(2, false), P(4, false), X, P(5, false), X, P(3, false), X, X]) }, Hit(2, P(0, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(6, false), P(1, false), P(2, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X]) }, Hit(1, P(0, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), T, P(6, false), P(1, false)]), l2: PVec([P(0, false), P(6, false), P(1, false), P(3, false), P(2, false), P(4, false), X, P(5, false), X, X, X, X]) }, Hit(2, P(0, false), Origin { isnfetch: false }))
+
+L1 victim is P(2, false)
+Have controlled victim 2 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), T, P(6, false)]), l2: PVec([P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), T, X, X, X, P(5, false), X, P(3, false)]) }, Hit(2, P(2, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(6, false), P(1, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X]) }, Hit(1, P(2, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), T, P(6, false)]), l2: PVec([P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X, X]) }, Hit(2, P(2, false), Origin { isnfetch: false }))
+
+L1 victim is P(1, false)
+Have controlled victim 1 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(0, false), T]), l2: PVec([P(1, false), P(0, false), P(2, false), P(4, false), T, P(6, false), X, X, X, X, P(3, false), P(5, false)]) }, Hit(2, P(1, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(0, false), P(6, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X]) }, Hit(1, P(1, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(0, false), T]), l2: PVec([P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(6, false), X, X, X, X, X, P(5, false)]) }, Hit(2, P(1, false), Origin { isnfetch: false }))
+
+L1 victim is P(6, false)
+Have controlled victim 6 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(0, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), T, P(5, false), X, X, X, X, P(3, false)]) }, Hit(2, P(6, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(0, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X]) }, Hit(1, P(6, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(0, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X]) }, Hit(2, P(6, false), Origin { isnfetch: false }))
+
+=-=-=-=-=-=-=-=
+Phase L2; init state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(0, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), T, P(5, false), X, X, X, X, P(3, false)]) }
+Pathfinding...
+Found eviction in 4 accesses
+
+1: Hit(2, P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(6, false), P(1, false), P(2, false)]), l2: PVec([P(3, false), P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), T, P(5, false), X, X, X, X]) }
+
+2: Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(3, false), P(6, false), P(1, false)]), l2: PVec([P(0, false), P(6, false), P(1, false), P(3, false), P(2, false), P(4, false), X, P(5, false), X, T, X, X]) }
+
+3: Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(3, false), P(6, false)]), l2: PVec([P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X, T]) }
+
+4: Miss(P(7, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(2, false), P(0, false), P(3, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X]) }
+
+Trying self-sync w/ pst
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(0, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X]) }
+
+P(3, false): Hit(2, P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(6, false), P(1, false), P(2, false)]), l2: PVec([P(3, false), P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), X, P(5, false), X, X, X, X]) }
+
+P(0, false): Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(3, false), P(6, false), P(1, false)]), l2: PVec([P(0, false), P(6, false), P(1, false), P(3, false), P(2, false), P(4, false), X, P(5, false), X, X, X, X]) }
+
+P(2, false): Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(3, false), P(6, false)]), l2: PVec([P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X, X]) }
+
+P(7, false): Miss(P(7, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(2, false), P(0, false), P(3, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X]) }
+
+End states MATCH!
+
+Trying self-sync w/ l1 noise
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(0, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, X, X]) }
+
+P(3, false): Hit(2, P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(6, false), P(1, false), P(2, false)]), l2: PVec([P(3, false), P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), X, P(5, false), X, X, X, X]) }
+
+P(0, false): Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(3, false), P(6, false), P(1, false)]), l2: PVec([P(0, false), P(6, false), P(1, false), P(3, false), P(2, false), P(4, false), X, P(5, false), X, X, X, X]) }
+
+P(2, false): Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(3, false), P(6, false)]), l2: PVec([P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X, X]) }
+
+P(7, false): Miss(P(7, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(2, false), P(0, false), P(3, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X]) }
+
+End states MATCH!
+
+---------------------------
+Round 2; ist:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(7, false), P(2, false), P(0, false)]), l2: PVec([T, P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false)]) }
+pst:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(2, false), P(0, false), P(3, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X]) }
+nst:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(7, false), P(2, false), P(0, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X]) }
+
+L1 victim is P(3, false)
+Have controlled victim 3 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), T, P(7, false), P(2, false)]), l2: PVec([P(3, false), P(2, false), T, P(0, false), P(6, false), P(1, false), P(7, false), X, P(4, false), X, P(5, false), X]) }, Hit(2, P(3, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(7, false), P(2, false), P(0, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X]) }, Hit(1, P(3, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), T, P(7, false), P(2, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(7, false), X, X, X, P(5, false), X]) }, Hit(2, P(3, false), Origin { isnfetch: false }))
+
+L1 victim is P(0, false)
+Have controlled victim 0 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(3, false), T, P(7, false)]), l2: PVec([P(0, false), P(2, false), T, P(3, false), P(6, false), P(1, false), X, X, P(4, false), P(7, false), P(5, false), X]) }, Hit(2, P(0, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(3, false), P(7, false), P(2, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X]) }, Hit(1, P(0, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(3, false), T, P(7, false)]), l2: PVec([P(0, false), P(2, false), P(1, false), P(3, false), P(6, false), P(4, false), X, X, X, P(7, false), P(5, false), X]) }, Hit(2, P(0, false), Origin { isnfetch: false }))
+
+L1 victim is P(2, false)
+Have controlled victim 2 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(3, false), T]), l2: PVec([P(2, false), T, P(0, false), P(6, false), P(1, false), P(3, false), X, P(4, false), X, P(5, false), X, P(7, false)]) }, Hit(2, P(2, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(3, false), P(7, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X]) }, Hit(1, P(2, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(3, false), T]), l2: PVec([P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X, P(7, false)]) }, Hit(2, P(2, false), Origin { isnfetch: false }))
+
+L1 victim is P(7, false)
+Have controlled victim 7 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(2, false), P(0, false), P(3, false)]), l2: PVec([P(7, false), P(2, false), T, P(0, false), P(6, false), P(1, false), P(3, false), X, P(4, false), X, P(5, false), X]) }, Hit(2, P(7, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(2, false), P(0, false), P(3, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X]) }, Hit(1, P(7, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(2, false), P(0, false), P(3, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X]) }, Hit(2, P(7, false), Origin { isnfetch: false }))
+
+=-=-=-=-=-=-=-=
+Phase L2; init state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(2, false), P(0, false), P(3, false)]), l2: PVec([P(7, false), P(2, false), T, P(0, false), P(6, false), P(1, false), P(3, false), X, P(4, false), X, P(5, false), X]) }
+Pathfinding...
+Found eviction in 4 accesses
+
+1: Hit(2, P(4, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(7, false), P(2, false), P(0, false)]), l2: PVec([P(4, false), P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), T, P(3, false), X, X, X, P(5, false)]) }
+
+2: Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(4, false), P(7, false), P(2, false)]), l2: PVec([P(1, false), P(7, false), P(2, false), P(4, false), P(0, false), P(6, false), X, P(3, false), X, T, X, P(5, false)]) }
+
+3: Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(1, false), P(4, false), P(7, false)]), l2: PVec([P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false), T]) }
+
+4: Miss(P(8, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), P(0, false), P(1, false), P(4, false)]), l2: PVec([P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false)]) }
+
+Trying self-sync w/ pst
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(2, false), P(0, false), P(3, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X]) }
+
+P(4, false): Hit(2, P(4, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(7, false), P(2, false), P(0, false)]), l2: PVec([P(4, false), P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), X, P(3, false), X, X, X, P(5, false)]) }
+
+P(1, false): Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(4, false), P(7, false), P(2, false)]), l2: PVec([P(1, false), P(7, false), P(2, false), P(4, false), P(0, false), P(6, false), X, P(3, false), X, X, X, P(5, false)]) }
+
+P(0, false): Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(1, false), P(4, false), P(7, false)]), l2: PVec([P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false), X]) }
+
+P(8, false): Miss(P(8, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), P(0, false), P(1, false), P(4, false)]), l2: PVec([P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false)]) }
+
+End states MATCH!
+
+Trying self-sync w/ l1 noise
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(2, false), P(0, false), P(3, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), X]) }
+
+P(4, false): Hit(2, P(4, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(7, false), P(2, false), P(0, false)]), l2: PVec([P(4, false), P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), X, P(3, false), X, X, X, P(5, false)]) }
+
+P(1, false): Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(4, false), P(7, false), P(2, false)]), l2: PVec([P(1, false), P(7, false), P(2, false), P(4, false), P(0, false), P(6, false), X, P(3, false), X, X, X, P(5, false)]) }
+
+P(0, false): Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(1, false), P(4, false), P(7, false)]), l2: PVec([P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false), X]) }
+
+P(8, false): Miss(P(8, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), P(0, false), P(1, false), P(4, false)]), l2: PVec([P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false)]) }
+
+End states MATCH!
+
+---------------------------
+Round 3; ist:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(8, false), P(0, false), P(1, false)]), l2: PVec([T, P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false)]) }
+pst:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), P(0, false), P(1, false), P(4, false)]), l2: PVec([P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false)]) }
+nst:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(8, false), P(0, false), P(1, false)]), l2: PVec([P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false)]) }
+
+L1 victim is P(4, false)
+Have controlled victim 4 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), T, P(8, false), P(0, false)]), l2: PVec([P(4, false), P(0, false), T, P(1, false), P(7, false), P(2, false), P(8, false), X, P(6, false), X, P(3, false), X]) }, Hit(2, P(4, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(8, false), P(0, false), P(1, false)]), l2: PVec([P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false)]) }, Hit(1, P(4, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), T, P(8, false), P(0, false)]), l2: PVec([P(4, false), P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(8, false), X, X, X, P(3, false), P(5, false)]) }, Hit(2, P(4, false), Origin { isnfetch: false }))
+
+L1 victim is P(1, false)
+Have controlled victim 1 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(4, false), T, P(8, false)]), l2: PVec([P(1, false), P(0, false), T, P(4, false), P(7, false), P(2, false), X, X, P(6, false), P(8, false), P(3, false), X]) }, Hit(2, P(1, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(4, false), P(8, false), P(0, false)]), l2: PVec([P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false)]) }, Hit(1, P(1, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(4, false), T, P(8, false)]), l2: PVec([P(1, false), P(0, false), P(2, false), P(4, false), P(7, false), P(6, false), X, X, X, P(8, false), P(3, false), P(5, false)]) }, Hit(2, P(1, false), Origin { isnfetch: false }))
+
+L1 victim is P(0, false)
+Have controlled victim 0 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(1, false), P(4, false), T]), l2: PVec([P(0, false), T, P(1, false), P(7, false), P(2, false), P(4, false), X, P(6, false), X, P(3, false), X, P(8, false)]) }, Hit(2, P(0, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(1, false), P(4, false), P(8, false)]), l2: PVec([P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false)]) }, Hit(1, P(0, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(1, false), P(4, false), T]), l2: PVec([P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false), P(8, false)]) }, Hit(2, P(0, false), Origin { isnfetch: false }))
+
+L1 victim is P(8, false)
+Have controlled victim 8 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), P(0, false), P(1, false), P(4, false)]), l2: PVec([P(8, false), P(0, false), T, P(1, false), P(7, false), P(2, false), P(4, false), X, P(6, false), X, P(3, false), X]) }, Hit(2, P(8, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), P(0, false), P(1, false), P(4, false)]), l2: PVec([P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false)]) }, Hit(1, P(8, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), P(0, false), P(1, false), P(4, false)]), l2: PVec([P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false)]) }, Hit(2, P(8, false), Origin { isnfetch: false }))
+
+=-=-=-=-=-=-=-=
+Phase L2; init state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), P(0, false), P(1, false), P(4, false)]), l2: PVec([P(8, false), P(0, false), T, P(1, false), P(7, false), P(2, false), P(4, false), X, P(6, false), X, P(3, false), X]) }
+Pathfinding...
+Found eviction in 4 accesses
+
+1: Hit(2, P(6, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(8, false), P(0, false), P(1, false)]), l2: PVec([P(6, false), P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), T, P(4, false), X, X, X, P(3, false)]) }
+
+2: Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(6, false), P(8, false), P(0, false)]), l2: PVec([P(2, false), P(8, false), P(0, false), P(6, false), P(1, false), P(7, false), X, P(4, false), X, T, X, P(3, false)]) }
+
+3: Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(6, false), P(8, false)]), l2: PVec([P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false), T]) }
+
+4: Miss(P(5, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(1, false), P(2, false), P(6, false)]), l2: PVec([P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false)]) }
+
+Trying self-sync w/ pst
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), P(0, false), P(1, false), P(4, false)]), l2: PVec([P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false)]) }
+
+P(6, false): Hit(2, P(6, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(8, false), P(0, false), P(1, false)]), l2: PVec([P(6, false), P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(5, false), P(4, false), X, X, X, P(3, false)]) }
+
+P(2, false): Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(6, false), P(8, false), P(0, false)]), l2: PVec([P(2, false), P(8, false), P(0, false), P(6, false), P(1, false), P(7, false), X, P(4, false), X, P(5, false), X, P(3, false)]) }
+
+P(1, false): Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(6, false), P(8, false)]), l2: PVec([P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false), P(5, false)]) }
+
+P(5, false): Hit(2, P(5, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(1, false), P(2, false), P(6, false)]), l2: PVec([P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false)]) }
+
+End states MATCH!
+
+Trying self-sync w/ l1 noise
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), P(0, false), P(1, false), P(4, false)]), l2: PVec([P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(6, false), P(4, false), X, X, X, P(3, false), P(5, false)]) }
+
+P(6, false): Hit(2, P(6, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(8, false), P(0, false), P(1, false)]), l2: PVec([P(6, false), P(8, false), P(0, false), P(2, false), P(1, false), P(7, false), P(5, false), P(4, false), X, X, X, P(3, false)]) }
+
+P(2, false): Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(6, false), P(8, false), P(0, false)]), l2: PVec([P(2, false), P(8, false), P(0, false), P(6, false), P(1, false), P(7, false), X, P(4, false), X, P(5, false), X, P(3, false)]) }
+
+P(1, false): Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(6, false), P(8, false)]), l2: PVec([P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false), P(5, false)]) }
+
+P(5, false): Hit(2, P(5, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(1, false), P(2, false), P(6, false)]), l2: PVec([P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false)]) }
+
+End states MATCH!
+
+---------------------------
+Round 4; ist:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(5, false), P(1, false), P(2, false)]), l2: PVec([T, P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false)]) }
+pst:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(1, false), P(2, false), P(6, false)]), l2: PVec([P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false)]) }
+nst:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(5, false), P(1, false), P(2, false)]), l2: PVec([P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false)]) }
+
+L1 victim is P(6, false)
+Have controlled victim 6 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), T, P(5, false), P(1, false)]), l2: PVec([P(6, false), P(1, false), T, P(2, false), P(8, false), P(0, false), P(5, false), X, P(7, false), X, P(4, false), X]) }, Hit(2, P(6, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(5, false), P(1, false), P(2, false)]), l2: PVec([P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false)]) }, Hit(1, P(6, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), T, P(5, false), P(1, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(5, false), X, X, X, P(4, false), P(3, false)]) }, Hit(2, P(6, false), Origin { isnfetch: false }))
+
+L1 victim is P(2, false)
+Have controlled victim 2 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(6, false), T, P(5, false)]), l2: PVec([P(2, false), P(1, false), T, P(6, false), P(8, false), P(0, false), X, X, P(7, false), P(5, false), P(4, false), X]) }, Hit(2, P(2, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(6, false), P(5, false), P(1, false)]), l2: PVec([P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false)]) }, Hit(1, P(2, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(6, false), T, P(5, false)]), l2: PVec([P(2, false), P(1, false), P(0, false), P(6, false), P(8, false), P(7, false), X, X, X, P(5, false), P(4, false), P(3, false)]) }, Hit(2, P(2, false), Origin { isnfetch: false }))
+
+L1 victim is P(1, false)
+Have controlled victim 1 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(6, false), T]), l2: PVec([P(1, false), T, P(2, false), P(8, false), P(0, false), P(6, false), X, P(7, false), X, P(4, false), X, P(5, false)]) }, Hit(2, P(1, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(6, false), P(5, false)]), l2: PVec([P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false)]) }, Hit(1, P(1, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(6, false), T]), l2: PVec([P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false), P(5, false)]) }, Hit(2, P(1, false), Origin { isnfetch: false }))
+
+L1 victim is P(5, false)
+Have controlled victim 5 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(1, false), P(2, false), P(6, false)]), l2: PVec([P(5, false), P(1, false), T, P(2, false), P(8, false), P(0, false), P(6, false), X, P(7, false), X, P(4, false), X]) }, Hit(2, P(5, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(1, false), P(2, false), P(6, false)]), l2: PVec([P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false)]) }, Hit(1, P(5, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(1, false), P(2, false), P(6, false)]), l2: PVec([P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false)]) }, Hit(2, P(5, false), Origin { isnfetch: false }))
+
+=-=-=-=-=-=-=-=
+Phase L2; init state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(1, false), P(2, false), P(6, false)]), l2: PVec([P(5, false), P(1, false), T, P(2, false), P(8, false), P(0, false), P(6, false), X, P(7, false), X, P(4, false), X]) }
+Pathfinding...
+Found eviction in 4 accesses
+
+1: Hit(2, P(7, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(5, false), P(1, false), P(2, false)]), l2: PVec([P(7, false), P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), T, P(6, false), X, X, X, P(4, false)]) }
+
+2: Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(7, false), P(5, false), P(1, false)]), l2: PVec([P(0, false), P(5, false), P(1, false), P(7, false), P(2, false), P(8, false), X, P(6, false), X, T, X, P(4, false)]) }
+
+3: Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(7, false), P(5, false)]), l2: PVec([P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false), T]) }
+
+4: Miss(P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(2, false), P(0, false), P(7, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false)]) }
+
+Trying self-sync w/ pst
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(1, false), P(2, false), P(6, false)]), l2: PVec([P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false)]) }
+
+P(7, false): Hit(2, P(7, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(5, false), P(1, false), P(2, false)]), l2: PVec([P(7, false), P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(3, false), P(6, false), X, X, X, P(4, false)]) }
+
+P(0, false): Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(7, false), P(5, false), P(1, false)]), l2: PVec([P(0, false), P(5, false), P(1, false), P(7, false), P(2, false), P(8, false), X, P(6, false), X, P(3, false), X, P(4, false)]) }
+
+P(2, false): Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(7, false), P(5, false)]), l2: PVec([P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false), P(3, false)]) }
+
+P(3, false): Hit(2, P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(2, false), P(0, false), P(7, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false)]) }
+
+End states MATCH!
+
+Trying self-sync w/ l1 noise
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(1, false), P(2, false), P(6, false)]), l2: PVec([P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(7, false), P(6, false), X, X, X, P(4, false), P(3, false)]) }
+
+P(7, false): Hit(2, P(7, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(5, false), P(1, false), P(2, false)]), l2: PVec([P(7, false), P(5, false), P(1, false), P(0, false), P(2, false), P(8, false), P(3, false), P(6, false), X, X, X, P(4, false)]) }
+
+P(0, false): Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(7, false), P(5, false), P(1, false)]), l2: PVec([P(0, false), P(5, false), P(1, false), P(7, false), P(2, false), P(8, false), X, P(6, false), X, P(3, false), X, P(4, false)]) }
+
+P(2, false): Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(7, false), P(5, false)]), l2: PVec([P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false), P(3, false)]) }
+
+P(3, false): Hit(2, P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(2, false), P(0, false), P(7, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false)]) }
+
+End states MATCH!
+
+---------------------------
+Round 5; ist:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(3, false), P(2, false), P(0, false)]), l2: PVec([T, P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false)]) }
+pst:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(2, false), P(0, false), P(7, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false)]) }
+nst:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(3, false), P(2, false), P(0, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false)]) }
+
+L1 victim is P(7, false)
+Have controlled victim 7 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), T, P(3, false), P(2, false)]), l2: PVec([P(7, false), P(2, false), T, P(0, false), P(5, false), P(1, false), P(3, false), X, P(8, false), X, P(6, false), X]) }, Hit(2, P(7, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(3, false), P(2, false), P(0, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false)]) }, Hit(1, P(7, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), T, P(3, false), P(2, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(3, false), X, X, X, P(6, false), P(4, false)]) }, Hit(2, P(7, false), Origin { isnfetch: false }))
+
+L1 victim is P(0, false)
+Have controlled victim 0 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(7, false), T, P(3, false)]), l2: PVec([P(0, false), P(2, false), T, P(7, false), P(5, false), P(1, false), X, X, P(8, false), P(3, false), P(6, false), X]) }, Hit(2, P(0, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(7, false), P(3, false), P(2, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false)]) }, Hit(1, P(0, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(7, false), T, P(3, false)]), l2: PVec([P(0, false), P(2, false), P(1, false), P(7, false), P(5, false), P(8, false), X, X, X, P(3, false), P(6, false), P(4, false)]) }, Hit(2, P(0, false), Origin { isnfetch: false }))
+
+L1 victim is P(2, false)
+Have controlled victim 2 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(7, false), T]), l2: PVec([P(2, false), T, P(0, false), P(5, false), P(1, false), P(7, false), X, P(8, false), X, P(6, false), X, P(3, false)]) }, Hit(2, P(2, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(7, false), P(3, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false)]) }, Hit(1, P(2, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(7, false), T]), l2: PVec([P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false), P(3, false)]) }, Hit(2, P(2, false), Origin { isnfetch: false }))
+
+L1 victim is P(3, false)
+Have controlled victim 3 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(2, false), P(0, false), P(7, false)]), l2: PVec([P(3, false), P(2, false), T, P(0, false), P(5, false), P(1, false), P(7, false), X, P(8, false), X, P(6, false), X]) }, Hit(2, P(3, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(2, false), P(0, false), P(7, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false)]) }, Hit(1, P(3, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(2, false), P(0, false), P(7, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false)]) }, Hit(2, P(3, false), Origin { isnfetch: false }))
+
+=-=-=-=-=-=-=-=
+Phase L2; init state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(2, false), P(0, false), P(7, false)]), l2: PVec([P(3, false), P(2, false), T, P(0, false), P(5, false), P(1, false), P(7, false), X, P(8, false), X, P(6, false), X]) }
+Pathfinding...
+Found eviction in 4 accesses
+
+1: Hit(2, P(8, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), P(3, false), P(2, false), P(0, false)]), l2: PVec([P(8, false), P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), T, P(7, false), X, X, X, P(6, false)]) }
+
+2: Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(8, false), P(3, false), P(2, false)]), l2: PVec([P(1, false), P(3, false), P(2, false), P(8, false), P(0, false), P(5, false), X, P(7, false), X, T, X, P(6, false)]) }
+
+3: Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(1, false), P(8, false), P(3, false)]), l2: PVec([P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false), T]) }
+
+4: Miss(P(4, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(0, false), P(1, false), P(8, false)]), l2: PVec([P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false)]) }
+
+Trying self-sync w/ pst
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(2, false), P(0, false), P(7, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false)]) }
+
+P(8, false): Hit(2, P(8, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), P(3, false), P(2, false), P(0, false)]), l2: PVec([P(8, false), P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(4, false), P(7, false), X, X, X, P(6, false)]) }
+
+P(1, false): Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(8, false), P(3, false), P(2, false)]), l2: PVec([P(1, false), P(3, false), P(2, false), P(8, false), P(0, false), P(5, false), X, P(7, false), X, P(4, false), X, P(6, false)]) }
+
+P(0, false): Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(1, false), P(8, false), P(3, false)]), l2: PVec([P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false), P(4, false)]) }
+
+P(4, false): Hit(2, P(4, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(0, false), P(1, false), P(8, false)]), l2: PVec([P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false)]) }
+
+End states MATCH!
+
+Trying self-sync w/ l1 noise
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(2, false), P(0, false), P(7, false)]), l2: PVec([P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(8, false), P(7, false), X, X, X, P(6, false), P(4, false)]) }
+
+P(8, false): Hit(2, P(8, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), P(3, false), P(2, false), P(0, false)]), l2: PVec([P(8, false), P(3, false), P(2, false), P(1, false), P(0, false), P(5, false), P(4, false), P(7, false), X, X, X, P(6, false)]) }
+
+P(1, false): Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(8, false), P(3, false), P(2, false)]), l2: PVec([P(1, false), P(3, false), P(2, false), P(8, false), P(0, false), P(5, false), X, P(7, false), X, P(4, false), X, P(6, false)]) }
+
+P(0, false): Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(1, false), P(8, false), P(3, false)]), l2: PVec([P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false), P(4, false)]) }
+
+P(4, false): Hit(2, P(4, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(0, false), P(1, false), P(8, false)]), l2: PVec([P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false)]) }
+
+End states MATCH!
+
+---------------------------
+Round 6; ist:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(4, false), P(0, false), P(1, false)]), l2: PVec([T, P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false)]) }
+pst:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(0, false), P(1, false), P(8, false)]), l2: PVec([P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false)]) }
+nst:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(4, false), P(0, false), P(1, false)]), l2: PVec([P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false)]) }
+
+L1 victim is P(8, false)
+Have controlled victim 8 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), T, P(4, false), P(0, false)]), l2: PVec([P(8, false), P(0, false), T, P(1, false), P(3, false), P(2, false), P(4, false), X, P(5, false), X, P(7, false), X]) }, Hit(2, P(8, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), P(4, false), P(0, false), P(1, false)]), l2: PVec([P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false)]) }, Hit(1, P(8, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(8, false), T, P(4, false), P(0, false)]), l2: PVec([P(8, false), P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(4, false), X, X, X, P(7, false), P(6, false)]) }, Hit(2, P(8, false), Origin { isnfetch: false }))
+
+L1 victim is P(1, false)
+Have controlled victim 1 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(8, false), T, P(4, false)]), l2: PVec([P(1, false), P(0, false), T, P(8, false), P(3, false), P(2, false), X, X, P(5, false), P(4, false), P(7, false), X]) }, Hit(2, P(1, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(8, false), P(4, false), P(0, false)]), l2: PVec([P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false)]) }, Hit(1, P(1, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(8, false), T, P(4, false)]), l2: PVec([P(1, false), P(0, false), P(2, false), P(8, false), P(3, false), P(5, false), X, X, X, P(4, false), P(7, false), P(6, false)]) }, Hit(2, P(1, false), Origin { isnfetch: false }))
+
+L1 victim is P(0, false)
+Have controlled victim 0 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(1, false), P(8, false), T]), l2: PVec([P(0, false), T, P(1, false), P(3, false), P(2, false), P(8, false), X, P(5, false), X, P(7, false), X, P(4, false)]) }, Hit(2, P(0, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(1, false), P(8, false), P(4, false)]), l2: PVec([P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false)]) }, Hit(1, P(0, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(1, false), P(8, false), T]), l2: PVec([P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false), P(4, false)]) }, Hit(2, P(0, false), Origin { isnfetch: false }))
+
+L1 victim is P(4, false)
+Have controlled victim 4 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(0, false), P(1, false), P(8, false)]), l2: PVec([P(4, false), P(0, false), T, P(1, false), P(3, false), P(2, false), P(8, false), X, P(5, false), X, P(7, false), X]) }, Hit(2, P(4, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(0, false), P(1, false), P(8, false)]), l2: PVec([P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false)]) }, Hit(1, P(4, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(0, false), P(1, false), P(8, false)]), l2: PVec([P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false)]) }, Hit(2, P(4, false), Origin { isnfetch: false }))
+
+=-=-=-=-=-=-=-=
+Phase L2; init state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(0, false), P(1, false), P(8, false)]), l2: PVec([P(4, false), P(0, false), T, P(1, false), P(3, false), P(2, false), P(8, false), X, P(5, false), X, P(7, false), X]) }
+Pathfinding...
+Found eviction in 4 accesses
+
+1: Hit(2, P(5, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(4, false), P(0, false), P(1, false)]), l2: PVec([P(5, false), P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), T, P(8, false), X, X, X, P(7, false)]) }
+
+2: Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(5, false), P(4, false), P(0, false)]), l2: PVec([P(2, false), P(4, false), P(0, false), P(5, false), P(1, false), P(3, false), X, P(8, false), X, T, X, P(7, false)]) }
+
+3: Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(5, false), P(4, false)]), l2: PVec([P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false), T]) }
+
+4: Miss(P(6, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(5, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false)]) }
+
+Trying self-sync w/ pst
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(0, false), P(1, false), P(8, false)]), l2: PVec([P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false)]) }
+
+P(5, false): Hit(2, P(5, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(4, false), P(0, false), P(1, false)]), l2: PVec([P(5, false), P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(6, false), P(8, false), X, X, X, P(7, false)]) }
+
+P(2, false): Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(5, false), P(4, false), P(0, false)]), l2: PVec([P(2, false), P(4, false), P(0, false), P(5, false), P(1, false), P(3, false), X, P(8, false), X, P(6, false), X, P(7, false)]) }
+
+P(1, false): Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(5, false), P(4, false)]), l2: PVec([P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false), P(6, false)]) }
+
+P(6, false): Hit(2, P(6, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(5, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false)]) }
+
+End states MATCH!
+
+Trying self-sync w/ l1 noise
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(4, false), P(0, false), P(1, false), P(8, false)]), l2: PVec([P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(5, false), P(8, false), X, X, X, P(7, false), P(6, false)]) }
+
+P(5, false): Hit(2, P(5, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(4, false), P(0, false), P(1, false)]), l2: PVec([P(5, false), P(4, false), P(0, false), P(2, false), P(1, false), P(3, false), P(6, false), P(8, false), X, X, X, P(7, false)]) }
+
+P(2, false): Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(5, false), P(4, false), P(0, false)]), l2: PVec([P(2, false), P(4, false), P(0, false), P(5, false), P(1, false), P(3, false), X, P(8, false), X, P(6, false), X, P(7, false)]) }
+
+P(1, false): Hit(2, P(1, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(5, false), P(4, false)]), l2: PVec([P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false), P(6, false)]) }
+
+P(6, false): Hit(2, P(6, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(5, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false)]) }
+
+End states MATCH!
+
+---------------------------
+Round 7; ist:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(6, false), P(1, false), P(2, false)]), l2: PVec([T, P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false)]) }
+pst:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(5, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false)]) }
+nst:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(6, false), P(1, false), P(2, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false)]) }
+
+L1 victim is P(5, false)
+Have controlled victim 5 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), T, P(6, false), P(1, false)]), l2: PVec([P(5, false), P(1, false), T, P(2, false), P(4, false), P(0, false), P(6, false), X, P(3, false), X, P(8, false), X]) }, Hit(2, P(5, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), P(6, false), P(1, false), P(2, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false)]) }, Hit(1, P(5, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(5, false), T, P(6, false), P(1, false)]), l2: PVec([P(5, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(6, false), X, X, X, P(8, false), P(7, false)]) }, Hit(2, P(5, false), Origin { isnfetch: false }))
+
+L1 victim is P(2, false)
+Have controlled victim 2 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(5, false), T, P(6, false)]), l2: PVec([P(2, false), P(1, false), T, P(5, false), P(4, false), P(0, false), X, X, P(3, false), P(6, false), P(8, false), X]) }, Hit(2, P(2, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(5, false), P(6, false), P(1, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false)]) }, Hit(1, P(2, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(5, false), T, P(6, false)]), l2: PVec([P(2, false), P(1, false), P(0, false), P(5, false), P(4, false), P(3, false), X, X, X, P(6, false), P(8, false), P(7, false)]) }, Hit(2, P(2, false), Origin { isnfetch: false }))
+
+L1 victim is P(1, false)
+Have controlled victim 1 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(5, false), T]), l2: PVec([P(1, false), T, P(2, false), P(4, false), P(0, false), P(5, false), X, P(3, false), X, P(8, false), X, P(6, false)]) }, Hit(2, P(1, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(5, false), P(6, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false)]) }, Hit(1, P(1, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(1, false), P(2, false), P(5, false), T]), l2: PVec([P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false), P(6, false)]) }, Hit(2, P(1, false), Origin { isnfetch: false }))
+
+L1 victim is P(6, false)
+Have controlled victim 6 false
+Hit ist w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(5, false)]), l2: PVec([P(6, false), P(1, false), T, P(2, false), P(4, false), P(0, false), P(5, false), X, P(3, false), X, P(8, false), X]) }, Hit(2, P(6, false), Origin { isnfetch: false }))
+Hit pst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(5, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false)]) }, Hit(1, P(6, false), Origin { isnfetch: false }))
+Hit nst w/ vict:
+(H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(5, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false)]) }, Hit(2, P(6, false), Origin { isnfetch: false }))
+
+=-=-=-=-=-=-=-=
+Phase L2; init state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(5, false)]), l2: PVec([P(6, false), P(1, false), T, P(2, false), P(4, false), P(0, false), P(5, false), X, P(3, false), X, P(8, false), X]) }
+Pathfinding...
+Found eviction in 4 accesses
+
+1: Hit(2, P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(6, false), P(1, false), P(2, false)]), l2: PVec([P(3, false), P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), T, P(5, false), X, X, X, P(8, false)]) }
+
+2: Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(3, false), P(6, false), P(1, false)]), l2: PVec([P(0, false), P(6, false), P(1, false), P(3, false), P(2, false), P(4, false), X, P(5, false), X, T, X, P(8, false)]) }
+
+3: Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(3, false), P(6, false)]), l2: PVec([P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), P(8, false), T]) }
+
+4: Miss(P(7, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(2, false), P(0, false), P(3, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), P(8, false)]) }
+
+Trying self-sync w/ pst
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(5, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false)]) }
+
+P(3, false): Hit(2, P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(6, false), P(1, false), P(2, false)]), l2: PVec([P(3, false), P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(7, false), P(5, false), X, X, X, P(8, false)]) }
+
+P(0, false): Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(3, false), P(6, false), P(1, false)]), l2: PVec([P(0, false), P(6, false), P(1, false), P(3, false), P(2, false), P(4, false), X, P(5, false), X, P(7, false), X, P(8, false)]) }
+
+P(2, false): Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(3, false), P(6, false)]), l2: PVec([P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), P(8, false), P(7, false)]) }
+
+P(7, false): Hit(2, P(7, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(2, false), P(0, false), P(3, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), P(8, false)]) }
+
+End states MATCH!
+
+Trying self-sync w/ l1 noise
+
+Applying sequence to initial state:
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(6, false), P(1, false), P(2, false), P(5, false)]), l2: PVec([P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(3, false), P(5, false), X, X, X, P(8, false), P(7, false)]) }
+
+P(3, false): Hit(2, P(3, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(3, false), P(6, false), P(1, false), P(2, false)]), l2: PVec([P(3, false), P(6, false), P(1, false), P(0, false), P(2, false), P(4, false), P(7, false), P(5, false), X, X, X, P(8, false)]) }
+
+P(0, false): Hit(2, P(0, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(0, false), P(3, false), P(6, false), P(1, false)]), l2: PVec([P(0, false), P(6, false), P(1, false), P(3, false), P(2, false), P(4, false), X, P(5, false), X, P(7, false), X, P(8, false)]) }
+
+P(2, false): Hit(2, P(2, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(2, false), P(0, false), P(3, false), P(6, false)]), l2: PVec([P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), P(8, false), P(7, false)]) }
+
+P(7, false): Hit(2, P(7, false), Origin { isnfetch: false })
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([P(7, false), P(2, false), P(0, false), P(3, false)]), l2: PVec([P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false), P(8, false)]) }
+
+End states MATCH!
+
+---------------------------
+Round 8; found init state previously in round 2
+H2SState { l1i: PVec([X, X, X, X, X, X, X, X]), l1d: PVec([T, P(7, false), P(2, false), P(0, false)]), l2: PVec([T, P(7, false), P(2, false), P(1, false), P(0, false), P(6, false), P(4, false), P(3, false), X, X, X, P(5, false)]) }

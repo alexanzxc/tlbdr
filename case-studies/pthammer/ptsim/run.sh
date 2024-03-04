@@ -7,7 +7,7 @@ PIPE="/tmp/pth-pipe"
 RESDIR="results"
 ITERS=5
 
-test 0 -eq `cat /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages` && echo "No 1G hugepages available, aborting." && exit 1
+#test 0 -eq `cat /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages` && echo "No 1G hugepages available, aborting." && exit 1
 
 run_ptham () {
 	rm -f "$TMPFILE" "$PIPE"

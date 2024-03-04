@@ -37,13 +37,25 @@ static inline long usecdiff(struct timespec *t0, struct timespec *t)
 
 #define TBUFBASE ((void *)0x13370000000L)
 //#define TARGOFF (0x887L * PAGESZ)
-#define TARGOFF ((1 * _G)/2)  // This is 2GB
+#define TARGOFF ((1 * _G)/2)  // This is 512MB
 #define TARGET ((char *)TBUFBASE + TARGOFF)
-
+//added gdb3 flag
 static void *setup_evbuf(void)
 {	
+	void *_mapped_address;
+
 	printf("trying EVBUF!\n");
-	return mmap(NULL, EVBSZ, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE|MAP_ANONYMOUS|MAP_HUGETLB|MAP_HUGE_2MB|MAP_POPULATE, -1, 0);
+	_mapped_address = mmap((TBUFBASE+EVBSZ), EVBSZ, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_FIXED|MAP_PRIVATE|MAP_ANONYMOUS|MAP_HUGETLB|MAP_HUGE_2MB|MAP_POPULATE, -1, 0);
+
+	 // Print the mapped address and size
+    if (_mapped_address != MAP_FAILED) {
+        printf("Mapped address: %p\n", _mapped_address);
+        printf("Size: %ld bytes\n", (long) EVBSZ);
+    } else {
+        perror("Failed to mmap"); // Print why the mapping failed
+    }
+
+    return _mapped_address;
 }
 static void *setup_tbuf(void)
 {
@@ -66,18 +78,6 @@ static void *setup_tbuf(void)
     return mapped_address;
 }
 
-// calls for 4k pages :
-// static void *setup_evbuf(void)
-// {
-// 	return mmap(NULL, EVBSZ, PROT_READ, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
-// }
-// static void *setup_tbuf(void)
-// {
-// 	assert((char *)TBUFBASE + EVBSZ > TARGET);
-// 	return mmap(TBUFBASE, EVBSZ, PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
-// }
-
-//Maybe required for 2mb pages.
 //#define TLLINE(x) ((x) >> 12)
 #define TLLINE(x) ((x) >> 21)
 
@@ -98,13 +98,7 @@ static void *tlb_nexthit(void *cur, uintptr_t l1t, uintptr_t l2t)
 		c++;
 		// printf("DEBUG 1    %d\n", c);
 		p += PAGESZ;
-		// printf("P as uintptr_t in hex: %" PRIxPTR "\n", p);
-        // printf("P as uintptr_t in unsigned int: %" PRIuPTR "\n", p);
-		// printf("l1t as uintptr_t in hex: %" PRIxPTR "\n", l1t);
-        // printf("l1t as uintptr_t in unsigned int: %" PRIuPTR "\n", l1t);
-		// printf("l2t as uintptr_t in hex: %" PRIxPTR "\n", l2t);
-        // printf("l2t as uintptr_t in unsigned int: %" PRIuPTR "\n", l2t);
-	} while (TDL1(p) != l1t || TSL2(p) != l2t);
+		} while (TDL1(p) != l1t || TSL2(p) != l2t);
 
 	return (void *)p;
 }
@@ -541,77 +535,24 @@ static inline uint16_t nxr(uint16_t x)
 	return x;
 }
 
-
 #define SYNCPULSE (9)
-//#define DO_DELAY {rn = nxr(rn);}
-//#define DO_DELAY {rn = nxr(rn);rn = nxr(rn);}
 #define DO_DELAY {rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);}
-//#define DO_DELAY {rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);}
-//#define DO_DELAY {rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);}
-//#define DO_DELAY {rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);}
-//#define DO_DELAY {rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);}
-//#define DO_DELAY {rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);rn = nxr(rn);}
 
 static void do_send(void *tebuf)
 {
 	uint16_t rn = 0xace1;
-	//int v = 0;
-	//volatile char *targ = (volatile char *)TARGET;
-	//uintptr_t tl1 = TDL1((uintptr_t)TARGET);
-	//uintptr_t tl2 = TSL2((uintptr_t)TARGET);
 	uintptr_t tl1 = TDL1((uintptr_t)TARGET ^ (1 << 18));
 	uintptr_t tl2 = TSL2((uintptr_t)TARGET ^ (1 << 18));
 	volatile char *targ = (volatile char *)tlb_nexthit(tebuf, tl1, tl2);
 	fprintf(stderr, "Sending on target: %p\n%zd %zd\n", targ, tl1, tl2);
 
 	for (;;) {
-		//for (size_t i = 0; i < (1L << (SYNCPULSE + 1)); i++) {
-			//DO_DELAY;
-			//if (i & (1L << SYNCPULSE)) {
-				//*(volatile char *)(targ + (rn & 8));
-			//}
-		//}
-		//for (size_t i = 0; i < (1L << (SYNCPULSE)); i++) {
-			//DO_DELAY;
-			//if (i & (1L << SYNCPULSE)) {
-				//*(volatile char *)(targ + (rn & 8));
-			//}
-		//}
-
 		for (size_t i = 0;; i++) {
-		//for (size_t i = 0; i < (1L << (SYNCPULSE + 2)); i++) {
-			DO_DELAY;
-			//rn ^= 1;
-			//if (rand() & 1) {
-			//if (0) {
-			//if (1) {
-			//if (rn & 1) {
-			//if (i & (1L << 6)) {
-				*(volatile char *)(targ + (rn & 8));
-				//if (v > 0) {
-					//*(volatile char *)(targ + (rn & 8));
-					//continue;
-				//}
-				//if (v < 0) {
-					//v = rn & 1;
-				//}
 
-				//if (!v) {
-					//v = 1;
-					//*(volatile char *)(targ + (rn & 8));
-					//puts("OY\n");
-				//}
-				//continue;
-			//}
-			//} else if (v >= 0) {
-				//v = -1;
-			//}
-			//if (v) {
-				//puts("EY\n");
-				//*(volatile char *)(targ + (rn & 8));
-				//v = 0;
-			//}
-		}
+			DO_DELAY;
+			
+				*(volatile char *)(targ + (rn & 8));
+				}
 	}
 }
 
@@ -633,9 +574,6 @@ static void do_walkup(void *tebuf)
 
 static void do_recv(void *tebuf, const int oneshot, const int use_l2, const int use_ninja)
 {
-	//volatile char const *dummy = tlb_nexthit(tebuf, TDL1((uintptr_t)TARGET), TSL2((uintptr_t)TARGET));
-	//#define DUMMY() do { (void)*dummy; } while (0)
-	//#define DUMMY() do { (void)*(volatile char *)TARGET; } while (0)
 	#define DUMMY() do { } while (0)
 
 	void **njhead, **njcur;
@@ -670,9 +608,7 @@ static void do_recv(void *tebuf, const int oneshot, const int use_l2, const int 
 		printf("DEBUG 4\n");
 		fprintf(stderr, "%s mode:\n", evmode);
 		pprint(njhead, evpplen);
-		//fputs("Ready to recv...", stderr);
-		//(void)getchar();
-	}
+		}
 
 	do {
 		uint32_t tim[TIMSZ];
@@ -874,10 +810,6 @@ static void do_setprobe(void *tebuf, const int use_l2, const int use_ninja, int 
 		}
 	}
 	timbuf = calloc(SPROBEROUNDS, sizeof(*timbuf));
-
-	//fputs("Ready to probe...", stderr);
-	//(void)getchar();
-
 	size_t measit = NMEAS;
 
 	do {
@@ -900,8 +832,7 @@ static void do_setprobe(void *tebuf, const int use_l2, const int use_ninja, int 
 							} else {
 								/* HACK: time last access only */
 								ipchase(njcur, NINJA_L2_STEP, timbuf[rnd]);
-								//ipchase(njcur, NINJA_L2_STEP - 1, timbuf[rnd]);
-								//ipchase(njcur, 1, timbuf[rnd]);
+								
 							}
 						} else {
 							ipchase(njcur, TLB_PREPSZ, timbuf[rnd]);
@@ -947,10 +878,6 @@ static void do_splice_setprobe_ninja(void *tebuf, int ofd, int l1s, int l2s)
 	njcur = njhead;
 
 	timbuf = calloc(2 * SPROBEROUNDS, sizeof(*timbuf));
-
-	//fputs("Ready to probe...", stderr);
-	//(void)getchar();
-
 	size_t measit = NMEAS;
 
 	do {
@@ -996,9 +923,6 @@ static void do_splice_setprobe_naive(void *tebuf, int ofd, int l1s, int l2s)
 
 	timbuf = calloc(2 * SPROBEROUNDS, sizeof(*timbuf));
 
-	//fputs("Ready to probe...", stderr);
-	//(void)getchar();
-
 	size_t measit = NMEAS;
 
 	do {
@@ -1023,8 +947,6 @@ static void do_splice_setprobe_naive(void *tebuf, int ofd, int l1s, int l2s)
 		fprintf(stderr, "Probed for %lu us (%lu ns/rnd ; %f M/sec)\n", diff, diff*1000/SPROBEIT/SPROBEROUNDS, SPROBEIT*SPROBEROUNDS*1.0/diff);
 	} while (--measit);
 }
-
-
 
 #define HIST_BSZ (10)
 #define HIST_BNR (80)
@@ -1078,10 +1000,6 @@ static void do_hist(void *tebuf, const int use_l2, const int use_ninja)
 	fputs("Ready to probe...", stderr);
 	(void)getchar();
 
-	//struct timespec t0, t;
-	//long diff;
-	//clock_gettime(CLOCK_REALTIME, &t0);
-
 	do {
 		for (int rnd = 0; rnd < HIST_SAMPLES; rnd++) {
 			for (int set = 0; set < nsets; set++) {
@@ -1132,9 +1050,6 @@ static void do_hist(void *tebuf, const int use_l2, const int use_ninja)
 		memset(timbuf, 0, nsets * HIST_BNR * sizeof(*timbuf));
 	} while (--it);
 
-	//clock_gettime(CLOCK_REALTIME, &t);
-	//diff = usecdiff(&t0, &t);
-	//fprintf(stderr, "Probed for %lu us (%lu us/rnd)\n", diff, diff/NMEAS/PROBEROUNDS);
 }
 
 static void do_sethist(void *tebuf, const int use_l2, const int use_ninja, int l1s, int l2s)
@@ -1170,10 +1085,6 @@ static void do_sethist(void *tebuf, const int use_l2, const int use_ninja, int l
 
 	fputs("Ready to probe...", stderr);
 	(void)getchar();
-
-	//struct timespec t0, t;
-	//long diff;
-	//clock_gettime(CLOCK_REALTIME, &t0);
 
 	do {
 		for (int rnd = 0; rnd < HIST_SAMPLES; rnd++) {
@@ -1220,12 +1131,7 @@ static void do_sethist(void *tebuf, const int use_l2, const int use_ninja, int l
 		memset(timbuf, 0, HIST_BNR * sizeof(*timbuf));
 	} while (--it);
 
-	//clock_gettime(CLOCK_REALTIME, &t);
-	//diff = usecdiff(&t0, &t);
-	//fprintf(stderr, "Probed for %lu us (%lu us/rnd)\n", diff, diff/NMEAS/PROBEROUNDS);
 }
-
-
 
 const char USAGE[] = "usage:\n'%s -s' : run as sender\n'%s -r[nj12]' : run as receiver\n'%s -h' : print this message\n";
 

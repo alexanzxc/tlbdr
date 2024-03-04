@@ -82,8 +82,8 @@ int32_t tload(void **addr)
 	return ret;
 }
 
-#define PAGESZ (4096)
-#define EVBN (1L << 16)
+#define PAGESZ (2097152)
+#define EVBN (1L << 9)
 #define EVBSZ (EVBN * PAGESZ)
 
 #define _K (1024)
@@ -95,7 +95,7 @@ int32_t tload(void **addr)
 
 static void *setup_tlbevbuf(void)
 {
-	void *ret = mmap(NULL, EVBSZ, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
+	void *ret = mmap(NULL, EVBSZ, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE|MAP_HUGETLB|MAP_HUGE_2MB, -1, 0);
 	if (ret == MAP_FAILED) {
 		perror("TLBEVB fail!");
 		exit(1);
@@ -104,8 +104,8 @@ static void *setup_tlbevbuf(void)
 }
 static void *setup_cacheevbuf(void)
 {
-	void *ret = mmap(NULL, 1*_G, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_HUGETLB|MAP_HUGE_1GB|MAP_POPULATE, -1, 0);
-	//void *ret = mmap(NULL, 64*_M, PROT_READ, MAP_PRIVATE|MAP_ANONYMOUS|MAP_HUGETLB|MAP_HUGE_2MB|MAP_POPULATE, -1, 0);
+	//void *ret = mmap(NULL, 1*_G, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_HUGETLB|MAP_HUGE_1GB|MAP_POPULATE, -1, 0);
+	void *ret = mmap(NULL, 64*_M, PROT_READ, MAP_PRIVATE|MAP_ANONYMOUS|MAP_HUGETLB|MAP_HUGE_2MB|MAP_POPULATE, -1, 0);
 	//void *ret = mmap(NULL, 64*_M, PROT_READ, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
 	if (ret == MAP_FAILED) {
 		perror("CACHEEVB fail!");

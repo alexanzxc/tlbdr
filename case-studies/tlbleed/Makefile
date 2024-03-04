@@ -5,7 +5,7 @@ clear-max.txt clear-probe.txt inuse-max.txt inuse-probe.txt &: madtlb measure.sh
 	./measure.sh
 
 madtlb: madtlb.c
-	$(CC) -g -O0 -Wall -o $@ $<
+	$(CC) -ggdb3 -O0 -Wall -o $@ $<
 
 .PHONY: clean cleanall
 
