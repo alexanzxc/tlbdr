@@ -82,7 +82,7 @@ static void *setup_tbuf(void)
 #define TLLINE(x) ((x) >> 12)
 
 //change TDL1 from 0xf to 0x8 along with the above TLLINE change.
-static inline uintptr_t TDL1(uintptr_t va) {return TLLINE(va) & 0x08;}
+static inline uintptr_t TDL1(uintptr_t va) {return TLLINE(va) & 0x0f;}
 static inline uintptr_t TIL1(uintptr_t va) {return TLLINE(va) & 0x07;}
 static inline uintptr_t TSL2(uintptr_t va)
 {

@@ -40,7 +40,7 @@ echo "%%%%%%%%%%%"
 }
 
 echo "Measuring clear channel..."
-#madrun_max "$cmfile"
+madrun_max "$cmfile"
 madrun_probe "$cpfile"
 
 echo "Measuring in-use channel..."

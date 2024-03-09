@@ -66,4 +66,7 @@ why do we allocate the sizes we do ?
 
 ut of memory: Killed process 28983 (trigger) total-vm:10258884kB, anon-rss:10247808kB, file-rss:256kB, shmem-rss:0kB, UID:0 pgtables:20104kB oom_score_adj:200
 
+valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind_out.txt ./madtlb -rj2
+
+
 
