@@ -19,9 +19,9 @@
 
 // THRESHOLD TWEAKS
 
-#define TIMETHRESH_NAIVE (500)
-#define TIMETHRESH_NINJA (165)
-#define NINJA_MASK (0x1ff)
+#define TIMETHRESH_NAIVE (450)
+#define TIMETHRESH_NINJA (123)
+#define NINJA_MASK (0x1ffff)
 
 // END OF TWEAKS
 
@@ -98,13 +98,9 @@ static const int use_setsize = 12; // !! uarch dependency: tlb set size, set at 
 
 #define CACHELINE 64
 
+#define TLLINE(x) ((x) >> 21)
 
-
-
-
-#define TLLINE(x) ((x) >> 12)
-
-static inline uintptr_t TDL1(uintptr_t va) {return TLLINE(va) & 0xf;}
+static inline uintptr_t TDL1(uintptr_t va) {return TLLINE(va) & 0x8;}
 static inline uintptr_t TIL1(uintptr_t va) {return TLLINE(va) & 0x7;}
 static inline uintptr_t TSL2(uintptr_t va)
 {
