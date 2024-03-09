@@ -4,7 +4,7 @@
 # Pair of co-resident logical cores to run the experiments on
 # Recommended to isolate them from the rest of the scheduler w/ cpusets
 RECVCORE=0
-SENDCORE=2
+SENDCORE=1
 
 # END TWEAKABLES
 
@@ -21,26 +21,26 @@ function madit {
 
 function madrun_max {
 	madit -rn1 $1
-#	madit -rn2 $1
+	madit -rn2 $1
 	madit -rj1 $1
-#	madit -rj2 $1
+	madit -rj2 $1
 }
 
 function madrun_probe {
-	echo 1
+	echo "~~~~~~~"
 	madit "-Pn1 /dev/null 7 86" $1
-#	madit "-Pn2 /dev/null 7 86" $1
-echo 2
+	madit "-Pn2 /dev/null 7 86" $1
+echo "###########"
 	madit "-Pj1 /dev/null 7 86" $1
-#	madit "-Pj2 /dev/null 7 86" $1
-echo 3
+	madit "-Pj2 /dev/null 7 86" $1
+echo "^^^^^^^^^"
 	madit "-Sn /dev/null 7 86" $1
-echo 4
+echo "%%%%%%%%%%%"
 	madit "-Sj /dev/null 7 86" $1
 }
 
 echo "Measuring clear channel..."
-madrun_max "$cmfile"
+#madrun_max "$cmfile"
 madrun_probe "$cpfile"
 
 echo "Measuring in-use channel..."

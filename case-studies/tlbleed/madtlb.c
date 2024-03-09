@@ -79,11 +79,11 @@ static void *setup_tbuf(void)
 }
 
 //#define TLLINE(x) ((x) >> 12)
-#define TLLINE(x) ((x) >> 21)
+#define TLLINE(x) ((x) >> 12)
 
 //change TDL1 from 0xf to 0x8 along with the above TLLINE change.
-static inline uintptr_t TDL1(uintptr_t va) {return TLLINE(va) & 0x8;}
-static inline uintptr_t TIL1(uintptr_t va) {return TLLINE(va) & 0x7;}
+static inline uintptr_t TDL1(uintptr_t va) {return TLLINE(va) & 0x08;}
+static inline uintptr_t TIL1(uintptr_t va) {return TLLINE(va) & 0x07;}
 static inline uintptr_t TSL2(uintptr_t va)
 {
 	uintptr_t p = TLLINE(va);
@@ -96,7 +96,7 @@ static void *tlb_nexthit(void *cur, uintptr_t l1t, uintptr_t l2t)
 	int c = 0;
 	do {
 		c++;
-		// printf("DEBUG 1    %d\n", c);
+		//printf("DEBUG 1 %d\n", c);
 		p += PAGESZ;
 		} while (TDL1(p) != l1t || TSL2(p) != l2t);
 
@@ -114,12 +114,15 @@ static void *tlb_nexthit_l1(void *cur, uintptr_t l1t)
 
 static inline void tlb_evrun(void *base, uintptr_t targ, size_t n)
 {
+	int countme =0;
 	uintptr_t l1t = TDL1(targ);
 	uintptr_t l2t = TSL2(targ);
 	void *p = base;
-	printf("DEBUG 3\n");
+	//printf("DEBUG 3\n");
 	for (size_t i = 0; i < n; i++) {
+		//printf("count me! %d --- n equals : %ld\n",countme,n);
 		p = tlb_nexthit(p, l1t, l2t);
+		countme++;
 		//fprintf(stderr, "*%p\n", p);
 		//(void)tload((void **)p);
 		*(volatile char *)p;
@@ -242,9 +245,10 @@ static void **tlb_prepnaive(void *base, uintptr_t targ)
 #define NINJA_L2_STEP (4)
 static void **tlb_prepninja(void *base, uintptr_t targ)
 {
+	printf("tlb prep ninja called \n");
 	uintptr_t l1t = TDL1(targ);
 	uintptr_t l2t = TSL2(targ);
-	//fprintf(stderr, "%" PRIxPTR " %" PRIxPTR "\n", l1t, l2t);
+	fprintf(stderr, "%" PRIxPTR " %" PRIxPTR "\n", l1t, l2t);
 	void *p = base;
 	void **ev[9];
 	for (int i = 0; i < 9; i++) {
