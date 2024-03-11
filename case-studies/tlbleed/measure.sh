@@ -4,7 +4,7 @@
 # Pair of co-resident logical cores to run the experiments on
 # Recommended to isolate them from the rest of the scheduler w/ cpusets
 RECVCORE=0
-SENDCORE=1
+SENDCORE=2
 
 # END TWEAKABLES
 
@@ -28,15 +28,15 @@ function madrun_max {
 
 function madrun_probe {
 	echo "~~~~~~~"
-	madit "-Pn1 /dev/null 7 86" $1
-	madit "-Pn2 /dev/null 7 86" $1
+	madit "-Pn1 /dev/null 0 24" $1
+	madit "-Pn2 /dev/null 0 24" $1
 echo "###########"
-	madit "-Pj1 /dev/null 7 86" $1
-	madit "-Pj2 /dev/null 7 86" $1
+	madit "-Pj1 /dev/null 0 24" $1
+	madit "-Pj2 /dev/null 0 24" $1
 echo "^^^^^^^^^"
-	madit "-Sn /dev/null 7 86" $1
+	madit "-Sn /dev/null 0 24" $1
 echo "%%%%%%%%%%%"
-	madit "-Sj /dev/null 7 86" $1
+	madit "-Sj /dev/null 0 24" $1
 }
 
 echo "Measuring clear channel..."
@@ -46,7 +46,9 @@ madrun_probe "$cpfile"
 echo "Measuring in-use channel..."
 taskset -c $SENDCORE ./madtlb -s 2>> /dev/null &
 sendpid=$!
-
+sleep 3
+echo "noisy"
+echo $sendpid
 madrun_max "$umfile"
 madrun_probe "$upfile"
 

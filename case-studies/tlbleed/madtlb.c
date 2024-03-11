@@ -77,6 +77,23 @@ static void *setup_tbuf(void)
 
     return mapped_address;
 }
+static void *setup_sender_evbuf(void)
+{	
+	void *_mapped_address;
+
+	printf("trying SENDER EVBUF!\n");
+	_mapped_address = mmap((TBUFBASE+EVBSZ+TARGOFF), EVBSZ, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_FIXED|MAP_PRIVATE|MAP_ANONYMOUS|MAP_HUGETLB|MAP_HUGE_2MB|MAP_POPULATE, -1, 0);
+
+	 // Print the mapped address and size
+    if (_mapped_address != MAP_FAILED) {
+        printf("Mapped address: %p\n", _mapped_address);
+        printf("Size: %ld bytes\n", (long) EVBSZ);
+    } else {
+        perror("Failed to mmap"); // Print why the mapping failed
+    }
+
+    return _mapped_address;
+}
 
 //#define TLLINE(x) ((x) >> 12)
 #define TLLINE(x) ((x) >> 12)
@@ -98,6 +115,8 @@ static void *tlb_nexthit(void *cur, uintptr_t l1t, uintptr_t l2t)
 		c++;
 		//printf("DEBUG 1 %d\n", c);
 		p += PAGESZ;
+		//if (c>100)
+		//break;
 		} while (TDL1(p) != l1t || TSL2(p) != l2t);
 
 	return (void *)p;
@@ -222,7 +241,7 @@ static void **tlb_prepnaive(void *base, uintptr_t targ)
 {
 	uintptr_t l1t = TDL1(targ);
 	uintptr_t l2t = TSL2(targ);
-	//fprintf(stderr, "%" PRIxPTR " %" PRIxPTR "\n", l1t, l2t);
+	fprintf(stderr, "%" PRIxPTR " %" PRIxPTR "\n", l1t, l2t);
 	void *p = base;
 	void **ev[TLB_PREPSZ];
 	for (int i = 0; i < TLB_PREPSZ; i++) {
@@ -876,7 +895,7 @@ static void do_splice_setprobe_ninja(void *tebuf, int ofd, int l1s, int l2s)
 	uint32_t *timbuf;
 	long ninjacnt = -1;
 	const uintptr_t SPTARG = (uintptr_t)tlb_nexthit(TBUFBASE, l1s, l2s);
-
+	printf("Ninja Spliced L1+L2 probe\n");
 	fputs("Ninja Spliced L1+L2 probe\n", stderr);
 	njhead = tlb_prepninja_splice(TBUFBASE, SPTARG);
 	njcur = njhead;
@@ -921,7 +940,7 @@ static void do_splice_setprobe_naive(void *tebuf, int ofd, int l1s, int l2s)
 	void **cur;
 	uint32_t *timbuf;
 	const uintptr_t SPTARG = (uintptr_t)tlb_nexthit(TBUFBASE, l1s, l2s);
-
+	printf("Naive Spliced L1+L2 probe\n");
 	fputs("Naive Spliced L1+L2 probe\n", stderr);
 	cur = tlb_prepnaive_splice(TBUFBASE, SPTARG);
 
@@ -1145,10 +1164,12 @@ int main(int argc, char *argv[])
 		goto err_usage;
 	} else {
 		void *tebuf;
+		void *trgbuf;
+		void *send_tebuf;
 		int use_l2 = USE_L2;
 		int use_ninja = NINJA;
 
-		if (setup_tbuf() == MAP_FAILED) {
+		if ((trgbuf=setup_tbuf()) == MAP_FAILED) {
 			perror("Error mapping target buffer");
 			fprintf(stderr, "~~~~Error in mmap for setup_tbuf: %s\n", strerror(errno));
 			return 2;
@@ -1166,7 +1187,14 @@ int main(int argc, char *argv[])
 					break;
 				case 's':
 					if (!argv[1][2]) {
-						do_send(tebuf);
+						munmap(trgbuf,EVBSZ);
+						munmap(tebuf,EVBSZ);
+						if ((send_tebuf = setup_sender_evbuf()) == MAP_FAILED) {
+						fprintf(stderr, "###Error in mmap for sender setup_evbuf: %s\n", strerror(errno));
+						perror("Error setting up eviction buf for sender");
+						return 2;
+						}
+						do_send(send_tebuf);
 						break;
 					}
 					// fall through
