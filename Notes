@@ -68,5 +68,6 @@ ut of memory: Killed process 28983 (trigger) total-vm:10258884kB, anon-rss:10247
 
 valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind_out.txt ./madtlb -rj2
 
-
+set exec-wrapper taskset -c 0
+set args -Pn1 /dev/null 0 24 2>> newtest.txt
 
