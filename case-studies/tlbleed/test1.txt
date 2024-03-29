@@ -1,3 +1,0 @@
-Failed to mmap: Cannot allocate memory
-Error mapping target buffer: Invalid argument
-~~~~Error in mmap for setup_tbuf: Invalid argument

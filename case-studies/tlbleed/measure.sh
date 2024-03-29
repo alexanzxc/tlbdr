@@ -27,7 +27,7 @@ function madrun_max {
 }
 
 function madrun_probe {
-	echo "~~~~~~~"
+echo "~~~~~~~"
 	madit "-Pn1 /dev/null 0 24" $1
 	madit "-Pn2 /dev/null 0 24" $1
 echo "###########"

@@ -95,13 +95,18 @@ static void *setup_sender_evbuf(void)
     return _mapped_address;
 }
 
-//#define TLLINE(x) ((x) >> 12)
-#define TLLINE(x) ((x) >> 12)
+#define TLLINE(x) ((x) >> 21)
+#define TLLINE2(x) ((x) >> 12)
 
-//change TDL1 from 0xf to 0x8 along with the above TLLINE change.
 static inline uintptr_t TDL1(uintptr_t va) {return TLLINE(va) & 0x0f;}
 static inline uintptr_t TIL1(uintptr_t va) {return TLLINE(va) & 0x07;}
 static inline uintptr_t TSL2(uintptr_t va)
+{
+	uintptr_t p = TLLINE2(va);
+	return (p ^ (p >> 7)) & 0x7f;
+}
+
+static inline uintptr_t TSL2x(uintptr_t va)
 {
 	uintptr_t p = TLLINE(va);
 	return (p ^ (p >> 7)) & 0x7f;
@@ -118,6 +123,21 @@ static void *tlb_nexthit(void *cur, uintptr_t l1t, uintptr_t l2t)
 		//if (c>100)
 		//break;
 		} while (TDL1(p) != l1t || TSL2(p) != l2t);
+
+	return (void *)p;
+}
+
+static void *tlb_nexthitx(void *cur, uintptr_t l1t, uintptr_t l2t)
+{
+	uintptr_t p = (uintptr_t)cur;
+	int c = 0;
+	do {
+		c++;
+		//printf("DEBUG 1 %d\n", c);
+		p += PAGESZ;
+		//if (c>100)
+		//break;
+		} while (TDL1(p) != l1t || TSL2x(p) != l2t);
 
 	return (void *)p;
 }
@@ -809,7 +829,7 @@ static void do_setprobe(void *tebuf, const int use_l2, const int use_ninja, int 
 	void **njhead, **njcur;
 	uint32_t *timbuf;
 	long ninjacnt = -1;
-	const uintptr_t SPTARG = (uintptr_t)tlb_nexthit(TBUFBASE, l1s, l2s);
+	const uintptr_t SPTARG = (uintptr_t)tlb_nexthitx(TBUFBASE, l1s, l2s);
 
 	if (use_l2) {
 		if (use_ninja) {
@@ -894,7 +914,7 @@ static void do_splice_setprobe_ninja(void *tebuf, int ofd, int l1s, int l2s)
 	void **njhead, **njcur;
 	uint32_t *timbuf;
 	long ninjacnt = -1;
-	const uintptr_t SPTARG = (uintptr_t)tlb_nexthit(TBUFBASE, l1s, l2s);
+	const uintptr_t SPTARG = (uintptr_t)tlb_nexthitx(TBUFBASE, l1s, l2s);
 	printf("Ninja Spliced L1+L2 probe\n");
 	fputs("Ninja Spliced L1+L2 probe\n", stderr);
 	njhead = tlb_prepninja_splice(TBUFBASE, SPTARG);
@@ -939,7 +959,7 @@ static void do_splice_setprobe_naive(void *tebuf, int ofd, int l1s, int l2s)
 {
 	void **cur;
 	uint32_t *timbuf;
-	const uintptr_t SPTARG = (uintptr_t)tlb_nexthit(TBUFBASE, l1s, l2s);
+	const uintptr_t SPTARG = (uintptr_t)tlb_nexthitx(TBUFBASE, l1s, l2s);
 	printf("Naive Spliced L1+L2 probe\n");
 	fputs("Naive Spliced L1+L2 probe\n", stderr);
 	cur = tlb_prepnaive_splice(TBUFBASE, SPTARG);
