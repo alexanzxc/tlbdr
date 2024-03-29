@@ -20,7 +20,7 @@
 // THRESHOLD TWEAKS
 
 #define TIMETHRESH_NAIVE (450)
-#define TIMETHRESH_NINJA (123)
+#define TIMETHRESH_NINJA (108)
 #define NINJA_MASK (0x1ffff)
 
 // END OF TWEAKS
@@ -99,12 +99,13 @@ static const int use_setsize = 12; // !! uarch dependency: tlb set size, set at 
 #define CACHELINE 64
 
 #define TLLINE(x) ((x) >> 21)
+#define TLLINE2(x) ((x) >> 12)
 
 static inline uintptr_t TDL1(uintptr_t va) {return TLLINE(va) & 0x8;}
 static inline uintptr_t TIL1(uintptr_t va) {return TLLINE(va) & 0x7;}
 static inline uintptr_t TSL2(uintptr_t va)
 {
-	uintptr_t p = TLLINE(va);
+	uintptr_t p = TLLINE2(va);
 	return (p ^ (p >> 7)) & 0x7f;
 }
 
@@ -126,7 +127,7 @@ void allocate_buffer(int *fdarray, volatile char *firstpage_d)
             unsigned long long p = calc_pageno(set, i);
             target_d = (void *) (firstpage_d+p*PAGE);
     		char *ret;
-            fprintf(stderr, "i is : %d, set is %d , target_d is %p \n",i, set, target_d);
+            //fprintf(stderr, "i is : %d, set is %d , target_d is %p \n",i, set, target_d);
 //adding hugetlb and huge 2mb
     		ret = mmap((void *) target_d, PAGE, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_SHARED| MAP_FILE | MAP_FIXED | MAP_HUGE_2MB, fdarray[set], 0);
     		if(ret == MAP_FAILED) {
