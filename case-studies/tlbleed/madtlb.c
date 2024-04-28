@@ -32,7 +32,7 @@ static inline long usecdiff(struct timespec *t0, struct timespec *t)
 //change size to 4*_K for 4k pages
 #define PAGESZ (2*_M)
 //change to 1L<<18
-#define EVBN (1L << 9)
+#define EVBN (1L << 9)//512
 #define EVBSZ (EVBN * PAGESZ)//1GB
 
 #define TBUFBASE ((void *)0x13370000000L)
@@ -99,7 +99,6 @@ static void *setup_sender_evbuf(void)
 #define TLLINE2(x) ((x) >> 12)
 
 static inline uintptr_t TDL1(uintptr_t va) {return TLLINE(va) & 0x0f;}
-static inline uintptr_t TIL1(uintptr_t va) {return TLLINE(va) & 0x07;}
 static inline uintptr_t TSL2(uintptr_t va)
 {
 	uintptr_t p = TLLINE2(va);
