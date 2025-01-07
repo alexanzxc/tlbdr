@@ -681,10 +681,15 @@ int main(int argc, char *argv[])
      int goodwords=0;
      //for(;;) {
      ninja_sync(SET_DATA, SET_DATA+WORDLEN);
-     for (long att = 0; time <= 100000; att++) {
-
+     int x=0;
+     int y=0;
+     int z=0;
+     for (long att = 0; time <= 100; att++) {
     #ifdef USE_NINJA
          if (!(att & NINJA_MASK)) {
+            
+            //printf("if we print its the first z %d\n",z);
+            z++;
              ninja_sync(SET_DATA, SET_DATA+WORDLEN);
          }
     #endif
@@ -707,12 +712,16 @@ int main(int argc, char *argv[])
             //readword(SET_SYNC_R_READY_DATA, SET_SYNC_T_READY_DATA, SET_DATA, WORDLEN);
 
             writeword(SET_SYNC_R_READY_DATA, SET_SYNC_T_READY_DATA, SET_DATA, WORDLEN, responseword);
+               
             //time++;
         //}
 
         // read reply using readword() into word. return 0 if invalid data received or timeout.
         // if 0 is received, time does not tick and we simply ask for the same word again next time.
+        
         if((word = readword(SET_SYNC_R_READY_DATA, SET_SYNC_T_READY_DATA, SET_DATA, WORDLEN)) != 0) {
+            //printf("x is %d\n",x);
+            x++;
             uint64_t writetime = time;
             uint64_t frameno = (word >> 1) & 0x7f;
             uint64_t dataword = (word >> 8) & 0xffff;
@@ -722,6 +731,8 @@ int main(int argc, char *argv[])
             // same frame again.
             if((time & 0x7f) == frameno) {
                     // if we are in sync, everything went OK and we ask for the next frame.
+                    printf("y is %d\n",y);
+                    y++;
                     time++;
                     // we check if the data word is correct - unlikely to be wrong (because the crc passed)
                     // but of course the crc can accidentally be right if there's enough noise often enough.

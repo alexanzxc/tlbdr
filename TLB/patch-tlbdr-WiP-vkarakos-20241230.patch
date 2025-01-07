@@ -1,0 +1,1468 @@
+diff --git a/TLB/mmuctl/include/mem_access.h b/TLB/mmuctl/include/mem_access.h
+index 2e9ed43..4066bca 100644
+--- a/TLB/mmuctl/include/mem_access.h
++++ b/TLB/mmuctl/include/mem_access.h
+@@ -11,7 +11,8 @@ typedef u64 (*retf_t)(void);
+ 	the next address of the pointer chain.
+ */
+ static inline __attribute__((always_inline)) unsigned long get_exec_pointer_address(volatile unsigned long addr, volatile unsigned int offset){
+-    return addr + 4096 - (offset * 13);
++    //return addr + 4096 - (offset * 13);
++    return addr + (4096 * 512) - (offset * 22);
+ }
+ 
+ /*
+@@ -53,7 +54,8 @@ static inline __attribute__((always_inline)) unsigned long read_walk(volatile un
+ 	volatile unsigned long val;
+ 	__uaccess_begin_nospec();
+ 	asm volatile("mfence\nlfence\n" ::: "memory");
+-	val = *((volatile uint64_t *)&((volatile char *)(volatile void *)(addr + 4096 - (*(offset) * 13)))[4]);
++	//val = *((volatile uint64_t *)&((volatile char *)(volatile void *)(addr + 4096 - (*(offset) * 13)))[4]);
++	val = *((volatile uint64_t *)&((volatile char *)(volatile void *)(addr + (4096*512) - (*(offset) * 22)))[4]);
+ 	__uaccess_end();
+ 	
+ 	*(offset) += 1;
+@@ -84,7 +86,8 @@ static inline __attribute__((always_inline)) unsigned long execute_walk(volatile
+ 	volatile unsigned long val;
+ 	__uaccess_begin_nospec();
+ 	asm volatile("mfence\nlfence\n" ::: "memory");
+-	val = ((volatile retf_t)(addr + 4096 - (*(offset) * 13)))();
++	//val = ((volatile retf_t)(addr + 4096 - (*(offset) * 13)))();
++	val = ((volatile retf_t)(addr + (4096 * 512) - (*(offset) * 22)))();
+ 	__uaccess_end();
+ 
+ 	*(offset) += 1;
+diff --git a/TLB/mmuctl/include/permutation.h b/TLB/mmuctl/include/permutation.h
+index e2a5bb0..802cb10 100644
+--- a/TLB/mmuctl/include/permutation.h
++++ b/TLB/mmuctl/include/permutation.h
+@@ -34,8 +34,11 @@ void __attribute__((optimize("O0"))) detect_dtlb_vector(volatile unsigned int ve
+ int __attribute__((optimize("O0"))) itlb_vector_evicted(volatile struct experiment_info info);
+ void __attribute__((optimize("O0"))) detect_itlb_vector(volatile unsigned int vector_index, volatile int vector[], volatile unsigned int *agreement, volatile unsigned int set_mistakes_early[][tlb.split_component_instruction->ways], volatile unsigned int set_mistakes_late[][tlb.split_component_instruction->ways], int set_attempts[]);
+ 
+-void __attribute__((optimize("O0"))) walk_dtlb_chain(volatile struct experiment_info *info, volatile pte_t *pte);
+-void __attribute__((optimize("O0"))) walk_stlb_chain(volatile struct experiment_info *info, volatile pte_t *pte);
+-void __attribute__((optimize("O0"))) walk_itlb_chain(volatile struct experiment_info *info, volatile pte_t *pte);
++//void __attribute__((optimize("O0"))) walk_dtlb_chain(volatile struct experiment_info *info, volatile pte_t *pte);
++//void __attribute__((optimize("O0"))) walk_stlb_chain(volatile struct experiment_info *info, volatile pte_t *pte);
++//void __attribute__((optimize("O0"))) walk_itlb_chain(volatile struct experiment_info *info, volatile pte_t *pte);
++void __attribute__((optimize("O0"))) walk_dtlb_chain(volatile struct experiment_info *info, volatile pmd_t *pmd);
++void __attribute__((optimize("O0"))) walk_stlb_chain(volatile struct experiment_info *info, volatile pmd_t *pmd);
++void __attribute__((optimize("O0"))) walk_itlb_chain(volatile struct experiment_info *info, volatile pmd_t *pmd);
+ 
+ #endif
+diff --git a/TLB/mmuctl/include/pgtable.h b/TLB/mmuctl/include/pgtable.h
+index 4159d85..6130b64 100644
+--- a/TLB/mmuctl/include/pgtable.h
++++ b/TLB/mmuctl/include/pgtable.h
+@@ -20,18 +20,28 @@ struct ptwalk {
+ #endif
+ 	pud_t *pud;
+ 	pmd_t *pmd;
++    // do we need to remove the pte from here?
+ 	pte_t *pte;
+ 	unsigned valid;
+ };
+ 
++// do we need to change these two functions?
+ int resolve_va(size_t addr, struct ptwalk *entry, int lock);
+ void clear_nx(pgd_t *p);
+ 
++/*
+ static inline __attribute__((always_inline)) void switch_pages(pte_t *pte1, pte_t *pte2)
+ {
+ 	u64 ptev = pte1->pte;
+ 	pte1->pte = pte2->pte;
+ 	pte2->pte = ptev;
+ }
++*/
++static inline __attribute__((always_inline)) void switch_pages(pmd_t *pmd1, pmd_t *pmd2)
++{
++	u64 pmdv = pmd1->pmd;
++	pmd1->pmd = pmd2->pmd;
++	pmd2->pmd = pmdv;
++}
+ 
+ #endif
+diff --git a/TLB/mmuctl/source/address_generation.c b/TLB/mmuctl/source/address_generation.c
+index 9cb7039..4c79724 100644
+--- a/TLB/mmuctl/source/address_generation.c
++++ b/TLB/mmuctl/source/address_generation.c
+@@ -12,7 +12,8 @@ void get_address_set_stlb_xor(unsigned long addrs[], int stlb_target, int split_
+ 
+ 	unsigned long right_mask = 0;
+ 	for(i = 0; i < stlb_bits; i++){ 
+-		right_mask |= (0x1 << (i + 12));
++		//right_mask |= (0x1 << (i + 12));
++		right_mask |= (0x1 << (i + 21));
+ 	}
+ 
+ 	int max_outer = 1;
+@@ -29,13 +30,17 @@ void get_address_set_stlb_xor(unsigned long addrs[], int stlb_target, int split_
+ 	int index = 0;
+ 	for(it = 0; it < max_outer; it++){
+ 		for(it2 = 0; it2 < max_inner; it2++){
+-			unsigned long base = (((unsigned long)BASE >> (12 + 2 * stlb_bits)) + it) << (12 + 2 * stlb_bits);
+-			unsigned long right_side = ((((base >> (12 + split_tlb_bits)) + it2) << split_tlb_bits) + split_target) << 12;
+-			unsigned long left_side = ((right_side & right_mask) ^ (stlb_target << 12)) << stlb_bits;
++			//unsigned long base = (((unsigned long)BASE >> (12 + 2 * stlb_bits)) + it) << (12 + 2 * stlb_bits);
++			//unsigned long right_side = ((((base >> (12 + split_tlb_bits)) + it2) << split_tlb_bits) + split_target) << 12;
++			//unsigned long left_side = ((right_side & right_mask) ^ (stlb_target << 12)) << stlb_bits;
++			unsigned long base = (((unsigned long)BASE >> (21 + 2 * stlb_bits)) + it) << (21 + 2 * stlb_bits);
++			unsigned long right_side = ((((base >> (21 + split_tlb_bits)) + it2) << split_tlb_bits) + split_target) << 21;
++			unsigned long left_side = ((right_side & right_mask) ^ (stlb_target << 21)) << stlb_bits;
+ 			unsigned long final_addr = left_side | right_side;
+ 
+             //Skip addresses that are at the end of the page table as they are not safe to swap
+-			int difference = (final_addr - (unsigned long)BASE) / 4096;
++			//int difference = (final_addr - (unsigned long)BASE) / 4096;
++			int difference = (final_addr - (unsigned long)BASE) / 2097152;
+ 			if(difference % 512 == 511){
+ 				continue;
+ 			}
+@@ -78,13 +83,17 @@ void get_address_set_stlb_lin(unsigned long addrs[], int stlb_target, int stlb_b
+ 
+ 	int index = 0;
+ 	for(it = 0; it < max_outer; it++){
+-		unsigned long base = ((unsigned long)BASE >> (12 + 2 * stlb_bits)) << (12 + 2 * stlb_bits);
+-		unsigned long right_side = ((base >> 12) + stlb_target) << 12;
+-		unsigned long left_side = ((base >> (12 + stlb_bits)) + it) << (12 + stlb_bits);
++		//unsigned long base = ((unsigned long)BASE >> (12 + 2 * stlb_bits)) << (12 + 2 * stlb_bits);
++		//unsigned long right_side = ((base >> 12) + stlb_target) << 12;
++		//unsigned long left_side = ((base >> (12 + stlb_bits)) + it) << (12 + stlb_bits);
++		unsigned long base = ((unsigned long)BASE >> (21 + 2 * stlb_bits)) << (21 + 2 * stlb_bits);
++		unsigned long right_side = ((base >> 21) + stlb_target) << 21;
++		unsigned long left_side = ((base >> (21 + stlb_bits)) + it) << (21 + stlb_bits);
+ 		unsigned long final_addr = left_side | right_side;
+ 
+         //Skip addresses that are at the end of the page table as they are not safe to swap
+-		int difference = (final_addr - (unsigned long)BASE) / 4096;
++		//int difference = (final_addr - (unsigned long)BASE) / 4096;
++		int difference = (final_addr - (unsigned long)BASE) / 2097152;
+ 		if(difference % 512 == 511){
+ 			continue;
+ 		}
+diff --git a/TLB/mmuctl/source/hash_functions.c b/TLB/mmuctl/source/hash_functions.c
+index 7c2fdb1..f011fef 100644
+--- a/TLB/mmuctl/source/hash_functions.c
++++ b/TLB/mmuctl/source/hash_functions.c
+@@ -20,7 +20,8 @@ int test_lin_stlb(int set_bits, int ways){
+ 
+ 	volatile unsigned long left_mask = 0;
+ 	for(i = 0; i < set_bits; i++){
+-		left_mask |= (0x1 << (i + 12 + set_bits));
++		//left_mask |= (0x1 << (i + 12 + set_bits));
++		left_mask |= (0x1 << (i + 21 + set_bits));
+ 	}
+ 
+ 	//Sample a random sTLB set
+@@ -39,7 +40,8 @@ int test_lin_stlb(int set_bits, int ways){
+ 
+ 		//Compute next address that maps to the same set, according to
+ 		//a linear hash function assumption with 'sets' sets
+-		addrs[i] = (void *)BASE + ((target_set + offset * sets) * 4096);
++		//addrs[i] = (void *)BASE + ((target_set + offset * sets) * 4096);
++		addrs[i] = (void *)BASE + ((target_set + offset * sets) * 4096*512);
+ 
+ 		if(unsafe_address(addrs[i])){
+ 			printk("Need more addresses to test for hash function. Please increase FREEDOM_OF_BITS or decrease number of sets/number of ways.\n");
+@@ -47,13 +49,15 @@ int test_lin_stlb(int set_bits, int ways){
+ 		}
+ 
+ 		//Perform page walk for this address
++        // vkarakos: should we do something here?
+ 		resolve_va(addrs[i], &walks[i], 0);
+ 		clear_nx(walks[i].pgd);
+ 
+ 		//If this address has its PTE at the end of a page table, we cannot
+ 		//swap as the next address in memory may not constitute a PTE!
+ 		//So skip this address
+-		if(((addrs[i] - (unsigned long)BASE) / 4096) % 512 == 511){
++		//if(((addrs[i] - (unsigned long)BASE) / 4096) % 512 == 511){
++		if(((addrs[i] - (unsigned long)BASE) / (4096*512)) % (512*512) == (511*512)){
+ 		 	i--;
+ 		}else if(i > 0){
+ 			//Set up pointer chains
+@@ -62,7 +66,8 @@ int test_lin_stlb(int set_bits, int ways){
+ 
+ 			write_instruction_chain(addrs[i - 1], &iteration, addrs[i]);
+ 			iteration = iteration - 1;
+-			write_instruction_chain(addrs[i - 1] + 4096, &iteration, 0);
++			//write_instruction_chain(addrs[i - 1] + 4096, &iteration, 0);
++			write_instruction_chain(addrs[i - 1] + 4096*512, &iteration, 0);
+ 		}
+ 	}
+ 
+@@ -71,7 +76,8 @@ int test_lin_stlb(int set_bits, int ways){
+ 	//addrs[ways] + 4096 --> 0
+ 	write_instruction_chain(addrs[ways], &iteration, addrs[0]);
+ 	iteration = iteration - 1;
+-	write_instruction_chain(addrs[ways] + 4096, &iteration, 0);
++	//write_instruction_chain(addrs[ways] + 4096, &iteration, 0);
++	write_instruction_chain(addrs[ways] + 4096*512, &iteration, 0);
+ 
+ 	iteration = 1;
+ 
+@@ -89,13 +95,15 @@ int test_lin_stlb(int set_bits, int ways){
+ 	for(i = 0; i < ways + 1; i++){
+ 		p = read_walk(p, &iteration);
+ 		//Desync TLB
+-		switch_pages(walks[i].pte, walks[i].pte + 1);
++		//switch_pages(walks[i].pte, walks[i].pte + 1);
++		switch_pages(walks[i].pmd, walks[i].pmd + 1);
+ 	}
+ 
+ 	int miss = 0;
+ 	iteration = 1;
+ 
+ 	//Does fetching them again result in iTLB hits?
++    // vkarakos: unclear what we sould do here -- alter the code to involve only the dTLB?
+ 	for(i = 0; i < ways + 1; i++){
+ 		if(p){
+ 			p = execute_walk(p, &iteration);
+@@ -104,7 +112,8 @@ int test_lin_stlb(int set_bits, int ways){
+ 		}
+ 
+ 		//Restore page table
+-		switch_pages(walks[i].pte, walks[i].pte + 1);
++		//switch_pages(walks[i].pte, walks[i].pte + 1);
++		switch_pages(walks[i].pmd, walks[i].pmd + 1);
+ 	}
+ 
+ 	if(!p){
+@@ -137,7 +146,8 @@ int test_xor_stlb(int set_bits, int ways){
+ 
+ 	volatile unsigned long left_mask = 0;
+ 	for(i = 0; i < set_bits; i++){
+-		left_mask |= (0x1 << (i + 12 + set_bits));
++		//left_mask |= (0x1 << (i + 12 + set_bits));
++		left_mask |= (0x1 << (i + 21 + set_bits));
+ 	}
+ 
+ 	//Sample a random sTLB set
+@@ -156,8 +166,10 @@ int test_xor_stlb(int set_bits, int ways){
+ 
+ 		//Compute next address that maps to the same set, according to
+ 		//an XOR hash function assumption with 'sets' sets
+-		base = (((unsigned long)BASE >> (12 + set_bits)) + offset) << (12 + set_bits);
+-		right_side = ((base & left_mask) ^ (target_set << (12 + set_bits))) >> set_bits;
++		//base = (((unsigned long)BASE >> (12 + set_bits)) + offset) << (12 + set_bits);
++		//right_side = ((base & left_mask) ^ (target_set << (12 + set_bits))) >> set_bits;
++		base = (((unsigned long)BASE >> (21 + set_bits)) + offset) << (21 + set_bits);
++		right_side = ((base & left_mask) ^ (target_set << (21 + set_bits))) >> set_bits;
+ 
+ 		addrs[i] = base | right_side;
+ 
+@@ -167,13 +179,15 @@ int test_xor_stlb(int set_bits, int ways){
+ 		}
+ 
+ 		//Perform page walk for this address
++        // vkarakos: should we do something here?
+ 		resolve_va(addrs[i], &walks[i], 0);
+ 		clear_nx(walks[i].pgd);
+ 
+ 		//If this address has its PTE at the end of a page table, we cannot
+ 		//swap as the next address in memory may not constitute a PTE!
+ 		//So skip this address
+-		if(((addrs[i] - (unsigned long)BASE) / 4096) % 512 == 511){
++		//if(((addrs[i] - (unsigned long)BASE) / 4096) % 512 == 511){
++		if(((addrs[i] - (unsigned long)BASE) / (4096*512)) % (512*512) == (511*512)){
+ 		 	i--;
+ 		}else if(i > 0){
+ 			//Set up pointer chains
+@@ -182,7 +196,8 @@ int test_xor_stlb(int set_bits, int ways){
+ 
+ 			write_instruction_chain(addrs[i - 1], &iteration, addrs[i]);
+ 			iteration = iteration - 1;
+-			write_instruction_chain(addrs[i - 1] + 4096, &iteration, 0);
++			//write_instruction_chain(addrs[i - 1] + 4096, &iteration, 0);
++			write_instruction_chain(addrs[i - 1] + (4096*512), &iteration, 0);
+ 		}
+ 	}
+ 
+@@ -191,7 +206,8 @@ int test_xor_stlb(int set_bits, int ways){
+ 	//addrs[ways] + 4096 --> 0
+ 	write_instruction_chain(addrs[ways], &iteration, addrs[0]);
+ 	iteration = iteration - 1;
+-	write_instruction_chain(addrs[ways] + 4096, &iteration, 0);
++	//write_instruction_chain(addrs[ways] + 4096, &iteration, 0);
++	write_instruction_chain(addrs[ways] + (4096*512), &iteration, 0);
+ 
+ 	iteration = 1;
+ 	volatile unsigned long p = addrs[0];
+@@ -203,16 +219,19 @@ int test_xor_stlb(int set_bits, int ways){
+ 
+ 	claim_cpu();
+ 
+-	//Prime ways + 1 PTEs in the TLB
++	////Prime ways + 1 PTEs in the TLB
++	//Prime ways + 1 PMDs in the TLB
+ 	for(i = 0; i < ways + 1; i++){
+ 		p = read_walk(p, &iteration);
+ 		//Desync TLB
+-		switch_pages(walks[i].pte, walks[i].pte + 1);
++		//switch_pages(walks[i].pte, walks[i].pte + 1);
++		switch_pages(walks[i].pmd, walks[i].pmd + 1);
+ 	}
+ 
+ 	iteration = 1;
+ 
+ 	//Does fetching them again result in iTLB hits?
++    // vkarakos: unclear what we sould do here -- alter the code to involve only the dTLB?
+ 	for(i = 0; i < ways + 1; i++){
+ 		if(p){
+ 			p = execute_walk(p, &iteration);
+@@ -221,7 +240,8 @@ int test_xor_stlb(int set_bits, int ways){
+ 		}
+ 
+ 		//Restore page table
+-		switch_pages(walks[i].pte, walks[i].pte + 1);
++		//switch_pages(walks[i].pte, walks[i].pte + 1);
++		switch_pages(walks[i].pmd, walks[i].pmd + 1);
+ 	}
+ 
+ 	if(!p){
+@@ -284,12 +304,14 @@ int test_lin_itlb_stlb_lin(int set_bits, int ways){
+ 	for(i = 0; i < ways + 1 + 4 * tlb.shared_component->ways - 1; i++){
+ 		write_instruction_chain(addrs[i], &iteration, addrs[i + 1]);
+ 		iteration = iteration - 1;
+-		write_instruction_chain(addrs[i] + 4096, &iteration, 0);
++		//write_instruction_chain(addrs[i] + 4096, &iteration, 0);
++		write_instruction_chain(addrs[i] + (4096*512), &iteration, 0);
+ 	}
+ 
+ 	write_instruction_chain(addrs[ways + 1 + 4 * tlb.shared_component->ways - 1], &iteration, addrs[0]);
+ 	iteration = iteration - 1;
+-	write_instruction_chain(addrs[ways + 1 + 4 * tlb.shared_component->ways - 1] + 4096, &iteration, 0);
++	//write_instruction_chain(addrs[ways + 1 + 4 * tlb.shared_component->ways - 1] + 4096, &iteration, 0);
++	write_instruction_chain(addrs[ways + 1 + 4 * tlb.shared_component->ways - 1] + (4096*512), &iteration, 0);
+ 
+ 	//Perform page walks for the first ways + 1 addresses
+ 	volatile struct ptwalk walks[ways + 1];
+@@ -314,7 +336,8 @@ int test_lin_itlb_stlb_lin(int set_bits, int ways){
+ 	for(i = 0; i < ways + 1; i++){
+ 		p = execute_walk(p, &iteration);
+ 		//Desync TLB
+-		switch_pages(walks[i].pte, walks[i].pte + 1);
++		//switch_pages(walks[i].pte, walks[i].pte + 1);
++		switch_pages(walks[i].pmd, walks[i].pmd + 1);
+ 	}
+ 
+ 	//Washing the sTLB (both sets)
+@@ -334,7 +357,8 @@ int test_lin_itlb_stlb_lin(int set_bits, int ways){
+ 		}
+ 
+ 		//Restore page table
+-		switch_pages(walks[i].pte, walks[i].pte + 1);
++		//switch_pages(walks[i].pte, walks[i].pte + 1);
++		switch_pages(walks[i].pmd, walks[i].pmd + 1);
+ 	}
+ 
+ 	if(!p){
+@@ -397,18 +421,21 @@ int test_lin_dtlb_stlb_lin(int set_bits, int ways){
+ 	for(i = 0; i < ways + 1 + 4 * tlb.shared_component->ways - 1; i++){
+ 		write_instruction_chain(addrs[i], &iteration, addrs[i + 1]);
+ 		iteration = iteration - 1;
+-		write_instruction_chain(addrs[i] + 4096, &iteration, 0);
++		//write_instruction_chain(addrs[i] + 4096, &iteration, 0);
++		write_instruction_chain(addrs[i] + (4096*512), &iteration, 0);
+ 	}
+ 
+ 	write_instruction_chain(addrs[ways + 1 + 4 * tlb.shared_component->ways - 1], &iteration, addrs[0]);
+ 	iteration = iteration - 1;
+-	write_instruction_chain(addrs[ways + 1 + 4 * tlb.shared_component->ways - 1] + 4096, &iteration, 0);
++	//write_instruction_chain(addrs[ways + 1 + 4 * tlb.shared_component->ways - 1] + 4096, &iteration, 0);
++	write_instruction_chain(addrs[ways + 1 + 4 * tlb.shared_component->ways - 1] + (4096*512), &iteration, 0);
+ 
+ 	//Perform page walks for the first ways + 1 addresses
+ 	volatile struct ptwalk walks[ways + 1];
+ 	volatile int values[ways + 1];
+ 
+ 	for(i = 0; i < ways + 1; i++){
++        // vkarakos: should we do something here?
+ 		resolve_va(addrs[i], &walks[i], 0);
+ 		clear_nx(walks[i].pgd);
+ 	}
+@@ -423,11 +450,12 @@ int test_lin_dtlb_stlb_lin(int set_bits, int ways){
+ 
+ 	claim_cpu();
+ 
+-	//Prime the dTLB (and sTLB) with ways + 1 PTEs
++	////Prime the dTLB (and sTLB) with ways + 1 PTEs
++	//Prime the dTLB (and sTLB) with ways + 1 PMDs
+ 	for(i = 0; i < ways + 1; i++){
+ 		p = read_walk(p, &iteration);
+ 		//Desync TLB
+-		switch_pages(walks[i].pte, walks[i].pte + 1);
++		switch_pages(walks[i].pmd, walks[i].pmd + 1);
+ 	}
+ 
+ 	//Washing the sTLB (both sets)
+@@ -438,7 +466,8 @@ int test_lin_dtlb_stlb_lin(int set_bits, int ways){
+ 	volatile int miss = 0;
+ 	iteration = 1;
+ 
+-	//Are the ways + 1 PTEs all cached?
++	////Are the ways + 1 PTEs all cached?
++	//Are the ways + 1 PMDs all cached?
+ 	for(i = 0; i < ways + 1; i++){
+ 		if(p){
+ 			p = read_walk(p, &iteration);
+@@ -447,7 +476,8 @@ int test_lin_dtlb_stlb_lin(int set_bits, int ways){
+ 		}
+ 
+ 		//Restore page table
+-		switch_pages(walks[i].pte, walks[i].pte + 1);
++		//switch_pages(walks[i].pte, walks[i].pte + 1);
++		switch_pages(walks[i].pmd, walks[i].pmd + 1);
+ 	}
+ 
+ 	if(!p){
+@@ -505,12 +535,14 @@ int test_lin_itlb_stlb_xor(int set_bits, int ways){
+ 	for(i = 0; i < ways + (2 * tlb.shared_component->ways); i++){
+ 		write_instruction_chain(addrs[i], &iteration, addrs[i + 1]);
+ 		iteration = iteration - 1;
+-		write_instruction_chain(addrs[i] + 4096, &iteration, 0);
++		//write_instruction_chain(addrs[i] + 4096, &iteration, 0);
++		write_instruction_chain(addrs[i] + (4096*512), &iteration, 0);
+ 	}
+ 
+ 	write_instruction_chain(addrs[ways + (2 * tlb.shared_component->ways)], &iteration, addrs[0]);
+ 	iteration = iteration - 1;
+-	write_instruction_chain(addrs[ways + (2 * tlb.shared_component->ways)] + 4096, &iteration, 0);
++	//write_instruction_chain(addrs[ways + (2 * tlb.shared_component->ways)] + 4096, &iteration, 0);
++	write_instruction_chain(addrs[ways + (2 * tlb.shared_component->ways)] + (4096*512), &iteration, 0);
+ 
+ 	//Perform page walks for the first ways + 1 addresses
+ 	volatile struct ptwalk walks[ways + 1];
+@@ -533,7 +565,8 @@ int test_lin_itlb_stlb_xor(int set_bits, int ways){
+ 	for(i = 0; i < ways + 1; i++){
+ 		p = execute_walk(p, &iteration);
+ 		//Desync TLB
+-		switch_pages(walks[i].pte, walks[i].pte + 1);
++		//switch_pages(walks[i].pte, walks[i].pte + 1);
++		switch_pages(walks[i].pmd, walks[i].pmd + 1);
+ 	}
+ 
+ 	//Wash the sTLB
+@@ -553,7 +586,8 @@ int test_lin_itlb_stlb_xor(int set_bits, int ways){
+ 		}
+ 
+ 		//Restore page table
+-		switch_pages(walks[i].pte, walks[i].pte + 1);
++		//switch_pages(walks[i].pte, walks[i].pte + 1);
++		switch_pages(walks[i].pmd, walks[i].pmd + 1);
+ 	}
+ 
+ 	if(!p){
+@@ -611,18 +645,20 @@ int test_lin_dtlb_stlb_xor(int set_bits, int ways){
+ 	for(i = 0; i < ways + (2 * tlb.shared_component->ways); i++){
+ 		write_instruction_chain(addrs[i], &iteration, addrs[i + 1]);
+ 		iteration = iteration - 1;
+-		write_instruction_chain(addrs[i] + 4096, &iteration, 0);
++		//write_instruction_chain(addrs[i] + 4096, &iteration, 0);
++		write_instruction_chain(addrs[i] + (4096*512), &iteration, 0);
+ 	}
+ 
+ 	write_instruction_chain(addrs[ways + (2 * tlb.shared_component->ways)], &iteration, addrs[0]);
+ 	iteration = iteration - 1;
+-	write_instruction_chain(addrs[ways + (2 * tlb.shared_component->ways)] + 4096, &iteration, 0);
++	write_instruction_chain(addrs[ways + (2 * tlb.shared_component->ways)] + (4096*512), &iteration, 0);
+ 
+ 	//Perform page walks for the first ways + 1 addresses
+ 	volatile struct ptwalk walks[ways + 1];
+ 	volatile int values[ways + 1];
+ 
+ 	for(i = 0; i < ways + 1; i++){
++        // vkarakos: should we do something here?
+ 		resolve_va(addrs[i], &walks[i], 0);
+ 		clear_nx(walks[i].pgd);
+ 	}
+@@ -636,10 +672,12 @@ int test_lin_dtlb_stlb_xor(int set_bits, int ways){
+ 	claim_cpu();
+ 
+ 	//Prime the iTLB (and sTLB) with ways + 1 PTEs
++    // vkarakos: unclear what we sould do here -- alter the code to involve only the dTLB?
+ 	for(i = 0; i < ways + 1; i++){
+ 		p = read_walk(p, &iteration);
+ 		//Desync TLB
+-		switch_pages(walks[i].pte, walks[i].pte + 1);
++		//switch_pages(walks[i].pte, walks[i].pte + 1);
++		switch_pages(walks[i].pmd, walks[i].pmd + 1);
+ 	}
+ 
+ 	//Wash the sTLB
+@@ -650,7 +688,8 @@ int test_lin_dtlb_stlb_xor(int set_bits, int ways){
+ 	volatile int miss = 0;
+ 	iteration = 1;
+ 
+-	//Are the ways + 1 PTEs cached?
++	////Are the ways + 1 PTEs cached?
++	//Are the ways + 1 PMDs cached?
+ 	for(i = 0; i < ways + 1; i++){
+ 		if(p){
+ 			p = read_walk(p, &iteration);
+@@ -659,7 +698,7 @@ int test_lin_dtlb_stlb_xor(int set_bits, int ways){
+ 		}
+ 
+ 		//Restore page table
+-		switch_pages(walks[i].pte, walks[i].pte + 1);
++		switch_pages(walks[i].pmd, walks[i].pmd + 1);
+ 	}
+ 
+ 	if(!p){
+diff --git a/TLB/mmuctl/source/helpers.c b/TLB/mmuctl/source/helpers.c
+index 0160734..e2db441 100644
+--- a/TLB/mmuctl/source/helpers.c
++++ b/TLB/mmuctl/source/helpers.c
+@@ -132,7 +132,8 @@ void spirt(u64 *p){
+ 	Should not happen.
+ */
+ int unsafe_address(unsigned long addr){
+-	unsigned long max = (unsigned long)BASE + (4096 * set_bits_to_sets(FREEDOM_OF_BITS));
++	//unsigned long max = (unsigned long)BASE + (4096 * set_bits_to_sets(FREEDOM_OF_BITS));
++	unsigned long max = (unsigned long)BASE + ((4096*512) * set_bits_to_sets(FREEDOM_OF_BITS));
+ 	if(addr >= max || addr < (unsigned long)BASE){
+ 		return 1;
+ 	}
+@@ -141,20 +142,21 @@ int unsafe_address(unsigned long addr){
+ }
+ 
+ /*
+-	Returns 0 - 4096 in a randomized order.
++	//Returns 0 - 4096 in a randomized order.
++	Returns 0 - 4096*512 in a randomized order.
+ */
+ void get_random_pcids(unsigned long pcids[]){
+ 	int i;
+-	for(i = 0; i < 4096; i++){
++	for(i = 0; i < (4096*512); i++){
+ 		pcids[i] = i;
+ 	}
+ 
+-	for(i = 0; i < 4096; i++){
++	for(i = 0; i < (4096*512); i++){
+ 		unsigned long choice;
+ 		get_random_bytes(&choice, sizeof(choice));
+ 		unsigned long tmp = pcids[i];
+-		pcids[i] = pcids[choice % 4096];
+-		pcids[choice % 4096] = tmp;
++		pcids[i] = pcids[choice % (4096*512)];
++		pcids[choice % (4096*512)] = tmp;
+ 	}
+ }
+ 
+@@ -166,10 +168,12 @@ int compute_xor_set(unsigned long addr, int set_bits){
+ 	unsigned int i;
+ 	unsigned long mask = 0;
+ 	for(i = 0; i < set_bits; i++){
+-		mask |= (0x1 << (i + 12));
++		//mask |= (0x1 << (i + 12));
++		mask |= (0x1 << (i + 21));
+ 	}
+ 
+-	return ((addr & mask) ^ ((addr & (mask << set_bits)) >> set_bits)) >> 12;
++	//return ((addr & mask) ^ ((addr & (mask << set_bits)) >> set_bits)) >> 12;
++	return ((addr & mask) ^ ((addr & (mask << set_bits)) >> set_bits)) >> 21;
+ }
+ 
+ /*
+@@ -180,10 +184,12 @@ int compute_lin_set(unsigned long addr, int set_bits){
+ 	unsigned int i;
+ 	unsigned long mask = 0;
+ 	for(i = 0; i < set_bits; i++){
+-		mask |= (0x1 << (i + 12));
++		//mask |= (0x1 << (i + 12));
++		mask |= (0x1 << (i + 21));
+ 	}
+ 	
+-	return (addr & mask) >> 12;
++	//return (addr & mask) >> 12;
++	return (addr & mask) >> 21;
+ }
+ 
+ /*
+diff --git a/TLB/mmuctl/source/pcid.c b/TLB/mmuctl/source/pcid.c
+index f09c6f8..91f089d 100644
+--- a/TLB/mmuctl/source/pcid.c
++++ b/TLB/mmuctl/source/pcid.c
+@@ -21,6 +21,7 @@ int stlb_pcid_limit(int pcid_writes, int no_flush){
+ 	//Get the 4096 possible PCIDs in a random order
+ 	get_random_pcids(pcids);
+ 
++    // vkarakos: this is unclear
+     u64 cr3 = (getcr3() >> 12) << 12;
+ 
+ 	volatile unsigned long addr;
+@@ -28,15 +29,20 @@ int stlb_pcid_limit(int pcid_writes, int no_flush){
+ 	get_random_bytes(&random_offset, sizeof(random_offset));
+ 
+ 	//Take a random page out of the first 1000 ones
+-	addr = (void *)BASE + (4096 * (random_offset % 1000));
++	//addr = (void *)BASE + (4096 * (random_offset % 1000));
++	addr = (void *)BASE + ((4096*512) * (random_offset % 1000));
+ 
+ 	//We should not use an address whose PTE is the last entry of a page table,
+ 	//as we would swap with arbritary memory (not necessarily a PTE)
+-	int difference = ((addr - (unsigned long)BASE) / 4096) % 512;
+-	while(difference % 512 == 511){
++	//int difference = ((addr - (unsigned long)BASE) / 4096) % 512;
++	int difference = ((addr - (unsigned long)BASE) / (4096*512)) % (512*512);
++	//while(difference % 512 == 511){
++	while(difference % (512*512) == (511*512)){
+ 		get_random_bytes(&random_offset, sizeof(random_offset));
+-		addr = (void *)BASE + (4096 * (random_offset % 1000));
+-		difference = ((addr - (unsigned long)BASE) / 4096) % 512;
++		//addr = (void *)BASE + (4096 * (random_offset % 1000));
++		addr = (void *)BASE + ((4096*512) * (random_offset % 1000));
++		//difference = ((addr - (unsigned long)BASE) / 4096) % 512;
++		difference = ((addr - (unsigned long)BASE) / (4096*512)) % (512*512);
+ 	}
+ 
+ 	//Perform the page table walk and make it executable
+@@ -58,7 +64,8 @@ int stlb_pcid_limit(int pcid_writes, int no_flush){
+ 	//Read the original value to be able to distinguish TLB hits from misses
+ 	int original = read(addr);
+ 
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	//Switch to 'pcid_writes' different PCIDs
+ 	//Either with the NOFLUSH bit set or not
+@@ -79,7 +86,8 @@ int stlb_pcid_limit(int pcid_writes, int no_flush){
+ 
+ 	give_up_cpu();
+ 
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	up_write(TLBDR_MMLOCK);
+ 
+@@ -136,7 +144,8 @@ int stlb_pcid_vector_evicted(int vector_index, int element, int position, int no
+ 
+     setcr3(cr3 | pcids[vector_index] | CR3_NOFLUSH);
+ 
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+     //To detect its position, we set 'position' fresh PCIDs
+     for(i = 0; i < position; i++){
+@@ -151,7 +160,8 @@ int stlb_pcid_vector_evicted(int vector_index, int element, int position, int no
+     curr = execute(addrs[0]);
+     give_up_cpu();
+ 
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+     up_write(TLBDR_MMLOCK);
+ 
+@@ -250,7 +260,8 @@ int dtlb_pcid_limit(int pcid_writes, int no_flush){
+ 	}
+ 
+ 	//Desync the TLB
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	//Switch to 'pcid_writes' different PCIDs
+ 	//Either with the NOFLUSH bit set or not
+@@ -271,7 +282,8 @@ int dtlb_pcid_limit(int pcid_writes, int no_flush){
+ 
+ 	give_up_cpu();
+ 
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	up_write(TLBDR_MMLOCK);
+ 
+@@ -346,7 +358,8 @@ int itlb_pcid_limit(int pcid_writes, int no_flush){
+ 	}
+ 
+ 	//Desync the TLB
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	//Switch to 'pcid_writes' different PCIDs
+ 	//Either with the NOFLUSH bit set or not
+@@ -367,7 +380,8 @@ int itlb_pcid_limit(int pcid_writes, int no_flush){
+ 
+ 	give_up_cpu();
+ 
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	up_write(TLBDR_MMLOCK);
+ 
+diff --git a/TLB/mmuctl/source/permutation.c b/TLB/mmuctl/source/permutation.c
+index 81f1ff3..e04b6b6 100644
+--- a/TLB/mmuctl/source/permutation.c
++++ b/TLB/mmuctl/source/permutation.c
+@@ -109,12 +109,14 @@ int __attribute__((optimize("O0"))) stlb_vector_evicted(volatile struct experime
+     down_write(TLBDR_MMLOCK);
+ 
+     //Walk the pointer chain (it will desync)
+-    walk_stlb_chain(&info, walk.pte);
++    //walk_stlb_chain(&info, walk.pte);
++    walk_stlb_chain(&info, walk.pmd);
+ 
+     spirt(info.p);
+ 
+     //Restore page table
+-    switch_pages(walk.pte, walk.pte + 1);
++    //switch_pages(walk.pte, walk.pte + 1);
++    switch_pages(walk.pmd, walk.pmd + 1);
+ 
+     up_write(TLBDR_MMLOCK);
+ 
+@@ -173,12 +175,13 @@ int __attribute__((optimize("O0"))) stlb_miss_vector(volatile struct experiment_
+     for(info.i = 0; info.i < 3 * info.ways - 1; info.i++){
+         write_instruction_chain(addrs[info.i], &info.iteration, addrs[info.i + 1]);
+         info.iteration = info.iteration - 1;
+-        write_instruction_chain(addrs[info.i] + 4096, &info.iteration, 0);
++        //write_instruction_chain(addrs[info.i] + 4096, &info.iteration, 0);
++        write_instruction_chain(addrs[info.i] + (4096*512), &info.iteration, 0);
+     }
+ 
+     write_instruction_chain(addrs[3 * info.ways - 1], &info.iteration, addrs[2 * info.ways]);
+     info.iteration = info.iteration - 1;
+-    write_instruction_chain(addrs[3 * info.ways - 1] + 4096, &info.iteration, 0);
++    write_instruction_chain(addrs[3 * info.ways - 1] + (4096*512), &info.iteration, 0);
+ 
+     info.iteration = 1;
+ 
+@@ -196,7 +199,8 @@ int __attribute__((optimize("O0"))) stlb_miss_vector(volatile struct experiment_
+     for(info.i = 0; info.i < info.ways; info.i++){
+ 		info.p = read_walk(info.p, &info.iteration);
+         //Desync the TLB
+-        switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
++        //switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
++        switch_pages(walks[info.i].pmd, walks[info.i].pmd + 1);
+ 	}
+ 
+     info.iteration = 2 * info.ways + 1;
+@@ -210,7 +214,8 @@ int __attribute__((optimize("O0"))) stlb_miss_vector(volatile struct experiment_
+         }
+ 
+         //Restore page table
+-        switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
++        //switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
++        switch_pages(walks[info.i].pmd, walks[info.i].pmd + 1);
+ 	}
+ 
+     if(!info.p){
+@@ -407,12 +412,14 @@ int __attribute__((optimize("O0"))) dtlb_vector_evicted(volatile struct experime
+     down_write(TLBDR_MMLOCK);
+ 
+     //Walk the pointer chain (it will desync)
+-    walk_dtlb_chain(&info, walk.pte);
++    //walk_dtlb_chain(&info, walk.pte);
++    walk_dtlb_chain(&info, walk.pmd);
+ 
+     spirt(info.p);
+ 
+     //Restore page table
+-    switch_pages(walk.pte, walk.pte + 1);
++    //switch_pages(walk.pte, walk.pte + 1);
++    switch_pages(walk.pmd, walk.pmd + 1);
+ 
+     up_write(TLBDR_MMLOCK);
+ 
+@@ -477,7 +484,8 @@ int __attribute__((optimize("O0"))) dtlb_miss_vector(volatile struct experiment_
+     for(info.i = 0; info.i < info.ways; info.i++){
+         write_instruction_chain(addrs[2 * info.ways + info.i], &info.iteration, addrs[2 * info.ways + info.i + 1]);
+         info.iteration = info.iteration - 1;
+-        write_instruction_chain(addrs[2 * info.ways + info.i] + 4096, &info.iteration, 0);
++        //write_instruction_chain(addrs[2 * info.ways + info.i] + 4096, &info.iteration, 0);
++        write_instruction_chain(addrs[2 * info.ways + info.i] + (4096*512), &info.iteration, 0);
+     }
+ 
+     for(info.i = 0; info.i < info.number_of_washings - 1; info.i++){
+@@ -502,7 +510,8 @@ int __attribute__((optimize("O0"))) dtlb_miss_vector(volatile struct experiment_
+     for(info.i = 0; info.i < info.ways; info.i++){
+ 		info.p = read_walk(info.p, &info.iteration);
+         //Desync the TLB
+-        switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
++        //switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
++        switch_pages(walks[info.i].pmd, walks[info.i].pmd + 1);
+ 	}
+ 
+     //Wash the sTLB set
+@@ -521,7 +530,8 @@ int __attribute__((optimize("O0"))) dtlb_miss_vector(volatile struct experiment_
+         }
+ 
+         //Restore page table
+-        switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
++        //switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
++        switch_pages(walks[info.i].pmd, walks[info.i].pmd + 1);
+ 	}
+ 
+     if(!info.p){
+@@ -712,12 +722,14 @@ int __attribute__((optimize("O0"))) itlb_vector_evicted(volatile struct experime
+     down_write(TLBDR_MMLOCK);
+ 
+     //Walk the pointer chain (it will desync)
+-    walk_itlb_chain(&info, walk.pte);
++    //walk_itlb_chain(&info, walk.pte);
++    walk_itlb_chain(&info, walk.pmd);
+ 
+     spirt(info.p);
+ 
+     //Restore page table
+-    switch_pages(walk.pte, walk.pte + 1);
++    //switch_pages(walk.pte, walk.pte + 1);
++    switch_pages(walk.pmd, walk.pmd + 1);
+ 
+     up_write(TLBDR_MMLOCK);
+ 
+@@ -798,7 +810,8 @@ int __attribute__((optimize("O0"))) itlb_miss_vector(volatile struct experiment_
+     for(info.i = 0; info.i < info.ways; info.i++){
+ 		info.p = execute_walk(info.p, &info.iteration);
+         //Desync the TLB
+-        switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
++        //switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
++        switch_pages(walks[info.i].pmd, walks[info.i].pmd + 1);
+ 	}
+ 
+     //Wash the sTLB set
+@@ -817,7 +830,8 @@ int __attribute__((optimize("O0"))) itlb_miss_vector(volatile struct experiment_
+         }
+ 
+         //Restore page table
+-        switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
++        //switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
++        switch_pages(walks[info.i].pmd, walks[info.i].pmd + 1);
+ 	}
+ 
+     if(!info.p){
+diff --git a/TLB/mmuctl/source/pgtable.c b/TLB/mmuctl/source/pgtable.c
+index aad1b57..3ef5a3f 100644
+--- a/TLB/mmuctl/source/pgtable.c
++++ b/TLB/mmuctl/source/pgtable.c
+@@ -13,7 +13,7 @@ int resolve_va(size_t addr, struct ptwalk *entry, int lock)
+ #endif
+ 	pud_t *pud;
+ 	pmd_t *pmd;
+-	pte_t *pte;
++	//pte_t *pte;
+ 
+ 	if (!entry)
+ 		return -EINVAL;
+@@ -22,7 +22,7 @@ int resolve_va(size_t addr, struct ptwalk *entry, int lock)
+ 	entry->p4d = NULL;
+ 	entry->pud = NULL;
+ 	entry->pmd = NULL;
+-	entry->pte = NULL;
++	//entry->pte = NULL;
+ 	entry->valid = 0;
+ 
+ 	if (!current->mm)
+@@ -64,14 +64,17 @@ int resolve_va(size_t addr, struct ptwalk *entry, int lock)
+ 		goto err;
+ 
+ 	entry->pmd = pmd;
+-	entry->valid = MMUCTL_PMD;
++	//entry->valid = MMUCTL_PMD;
++	entry->valid |= MMUCTL_PMD;
+ 
+-	pte = pte_offset_map(pmd, addr);
++    // vkarakos: unclear how to handle this -- need to check
++    //pmd_unmap(pmd);
++    pte_unmap(pmd);
+ 
+-	entry->pte = pte;
+-	entry->valid |= MMUCTL_PTE;
+-
+-	pte_unmap(pte);
++	//pte = pte_offset_map(pmd, addr);
++	//entry->pte = pte;
++	//entry->valid |= MMUCTL_PTE;
++	//pte_unmap(pte);
+ 
+ 	if (lock)
+ 		up_read(TLBDR_MMLOCK);
+@@ -87,6 +90,7 @@ err:
+ 
+ void clear_nx(pgd_t *p)
+ {
++    // vkarakos: should we change this?
+ 	p->pgd &= ~NXBIT;
+ }
+ 
+diff --git a/TLB/mmuctl/source/replacement.c b/TLB/mmuctl/source/replacement.c
+index 3025159..509c858 100644
+--- a/TLB/mmuctl/source/replacement.c
++++ b/TLB/mmuctl/source/replacement.c
+@@ -79,7 +79,8 @@ int test_shared_replacement(int sequence[], int length, int failure_distribution
+ 	//First in sequence
+ 	p = read_walk(p, &iteration);
+ 
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	//Visit the rest of the sequence
+ 	for(i = 0; i < length - 2; i++){
+@@ -94,7 +95,8 @@ int test_shared_replacement(int sequence[], int length, int failure_distribution
+ 
+ 	spirt(p);
+ 
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	give_up_cpu();
+ 
+@@ -143,7 +145,8 @@ int test_split_data_replacement(int sequence[], int length, int failure_distribu
+ 	volatile struct ptwalk walk;
+ 	resolve_va(addrs[sequence[0]], &walk, 0);
+ 
+-	while(compute_lin_set(walk.pte, tlb.split_component_data->set_bits) == target_dtlb_set){
++	//while(compute_lin_set(walk.pte, tlb.split_component_data->set_bits) == target_dtlb_set){
++	while(compute_lin_set(walk.pmd, tlb.split_component_data->set_bits) == target_dtlb_set){
+         shuffle(addrs, addresses_needed);
+         resolve_va(addrs[sequence[0]], &walk, 0);
+     }
+@@ -186,7 +189,8 @@ int test_split_data_replacement(int sequence[], int length, int failure_distribu
+ 	//First in sequence
+ 	p = read_walk(p, &iteration);
+ 
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	//Wash the sTLB
+ 	for(i = 0; i < number_of_washings; i++){
+@@ -205,7 +209,8 @@ int test_split_data_replacement(int sequence[], int length, int failure_distribu
+ 
+ 	spirt(p);
+ 
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	up_write(TLBDR_MMLOCK);
+ 
+@@ -287,7 +292,8 @@ int test_split_instruction_replacement(int sequence[], int length, int failure_d
+ 	//First in sequence
+ 	p = execute_walk(p, &iteration);
+ 
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	//Wash the sTLB
+ 	for(i = 0; i < number_of_washings; i++){
+@@ -306,7 +312,8 @@ int test_split_instruction_replacement(int sequence[], int length, int failure_d
+ 
+ 	spirt(p);
+ 
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	up_write(TLBDR_MMLOCK);
+ 
+diff --git a/TLB/mmuctl/source/tlb_layout.c b/TLB/mmuctl/source/tlb_layout.c
+index 79e382c..475fb77 100644
+--- a/TLB/mmuctl/source/tlb_layout.c
++++ b/TLB/mmuctl/source/tlb_layout.c
+@@ -3,7 +3,8 @@
+ #include "mm_locking.h"
+ 
+ /*
+-	This function tests whether a PTE is cached the dTLB
++	//This function tests whether a PTE is cached the dTLB
++	This function tests whether a PMD is cached the dTLB
+ 	independently of the sTLB. It is explained in Section 4.1 of the paper.
+ */
+ int non_inclusivity(void){
+@@ -23,20 +24,26 @@ int non_inclusivity(void){
+ 	get_random_bytes(&random_offset, sizeof(random_offset));
+ 
+ 	//Take a random page out of the first 1000 ones
+-	addr = (void *)BASE + (4096 * (random_offset % 1000));
++	//addr = (void *)BASE + (4096 * (random_offset % 1000));
++	addr = (void *)BASE + ((4096*512) * (random_offset % 1000));
+ 
+ 	//We should not use an address whose PTE is the last entry of a page table,
+ 	//as we would swap with arbritary memory (not necessarily a PTE)
+-	int difference = ((addr - (unsigned long)BASE) / 4096) % 512;
+-	while(difference % 512 == 511){
++	//int difference = ((addr - (unsigned long)BASE) / 4096) % 512;
++	int difference = ((addr - (unsigned long)BASE) / (4096*512)) % (512*512);
++	//while(difference % 512 == 511){
++	while(difference % (512*512) == (511*512)){
+ 		get_random_bytes(&random_offset, sizeof(random_offset));
+-		addr = (void *)BASE + (4096 * (random_offset % 1000));
+-		difference = ((addr - (unsigned long)BASE) / 4096) % 512;
++		//addr = (void *)BASE + (4096 * (random_offset % 1000));
++		//difference = ((addr - (unsigned long)BASE) / 4096) % 512;
++		addr = (void *)BASE + ((4096*512) * (random_offset % 1000));
++		difference = ((addr - (unsigned long)BASE) / (4096*512)) % (512*512);
+ 	}
+ 
+ 	//Perform the page table walk and make it executable
+ 	struct ptwalk walk;
+ 	resolve_va(addr, &walk, 0);
++    //vkarakos: should we do something here?
+ 	clear_nx(walk.pgd);
+ 
+ 	down_write(TLBDR_MMLOCK);
+@@ -46,12 +53,15 @@ int non_inclusivity(void){
+ 	int original = read(addr);
+ 
+ 	//Desync TLB
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+-	//Will executions evict the PTE?
++	////Will executions evict the PTE?
++	//Will executions evict the PMD?
+ 	volatile int i;
+ 	for(i = 0; i < 10000; i++){
+-		execute((void *)BASE + (4096 * i));
++        //vkarakos: should we do something here?
++		execute((void *)BASE + ((4096*512) * i));
+ 	}
+ 
+ 	int curr = read(addr);
+@@ -59,7 +69,8 @@ int non_inclusivity(void){
+ 	give_up_cpu();
+ 
+ 	//Restore page table
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	up_write(TLBDR_MMLOCK);
+ 
+@@ -84,19 +95,26 @@ int non_exclusivity(void){
+ 	get_random_bytes(&random_offset, sizeof(random_offset));
+ 
+ 	//Take a random page out of the first 1000 ones
+-	*addr = (void *)BASE + (4096 * (random_offset % 1000));
++	//*addr = (void *)BASE + (4096 * (random_offset % 1000));
++	*addr = (void *)BASE + ((4096*512) * (random_offset % 1000));
+ 
+-	//We should not use an address whose PTE is the last entry of a page table,
++	////We should not use an address whose PTE is the last entry of a page table,
++	//We should not use an address whose PMD is the last entry of a page table,
+ 	//as we would swap with arbritary memory (not necessarily a PTE)
+-	volatile unsigned int difference = ((*addr - (unsigned long)BASE) / 4096) % 512;
+-	while(difference % 512 == 511){
++	//volatile unsigned int difference = ((*addr - (unsigned long)BASE) / 4096) % 512;
++	volatile unsigned int difference = ((*addr - (unsigned long)BASE) / (4096*512)) % (512*512);
++	//while(difference % 512 == 511){
++	while(difference % (512*512) == (511*512)){
+ 		get_random_bytes(&random_offset, sizeof(random_offset));
+-		*addr = (void *)BASE + (4096 * (random_offset % 1000));
+-		difference = ((*addr - (unsigned long)BASE) / 4096) % 512;
++		//*addr = (void *)BASE + (4096 * (random_offset % 1000));
++		//difference = ((*addr - (unsigned long)BASE) / 4096) % 512;
++		*addr = (void *)BASE + ((4096*512) * (random_offset % 1000));
++		difference = ((*addr - (unsigned long)BASE) / (4096*512)) % (512*512);
+ 	}
+ 
+ 	//Perform the page table walk and make it executable
+ 	struct ptwalk walk;
++    // vkarakos: should we do something here?
+ 	resolve_va(*addr, &walk, 0);
+ 	clear_nx(walk.pgd);
+ 
+@@ -121,7 +139,8 @@ int non_exclusivity(void){
+ 	p = read_walk(p, &iteration);
+ 
+ 	//Desync TLB
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	//Was it inserted into the sTLB?
+ 	int curr = execute(p);
+@@ -129,7 +148,8 @@ int non_exclusivity(void){
+ 	give_up_cpu();
+ 
+ 	//Restore page table
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	up_write(TLBDR_MMLOCK);
+ 
+@@ -200,7 +220,8 @@ int reinsert_itlb(void){
+ 	p = execute_walk(p, &iteration);
+ 
+ 	//Desync TLB
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	//We wash the sTLB
+ 	for(i = 0; i < tlb.shared_component->ways * 2; i++){
+@@ -213,7 +234,8 @@ int reinsert_itlb(void){
+ 	give_up_cpu();
+ 
+ 	//Restore page table
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	up_write(TLBDR_MMLOCK);
+ 
+@@ -248,6 +270,7 @@ int reinsert_dtlb(void){
+ 
+ 	//Perform the page walk for the first address
+ 	struct ptwalk walk;
++    // vkarakos: should we do something here?
+ 	resolve_va(addrs[0], &walk, 0);
+ 	clear_nx(walk.pgd);
+ 
+@@ -284,7 +307,8 @@ int reinsert_dtlb(void){
+ 	p = read_walk(p, &iteration);
+ 
+ 	//Desync TLB
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	//We wash the sTLB
+ 	for(i = 0; i < tlb.shared_component->ways * 2; i++){
+@@ -297,7 +321,8 @@ int reinsert_dtlb(void){
+ 	give_up_cpu();
+ 
+ 	//Restore page table
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	up_write(TLBDR_MMLOCK);
+ 
+@@ -332,6 +357,7 @@ int reinsert_stlb_data(void){
+ 
+ 	//Perform the page walk for the first address
+ 	struct ptwalk walk;
++    // vkarakos: should we do something here?
+ 	resolve_va(addrs[0], &walk, 0);
+ 	clear_nx(walk.pgd);
+ 
+@@ -353,7 +379,8 @@ int reinsert_stlb_data(void){
+ 
+ 	write_instruction_chain(addrs[0], &iteration, addrs[0]);
+ 	iteration = iteration - 1;
+-	write_instruction_chain(addrs[0] + 4096, &iteration, 0);
++	//write_instruction_chain(addrs[0] + 4096, &iteration, 0);
++	write_instruction_chain(addrs[0] + (4096*512), &iteration, 0);
+ 
+ 	vfree(addrs);
+ 
+@@ -369,7 +396,8 @@ int reinsert_stlb_data(void){
+ 	p = read_walk(p, &iteration);
+ 
+ 	//Desync TLB
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	//We wash the sTLB
+ 	for(i = 0; i < tlb.shared_component->ways * 2; i++){
+@@ -390,7 +418,8 @@ int reinsert_stlb_data(void){
+ 	give_up_cpu();
+ 
+ 	//Restore page table
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	up_write(TLBDR_MMLOCK);
+ 
+@@ -462,7 +491,8 @@ int reinsert_stlb_instruction(void){
+ 	p = execute_walk(p, &iteration);
+ 
+ 	//Desync TLB
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	//We wash the sTLB
+ 	for(i = 0; i < tlb.shared_component->ways * 2; i++){
+@@ -483,7 +513,8 @@ int reinsert_stlb_instruction(void){
+ 	give_up_cpu();
+ 
+ 	//Restore page table
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	up_write(TLBDR_MMLOCK);
+ 
+@@ -523,6 +554,7 @@ int reinsert_stlb_dtlb_eviction(void){
+ 
+ 	//Perform the page walk for the first address
+ 	struct ptwalk walk;
++    // vkarakos: should we do something here?
+ 	resolve_va(addrs[0], &walk, 0);
+ 	clear_nx(walk.pgd);
+ 
+@@ -562,7 +594,8 @@ int reinsert_stlb_dtlb_eviction(void){
+ 	p = read_walk(p, &iteration);
+ 
+ 	//Desync TLB
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	//We wash the sTLB
+ 	for(i = 0; i < tlb.shared_component->ways * 2; i++){
+@@ -582,7 +615,8 @@ int reinsert_stlb_dtlb_eviction(void){
+ 	give_up_cpu();
+ 
+ 	//Restore page table
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	up_write(TLBDR_MMLOCK);
+ 
+@@ -661,7 +695,8 @@ int reinsert_stlb_itlb_eviction(void){
+ 	p = execute_walk(p, &iteration);
+ 
+ 	//Desync TLB
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	//We wash the sTLB
+ 	for(i = 0; i < tlb.shared_component->ways * 2; i++){
+@@ -681,7 +716,8 @@ int reinsert_stlb_itlb_eviction(void){
+ 	give_up_cpu();
+ 
+ 	//Restore page table
+-	switch_pages(walk.pte, walk.pte + 1);
++	//switch_pages(walk.pte, walk.pte + 1);
++	switch_pages(walk.pmd, walk.pmd + 1);
+ 
+ 	up_write(TLBDR_MMLOCK);
+ 
+diff --git a/TLB/mmuctl/source/walk_dtlb.c b/TLB/mmuctl/source/walk_dtlb.c
+index 9d0f120..6baa7f3 100644
+--- a/TLB/mmuctl/source/walk_dtlb.c
++++ b/TLB/mmuctl/source/walk_dtlb.c
+@@ -1,6 +1,7 @@
+ #include <permutation.h>
+ 
+-void __attribute__((optimize("O0"))) walk_dtlb_chain(volatile struct experiment_info *info, volatile pte_t *pte){
++//void __attribute__((optimize("O0"))) walk_dtlb_chain(volatile struct experiment_info *info, volatile pte_t *pte){
++void __attribute__((optimize("O0"))) walk_dtlb_chain(volatile struct experiment_info *info, volatile pmd_t *pmd){
+     //Warming + getting known state
+ 	for(info->i = 0; info->i < 3 * info->ways; info->i++){
+ 		info->p = read_walk(info->p, &info->iteration);	
+@@ -15,7 +16,8 @@ void __attribute__((optimize("O0"))) walk_dtlb_chain(volatile struct experiment_
+     info->p = read_walk(info->p, &info->iteration);
+ 
+     //Desync the TLB
+-    switch_pages(pte, pte + 1);
++    //switch_pages(pte, pte + 1);
++    switch_pages(pmd, pmd + 1);
+ 
+     //Visiting 'position' new addresses
+     for(info->i = 0; info->i < (info->ways - info->position); info->i++){
+diff --git a/TLB/mmuctl/source/walk_itlb.c b/TLB/mmuctl/source/walk_itlb.c
+index 67809f0..2cfb065 100644
+--- a/TLB/mmuctl/source/walk_itlb.c
++++ b/TLB/mmuctl/source/walk_itlb.c
+@@ -1,6 +1,7 @@
+ #include <permutation.h>
+ 
+-void __attribute__((optimize("O0"))) walk_itlb_chain(volatile struct experiment_info *info, volatile pte_t *pte){
++//void __attribute__((optimize("O0"))) walk_itlb_chain(volatile struct experiment_info *info, volatile pte_t *pte){
++void __attribute__((optimize("O0"))) walk_itlb_chain(volatile struct experiment_info *info, volatile pmd_t *pmd){
+     //Warming + getting known state
+ 	for(info->i = 0; info->i < 3 * info->ways; info->i++){
+ 		info->p = execute_walk(info->p, &info->iteration);	
+@@ -15,7 +16,8 @@ void __attribute__((optimize("O0"))) walk_itlb_chain(volatile struct experiment_
+     info->p = execute_walk(info->p, &info->iteration);
+     
+     //Desync the TLB
+-    switch_pages(pte, pte + 1);
++    //switch_pages(pte, pte + 1);
++    switch_pages(pmd, pmd + 1);
+ 
+     //Visiting 'position' new addresses
+     for(info->i = 0; info->i < (info->ways - info->position); info->i++){
+diff --git a/TLB/mmuctl/source/walk_stlb.c b/TLB/mmuctl/source/walk_stlb.c
+index 77b9dfa..68bce2f 100644
+--- a/TLB/mmuctl/source/walk_stlb.c
++++ b/TLB/mmuctl/source/walk_stlb.c
+@@ -1,6 +1,7 @@
+ #include <permutation.h>
+ 
+-void __attribute__((optimize("O0"))) walk_stlb_chain(volatile struct experiment_info *info, volatile pte_t *pte){
++//void __attribute__((optimize("O0"))) walk_stlb_chain(volatile struct experiment_info *info, volatile pte_t *pte){
++void __attribute__((optimize("O0"))) walk_stlb_chain(volatile struct experiment_info *info, volatile pmd_t *pmd){
+     //Warming + getting known state
+ 	for(info->i = 0; info->i < 3 * info->ways; info->i++){
+ 		info->p = read_walk(info->p, &info->iteration);
+@@ -20,7 +21,8 @@ void __attribute__((optimize("O0"))) walk_stlb_chain(volatile struct experiment_
+ 	}
+ 
+     //Desync the TLB
+-    switch_pages(pte, pte + 1);;
++    //switch_pages(pte, pte + 1);;
++    switch_pages(pmd, pmd + 1);;
+ 
+     //Visiting 'position + 1' new addresses
+     for(info->i = 0; info->i < (info->ways - info->position); info->i++){
+@@ -29,4 +31,4 @@ void __attribute__((optimize("O0"))) walk_stlb_chain(volatile struct experiment_
+ 
+     //Is it still in?
+     info->curr = read(info->p);
+-}
+\ No newline at end of file
++}
+diff --git a/case-studies/tlbleed/madtlb.c b/case-studies/tlbleed/madtlb.c
+index bcf2e0a..ba1abb8 100644
+--- a/case-studies/tlbleed/madtlb.c
++++ b/case-studies/tlbleed/madtlb.c
+@@ -179,7 +179,7 @@ static void **tlb_prepnaive(void *base, uintptr_t targ)
+ {
+ 	uintptr_t l1t = TDL1(targ);
+ 	uintptr_t l2t = TSL2(targ);
+-	//fprintf(stderr, "%" PRIxPTR " %" PRIxPTR "\n", l1t, l2t);
++	fprintf(stderr, "%" PRIxPTR " %" PRIxPTR "\n", l1t, l2t);
+ 	void *p = base;
+ 	void **ev[TLB_PREPSZ];
+ 	for (int i = 0; i < TLB_PREPSZ; i++) {
+@@ -346,7 +346,7 @@ static void **tlb_prepnaive_splice(void *base, uintptr_t targ)
+ {
+ 	uintptr_t l1t = TDL1(targ);
+ 	uintptr_t l2t = TSL2(targ);
+-	//fprintf(stderr, "%" PRIxPTR " %" PRIxPTR "\n", l1t, l2t);
++	fprintf(stderr, "%" PRIxPTR " %" PRIxPTR "\n", l1t, l2t);
+ 	void *p = base;
+ 	void **ev[24];
+ 	for (int i = 0; i < 24; i++) {
+@@ -465,8 +465,9 @@ static void **tlb_prepnaive_splice(void *base, uintptr_t targ)
+ 
+ static void pprint(void **head, size_t n)
+ {
++    printf("pprint - size: %ld\n", n);
+ 	while (n--) {
+-		fprintf(stderr, "%p\n", head);
++		fprintf(stderr, "head: %p\n", head);
+ 		head = *head;
+ 	}
+ 	fputc('\n', stderr);
+@@ -478,13 +479,13 @@ static void pprint(void **head, size_t n)
+ #define NINJA_THRESH (2048)
+ #define TIMSZ (32)
+ 
+-//static void prtim(uint32_t tim[TIMSZ])
+-//{
+-	//for (size_t i = 0; i < TIMSZ; i++) {
+-		//printf("%"PRIu32" ", tim[i]);
+-	//}
+-	//putchar('\n');
+-//}
++static void prtim(uint32_t tim[TIMSZ])
++{
++	for (size_t i = 0; i < TIMSZ; i++) {
++		printf("%"PRIu32" ", tim[i]);
++	}
++	putchar('\n');
++}
+ 
+ static inline uint16_t nxr(uint16_t x)
+ {
+@@ -541,6 +542,7 @@ static void do_send(void *tebuf)
+ 			//if (rn & 1) {
+ 			//if (i & (1L << 6)) {
+ 				*(volatile char *)(targ + (rn & 8));
++				//printf("accessing: %p\n", (targ + (rn & 8)));
+ 				//if (v > 0) {
+ 					//*(volatile char *)(targ + (rn & 8));
+ 					//continue;
+@@ -654,6 +656,7 @@ static void do_recv(void *tebuf, const int oneshot, const int use_l2, const int
+ 						ipchase(njcur, TLB_PREPSZ, tim[ti]);
+ 					}
+ 				}
++		        prtim(tim);
+ 			}
+ 		} else {
+ 			if (use_ninja) {
+@@ -668,13 +671,17 @@ static void do_recv(void *tebuf, const int oneshot, const int use_l2, const int
+ 						}
+ 					}
+ 				}
++		        prtim(tim);
+ 			} else {
++                printf("we are here\n");
+ 				for (size_t r = NINJA_ROUNDS*NINJA_THRESH/TIMSZ; r-- > 0;) {
++				//for (size_t r = NINJA_THRESH/TIMSZ; r-- > 0;) {
+ 					for (size_t ti = 0; ti < TIMSZ; ti++) {
+-						DUMMY();
++						//DUMMY();
+ 						ipchase(njcur, TLB_PREPSZ_L1, tim[ti]);
+ 					}
+ 				}
++		        prtim(tim);
+ 			}
+ 		}
+ 		clock_gettime(CLOCK_REALTIME, &t);
+@@ -938,11 +945,14 @@ static void do_splice_setprobe_ninja(void *tebuf, int ofd, int l1s, int l2s)
+ static void do_splice_setprobe_naive(void *tebuf, int ofd, int l1s, int l2s)
+ {
+ 	void **cur;
++	//void **mycur;
+ 	uint32_t *timbuf;
+ 	const uintptr_t SPTARG = (uintptr_t)tlb_nexthit(TBUFBASE, l1s, l2s);
+ 
+ 	fputs("Naive Spliced L1+L2 probe\n", stderr);
+ 	cur = tlb_prepnaive_splice(TBUFBASE, SPTARG);
++    //mycur = cur;
++    //pprint(mycur, evpplen);
+ 
+ 	timbuf = calloc(2 * SPROBEROUNDS, sizeof(*timbuf));
+ 
+@@ -961,8 +971,11 @@ static void do_splice_setprobe_naive(void *tebuf, int ofd, int l1s, int l2s)
+ 		do {
+ 			for (int rnd = 0; rnd < SPROBEROUNDS; rnd++) {
+ 				ipfwd(cur, NAIVE_SPLICE_PRIME);
++                printf("cur0: %p\n", cur);
+ 				ipchase(cur, NAIVE_SPLICE_L1, timbuf[2*rnd]);
++                printf("cur1: %p\n", cur);
+ 				ipchase(cur, NAIVE_SPLICE_L2, timbuf[2*rnd + 1]);
++                printf("cur2: %p\n", cur);
+ 			}
+ 			// Output timbuf
+ 			write(ofd, timbuf, 2 * SPROBEROUNDS * sizeof(*timbuf));
+@@ -1242,8 +1255,10 @@ int main(int argc, char *argv[])
+ 								goto err_usage;
+ 							}
+ 							if (argv[1][1] == 'p') {
++                                printf("do_probe()\n");
+ 								do_probe(tebuf, use_l2, use_ninja, fd);
+ 							} else {
++                                printf("do_setprobe()\n");
+ 								do_setprobe(tebuf, use_l2, use_ninja, fd, atoi(argv[3]), atoi(argv[4]));
+ 							}
+ 							close(fd);
+@@ -1266,9 +1281,11 @@ int main(int argc, char *argv[])
+ 					}
+ 					switch (argv[1][2]) {
+ 						case 'j':
++                            printf("do_splice_setprobe_ninja()\n");
+ 							do_splice_setprobe_ninja(tebuf, fd, atoi(argv[3]), atoi(argv[4]));
+ 							break;
+ 						case 'n':
++                            printf("do_splice_setprobe_naive()\n");
+ 							do_splice_setprobe_naive(tebuf, fd, atoi(argv[3]), atoi(argv[4]));
+ 							break;
+ 					}
