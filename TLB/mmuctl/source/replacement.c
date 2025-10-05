@@ -79,7 +79,8 @@ int test_shared_replacement(int sequence[], int length, int failure_distribution
 	//First in sequence
 	p = read_walk(p, &iteration);
 
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	//Visit the rest of the sequence
 	for(i = 0; i < length - 2; i++){
@@ -94,7 +95,8 @@ int test_shared_replacement(int sequence[], int length, int failure_distribution
 
 	spirt(p);
 
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	give_up_cpu();
 
@@ -143,7 +145,8 @@ int test_split_data_replacement(int sequence[], int length, int failure_distribu
 	volatile struct ptwalk walk;
 	resolve_va(addrs[sequence[0]], &walk, 0);
 
-	while(compute_lin_set(walk.pte, tlb.split_component_data->set_bits) == target_dtlb_set){
+	// while(compute_lin_set(walk.pte, tlb.split_component_data->set_bits) == target_dtlb_set){
+	while(compute_lin_set(walk.pmd, tlb.split_component_data->set_bits) == target_dtlb_set){
         shuffle(addrs, addresses_needed);
         resolve_va(addrs[sequence[0]], &walk, 0);
     }
@@ -186,7 +189,8 @@ int test_split_data_replacement(int sequence[], int length, int failure_distribu
 	//First in sequence
 	p = read_walk(p, &iteration);
 
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	//Wash the sTLB
 	for(i = 0; i < number_of_washings; i++){
@@ -205,7 +209,8 @@ int test_split_data_replacement(int sequence[], int length, int failure_distribu
 
 	spirt(p);
 
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	up_write(TLBDR_MMLOCK);
 
@@ -287,7 +292,8 @@ int test_split_instruction_replacement(int sequence[], int length, int failure_d
 	//First in sequence
 	p = execute_walk(p, &iteration);
 
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	//Wash the sTLB
 	for(i = 0; i < number_of_washings; i++){
@@ -306,8 +312,9 @@ int test_split_instruction_replacement(int sequence[], int length, int failure_d
 
 	spirt(p);
 
-	switch_pages(walk.pte, walk.pte + 1);
-
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
+	
 	up_write(TLBDR_MMLOCK);
 
 	volatile int evicted = !!(value == ((original + 1) % set_bits_to_sets(UNIQUE_BITS)));

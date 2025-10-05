@@ -158,7 +158,8 @@ void spirt(u64 *p)
 */
 int unsafe_address(unsigned long addr)
 {
-	unsigned long max = (unsigned long)BASE + (4096 * set_bits_to_sets(FREEDOM_OF_BITS));
+	//unsigned long max = (unsigned long)BASE + (4096 * set_bits_to_sets(FREEDOM_OF_BITS));
+	unsigned long max = (unsigned long)BASE + ((4096*512) * set_bits_to_sets(FREEDOM_OF_BITS));
 	if (addr >= max || addr < (unsigned long)BASE)
 	{
 		return 1;
@@ -168,17 +169,18 @@ int unsafe_address(unsigned long addr)
 }
 
 /*
-	Returns 0 - 4096 in a randomized order.
+	//Returns 0 - 4096 in a randomized order.
+	Returns 0 - 4096*512 in a randomized order.
 */
 void get_random_pcids(unsigned long pcids[])
 {
 	int i;
-	for (i = 0; i < 4096; i++)
+	for(i = 0; i < (4096*512); i++)
 	{
 		pcids[i] = i;
 	}
 
-	for (i = 0; i < 4096; i++)
+	for(i = 0; i < (4096*512); i++)
 	{
 		unsigned long choice;
 		get_random_bytes(&choice, sizeof(choice));
@@ -198,10 +200,12 @@ int compute_xor_set(unsigned long addr, int set_bits)
 	unsigned long mask = 0;
 	for (i = 0; i < set_bits; i++)
 	{
-		mask |= (0x1 << (i + 12));
+		//mask |= (0x1 << (i + 12));
+		mask |= (0x1 << (i + 21));
 	}
 
-	return ((addr & mask) ^ ((addr & (mask << set_bits)) >> set_bits)) >> 12;
+	//return ((addr & mask) ^ ((addr & (mask << set_bits)) >> set_bits)) >> 12;
+	return ((addr & mask) ^ ((addr & (mask << set_bits)) >> set_bits)) >> 21;
 }
 
 /*
@@ -214,10 +218,12 @@ int compute_lin_set(unsigned long addr, int set_bits)
 	unsigned long mask = 0;
 	for (i = 0; i < set_bits; i++)
 	{
-		mask |= (0x1 << (i + 12));
+		//mask |= (0x1 << (i + 12));
+		mask |= (0x1 << (i + 21));
 	}
 
 	return (addr & mask) >> 12;
+	return (addr & mask) >> 21;
 }
 
 /*

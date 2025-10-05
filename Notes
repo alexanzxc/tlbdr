@@ -1,39 +1,42 @@
 Notes :
 
-QEMU commands :
+################  QEMU commands ################
 
 qemu-img create -f qcow2 ubuntu.img 20G
 qemu-system-x86_64 -m 8G -hda ubuntu.img -cdrom ubuntu-20.04.4-desktop-amd64.iso -boot d -enable-kvm -nic user,hostfwd=tcp::22222-:22
 qemu-system-x86_64 -m 8G -smp 4 -hda ubuntu.img  -enable-kvm -nic user,hostfwd=tcp::22222-:22 -cpu host
 qemu-system-x86_64 -m 8G -smp cores=6,threads=2,sockets=1 -hda ubuntu.img  -enable-kvm -nic user,hostfwd=tcp::22222-:22 -cpu host -nographic
+
 raptor lake kernel fix ibt=off ( https://www.reddit.com/r/archlinux/comments/y4746k/ibtoff/ )
 PW : 123qwe
 
+################ HUGE PAGES CHECK AND SET ################
+
 - check if hugepages are enabled in kernel:
+
 zcat /proc/config.gz | grep "CONFIG_SYS_SUPPORTS_HUGETLBFS=y"
 
-
 - check current memory status:
-grep Huge /proc/meminfo or cat /sys/devices/system/node/node*/meminfo | grep Huge
+
+grep Huge /proc/meminfo
+cat /sys/devices/system/node/node*/meminfo | grep Huge
 grep -i huge /proc/mounts
 ipcs -m  -for shared memory-
 
-- enable/disable hugepages:
-https://www.kernel.org/doc/html/latest/admin-guide/mm/transhuge.html
-https://www.kernel.org/doc/Documentation/vm/transhuge.txt
+- enable/disable and allocate hugepages:
 
 echo always >/sys/kernel/mm/transparent_hugepage/enabled
-echo madvise >/sys/kernel/mm/transparent_hugepage/enabled
-echo never >/sys/kernel/mm/transparent_hugepage/enabled
-echo 1 >/sys/kernel/mm/transparent_hugepage/khugepaged/defrag
-
-- allocate huge pages:
-
-echo 10 > /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
-
+echo always >/sys/kernel/mm/transparent_hugepage/khugepaged/defrag
+echo 1025 > /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
 echo 2 > /sys/devices/system/node/node0/hugepages/hugepages-1048576kB/nr_hugepages
 
-[root@m1 alex]# cat /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
+cat /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
+
+https://www.kernel.org/doc/html/latest/admin-guide/mm/transhuge.html
+https://www.kernel.org/doc/Documentation/vm/transhuge.txt
+https://www.kernel.org/doc/html/v4.18/admin-guide/mm/transhuge.html
+
+################ CPU PIN AND CHECK ################
 
 -core pin on physical cores:
 
@@ -45,6 +48,9 @@ grep -H . /sys/devices/system/cpu/cpu*/topology/thread_siblings_list
 
 /proc/<pid>/smaps
 
+
+################ RANDOM ################
+
 - buddyinfo:
 
 cat /proc/buddyinfo
@@ -55,7 +61,52 @@ dmesg -wH
 
 - htop find process:
 
-htop / searchhttps://www.kernel.org/doc/html/v4.18/admin-guide/mm/transhuge.html
+htop / search
+
+ - kernel check
+ 
+uname -r
+
+
+################ EXECUTION NOTES ################
+
+################ RUN COMMANDS ################
+
+- this should always run :
+
+make all
+su insmod mmuctl/mmuctl.ko
+su ./trigger
+
+
+madtlb notes :
+
+mmap requires 1024 2mb hugepages
+(echo 1025 > /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages)
+
+-rn1 34M/sec
+-rj1 35M/sec
+
+-rn2 seg fault
+-rj2 seg fault
+
+covert-chan notes:
+
+covert naive:
+allocates 1 huge page. Works on pinned core correctly.
+covert ninja:
+allocates 1 huge page. Did not work correctly no matter the threshold values
+
+pthammer :
+
+requires 1GB huge page
+worked on qemu, cannot allocate in in real hardware.
+
+
+anc:
+
+runs ok
+
 
 why do we allocate the sizes we do ?
 

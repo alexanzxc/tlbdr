@@ -30,7 +30,8 @@ int test_lin_stlb(int set_bits, int ways)
 		 how do we fill the TLB and TLB_LEVEL structs?
 
 		 starting set_bits for STLB_HAS is 3*/
-		left_mask |= (0x1 << (i + 12 + set_bits));
+		//left_mask |= (0x1 << (i + 12 + set_bits));
+		left_mask |= (0x1 << (i + 21 + set_bits));
 	}
 
 	// Sample a random sTLB set
@@ -51,7 +52,8 @@ int test_lin_stlb(int set_bits, int ways)
 
 		// Compute next address that maps to the same set, according to
 		// a linear hash function assumption with 'sets' sets
-		addrs[i] = (void *)BASE + ((target_set + offset * sets) * 4096);
+		//addrs[i] = (void *)BASE + ((target_set + offset * sets) * 4096);
+		addrs[i] = (void *)BASE + ((target_set + offset * sets) * 4096*512);
 
 		if (unsafe_address(addrs[i]))
 		{
@@ -60,13 +62,15 @@ int test_lin_stlb(int set_bits, int ways)
 		}
 
 		// Perform page walk for this address
+		// vkarakos: should we do something here 
 		resolve_va(addrs[i], &walks[i], 0);
 		clear_nx(walks[i].pgd);
 
 		// If this address has its PTE at the end of a page table, we cannot
 		// swap as the next address in memory may not constitute a PTE!
 		// So skip this address
-		if (((addrs[i] - (unsigned long)BASE) / 4096) % 512 == 511)
+		//if (((addrs[i] - (unsigned long)BASE) / 4096) % 512 == 511)
+		if (((addrs[i] - (unsigned long)BASE) / (4096*512)) % (512*512) == (511*512))
 		{
 			i--;
 		}
@@ -87,7 +91,8 @@ int test_lin_stlb(int set_bits, int ways)
 	// addrs[ways] + 4096 --> 0
 	write_instruction_chain(addrs[ways], &iteration, addrs[0]);
 	iteration = iteration - 1;
-	write_instruction_chain(addrs[ways] + 4096, &iteration, 0);
+	//write_instruction_chain(addrs[ways] + 4096, &iteration, 0);
+	write_instruction_chain(addrs[i - 1] + 4096*512, &iteration, 0);
 
 	iteration = 1;
 
@@ -106,13 +111,15 @@ int test_lin_stlb(int set_bits, int ways)
 	{
 		p = read_walk(p, &iteration);
 		// Desync TLB
-		switch_pages(walks[i].pte, walks[i].pte + 1);
+		//switch_pages(walks[i].pte, walks[i].pte + 1);
+		switch_pages(walks[i].pmd, walks[i].pmd + 1);
 	}
 
 	int miss = 0;
 	iteration = 1;
 
 	// Does fetching them again result in iTLB hits?
+	// vkarakos: unclear what we sould do here -- alter the code to involve only the dTLB?
 	for (i = 0; i < ways + 1; i++)
 	{
 		if (p)
@@ -125,7 +132,8 @@ int test_lin_stlb(int set_bits, int ways)
 		}
 
 		// Restore page table
-		switch_pages(walks[i].pte, walks[i].pte + 1);
+		//switch_pages(walks[i].pte, walks[i].pte + 1);
+		switch_pages(walks[i].pmd, walks[i].pmd + 1);
 	}
 
 	if (!p)
@@ -161,7 +169,8 @@ int test_xor_stlb(int set_bits, int ways)
 	volatile unsigned long left_mask = 0;
 	for (i = 0; i < set_bits; i++)
 	{
-		left_mask |= (0x1 << (i + 12 + set_bits));
+		//left_mask |= (0x1 << (i + 12 + set_bits));
+		left_mask |= (0x1 << (i + 21 + set_bits));
 	}
 
 	// Sample a random sTLB set
@@ -181,8 +190,10 @@ int test_xor_stlb(int set_bits, int ways)
 
 		// Compute next address that maps to the same set, according to
 		// an XOR hash function assumption with 'sets' sets
-		base = (((unsigned long)BASE >> (12 + set_bits)) + offset) << (12 + set_bits);
-		right_side = ((base & left_mask) ^ (target_set << (12 + set_bits))) >> set_bits;
+		// base = (((unsigned long)BASE >> (12 + set_bits)) + offset) << (12 + set_bits);
+		// right_side = ((base & left_mask) ^ (target_set << (12 + set_bits))) >> set_bits;
+		base = (((unsigned long)BASE >> (21 + set_bits)) + offset) << (21 + set_bits);
+		right_side = ((base & left_mask) ^ (target_set << (21 + set_bits))) >> set_bits;
 
 		addrs[i] = base | right_side;
 
@@ -193,13 +204,15 @@ int test_xor_stlb(int set_bits, int ways)
 		}
 
 		// Perform page walk for this address
+		// vkarakos: should we do something here?
 		resolve_va(addrs[i], &walks[i], 0);
 		clear_nx(walks[i].pgd);
 
 		// If this address has its PTE at the end of a page table, we cannot
 		// swap as the next address in memory may not constitute a PTE!
 		// So skip this address
-		if (((addrs[i] - (unsigned long)BASE) / 4096) % 512 == 511)
+		//if (((addrs[i] - (unsigned long)BASE) / 4096) % 512 == 511)
+		if (((addrs[i] - (unsigned long)BASE) / (4096*512)) % (512*512) == (511*512)) 
 		{
 			i--;
 		}
@@ -211,7 +224,8 @@ int test_xor_stlb(int set_bits, int ways)
 
 			write_instruction_chain(addrs[i - 1], &iteration, addrs[i]);
 			iteration = iteration - 1;
-			write_instruction_chain(addrs[i - 1] + 4096, &iteration, 0);
+			//write_instruction_chain(addrs[i - 1] + 4096, &iteration, 0);
+			write_instruction_chain(addrs[i - 1] + (4096*512), &iteration, 0);
 		}
 	}
 
@@ -220,7 +234,8 @@ int test_xor_stlb(int set_bits, int ways)
 	// addrs[ways] + 4096 --> 0
 	write_instruction_chain(addrs[ways], &iteration, addrs[0]);
 	iteration = iteration - 1;
-	write_instruction_chain(addrs[ways] + 4096, &iteration, 0);
+	// write_instruction_chain(addrs[ways] + 4096, &iteration, 0);
+	write_instruction_chain(addrs[ways] + (4096*512), &iteration, 0);
 
 	iteration = 1;
 	volatile unsigned long p = addrs[0];
@@ -233,16 +248,20 @@ int test_xor_stlb(int set_bits, int ways)
 	claim_cpu();
 
 	// Prime ways + 1 PTEs in the TLB
+	////Prime ways + 1 PTEs in the TLB
+	//Prime ways + 1 PMDs in the TLB
 	for (i = 0; i < ways + 1; i++)
 	{
 		p = read_walk(p, &iteration);
 		// Desync TLB
-		switch_pages(walks[i].pte, walks[i].pte + 1);
+		//switch_pages(walks[i].pte, walks[i].pte + 1);
+		switch_pages(walks[i].pmd, walks[i].pmd + 1);
 	}
 
 	iteration = 1;
 
 	// Does fetching them again result in iTLB hits?
+	// vkarakos: unclear what we sould do here -- alter the code to involve only the dTLB?
 	for (i = 0; i < ways + 1; i++)
 	{
 		if (p)
@@ -255,7 +274,8 @@ int test_xor_stlb(int set_bits, int ways)
 		}
 
 		// Restore page table
-		switch_pages(walks[i].pte, walks[i].pte + 1);
+		//switch_pages(walks[i].pte, walks[i].pte + 1);
+		switch_pages(walks[i].pmd, walks[i].pmd + 1);
 	}
 
 	if (!p)
@@ -321,12 +341,14 @@ int test_lin_itlb_stlb_lin(int set_bits, int ways)
 	{
 		write_instruction_chain(addrs[i], &iteration, addrs[i + 1]);
 		iteration = iteration - 1;
-		write_instruction_chain(addrs[i] + 4096, &iteration, 0);
+		//write_instruction_chain(addrs[i] + 4096, &iteration, 0);
+		write_instruction_chain(addrs[i] + (4096*512), &iteration, 0);
 	}
 
 	write_instruction_chain(addrs[ways + 1 + 4 * tlb.shared_component->ways - 1], &iteration, addrs[0]);
 	iteration = iteration - 1;
-	write_instruction_chain(addrs[ways + 1 + 4 * tlb.shared_component->ways - 1] + 4096, &iteration, 0);
+	//write_instruction_chain(addrs[ways + 1 + 4 * tlb.shared_component->ways - 1] + 4096, &iteration, 0);
+	write_instruction_chain(addrs[ways + 1 + 4 * tlb.shared_component->ways - 1] + (4096*512), &iteration, 0);
 
 	// Perform page walks for the first ways + 1 addresses
 	volatile struct ptwalk walks[ways + 1];
@@ -353,7 +375,8 @@ int test_lin_itlb_stlb_lin(int set_bits, int ways)
 	{
 		p = execute_walk(p, &iteration);
 		// Desync TLB
-		switch_pages(walks[i].pte, walks[i].pte + 1);
+		//switch_pages(walks[i].pte, walks[i].pte + 1);
+		switch_pages(walks[i].pmd, walks[i].pmd + 1);
 	}
 
 	// Washing the sTLB (both sets)
@@ -378,7 +401,8 @@ int test_lin_itlb_stlb_lin(int set_bits, int ways)
 		}
 
 		// Restore page table
-		switch_pages(walks[i].pte, walks[i].pte + 1);
+		//switch_pages(walks[i].pte, walks[i].pte + 1);
+		switch_pages(walks[i].pmd, walks[i].pmd + 1);
 	}
 
 	if (!p)
@@ -444,12 +468,14 @@ int test_lin_dtlb_stlb_lin(int set_bits, int ways)
 	{
 		write_instruction_chain(addrs[i], &iteration, addrs[i + 1]);
 		iteration = iteration - 1;
-		write_instruction_chain(addrs[i] + 4096, &iteration, 0);
+		//write_instruction_chain(addrs[i] + 4096, &iteration, 0);
+		write_instruction_chain(addrs[i] + (4096*512), &iteration, 0);
 	}
 
 	write_instruction_chain(addrs[ways + 1 + 4 * tlb.shared_component->ways - 1], &iteration, addrs[0]);
 	iteration = iteration - 1;
-	write_instruction_chain(addrs[ways + 1 + 4 * tlb.shared_component->ways - 1] + 4096, &iteration, 0);
+	//write_instruction_chain(addrs[ways + 1 + 4 * tlb.shared_component->ways - 1] + 4096, &iteration, 0);
+	write_instruction_chain(addrs[ways + 1 + 4 * tlb.shared_component->ways - 1] + (4096*512), &iteration, 0);
 
 	// Perform page walks for the first ways + 1 addresses
 	volatile struct ptwalk walks[ways + 1];
@@ -457,6 +483,7 @@ int test_lin_dtlb_stlb_lin(int set_bits, int ways)
 
 	for (i = 0; i < ways + 1; i++)
 	{
+		// vkarakos: should we do something here?
 		resolve_va(addrs[i], &walks[i], 0);
 		clear_nx(walks[i].pgd);
 	}
@@ -472,11 +499,14 @@ int test_lin_dtlb_stlb_lin(int set_bits, int ways)
 	claim_cpu();
 
 	// Prime the dTLB (and sTLB) with ways + 1 PTEs
+	////Prime the dTLB (and sTLB) with ways + 1 PTEs
+    //Prime the dTLB (and sTLB) with ways + 1 PMDs
 	for (i = 0; i < ways + 1; i++)
 	{
 		p = read_walk(p, &iteration);
 		// Desync TLB
-		switch_pages(walks[i].pte, walks[i].pte + 1);
+		//switch_pages(walks[i].pte, walks[i].pte + 1);
+		switch_pages(walks[i].pmd, walks[i].pmd + 1);
 	}
 
 	// Washing the sTLB (both sets)
@@ -489,6 +519,7 @@ int test_lin_dtlb_stlb_lin(int set_bits, int ways)
 	iteration = 1;
 
 	// Are the ways + 1 PTEs all cached?
+	//Are the ways + 1 PMDs all cached?
 	for (i = 0; i < ways + 1; i++)
 	{
 		if (p)
@@ -501,7 +532,8 @@ int test_lin_dtlb_stlb_lin(int set_bits, int ways)
 		}
 
 		// Restore page table
-		switch_pages(walks[i].pte, walks[i].pte + 1);
+		//switch_pages(walks[i].pte, walks[i].pte + 1);
+		switch_pages(walks[i].pmd, walks[i].pmd + 1);
 	}
 
 	if (!p)
@@ -562,12 +594,14 @@ int test_lin_itlb_stlb_xor(int set_bits, int ways)
 	{
 		write_instruction_chain(addrs[i], &iteration, addrs[i + 1]);
 		iteration = iteration - 1;
-		write_instruction_chain(addrs[i] + 4096, &iteration, 0);
+		//write_instruction_chain(addrs[i] + 4096, &iteration, 0);
+		write_instruction_chain(addrs[i] + (4096*512), &iteration, 0);
 	}
 
 	write_instruction_chain(addrs[ways + (2 * tlb.shared_component->ways)], &iteration, addrs[0]);
 	iteration = iteration - 1;
-	write_instruction_chain(addrs[ways + (2 * tlb.shared_component->ways)] + 4096, &iteration, 0);
+	//write_instruction_chain(addrs[ways + (2 * tlb.shared_component->ways)] + 4096, &iteration, 0);
+	write_instruction_chain(addrs[ways + (2 * tlb.shared_component->ways)] + (4096*512), &iteration, 0);
 
 	// Perform page walks for the first ways + 1 addresses
 	volatile struct ptwalk walks[ways + 1];
@@ -592,7 +626,8 @@ int test_lin_itlb_stlb_xor(int set_bits, int ways)
 	{
 		p = execute_walk(p, &iteration);
 		// Desync TLB
-		switch_pages(walks[i].pte, walks[i].pte + 1);
+		//switch_pages(walks[i].pte, walks[i].pte + 1);
+		switch_pages(walks[i].pmd, walks[i].pmd + 1);
 	}
 
 	// Wash the sTLB
@@ -617,7 +652,8 @@ int test_lin_itlb_stlb_xor(int set_bits, int ways)
 		}
 
 		// Restore page table
-		switch_pages(walks[i].pte, walks[i].pte + 1);
+		//switch_pages(walks[i].pte, walks[i].pte + 1);
+		switch_pages(walks[i].pmd, walks[i].pmd + 1);
 	}
 
 	if (!p)
@@ -678,12 +714,14 @@ int test_lin_dtlb_stlb_xor(int set_bits, int ways)
 	{
 		write_instruction_chain(addrs[i], &iteration, addrs[i + 1]);
 		iteration = iteration - 1;
-		write_instruction_chain(addrs[i] + 4096, &iteration, 0);
+		//write_instruction_chain(addrs[i] + 4096, &iteration, 0);
+		write_instruction_chain(addrs[i] + (4096*512), &iteration, 0);
 	}
 
 	write_instruction_chain(addrs[ways + (2 * tlb.shared_component->ways)], &iteration, addrs[0]);
 	iteration = iteration - 1;
-	write_instruction_chain(addrs[ways + (2 * tlb.shared_component->ways)] + 4096, &iteration, 0);
+	//write_instruction_chain(addrs[ways + (2 * tlb.shared_component->ways)] + 4096, &iteration, 0);
+	write_instruction_chain(addrs[ways + (2 * tlb.shared_component->ways)] + (4096*512), &iteration, 0);
 
 	// Perform page walks for the first ways + 1 addresses
 	volatile struct ptwalk walks[ways + 1];
@@ -691,6 +729,7 @@ int test_lin_dtlb_stlb_xor(int set_bits, int ways)
 
 	for (i = 0; i < ways + 1; i++)
 	{
+		// vkarakos: should we do something here?
 		resolve_va(addrs[i], &walks[i], 0);
 		clear_nx(walks[i].pgd);
 	}
@@ -704,11 +743,13 @@ int test_lin_dtlb_stlb_xor(int set_bits, int ways)
 	claim_cpu();
 
 	// Prime the iTLB (and sTLB) with ways + 1 PTEs
+	// vkarakos: unclear what we sould do here -- alter the code to involve only the dTLB?
 	for (i = 0; i < ways + 1; i++)
 	{
 		p = read_walk(p, &iteration);
 		// Desync TLB
-		switch_pages(walks[i].pte, walks[i].pte + 1);
+		//switch_pages(walks[i].pte, walks[i].pte + 1);
+		switch_pages(walks[i].pmd, walks[i].pmd + 1);
 	}
 
 	// Wash the sTLB
@@ -721,6 +762,7 @@ int test_lin_dtlb_stlb_xor(int set_bits, int ways)
 	iteration = 1;
 
 	// Are the ways + 1 PTEs cached?
+	//Are the ways + 1 PMDs cached?
 	for (i = 0; i < ways + 1; i++)
 	{
 		if (p)
@@ -734,6 +776,7 @@ int test_lin_dtlb_stlb_xor(int set_bits, int ways)
 
 		// Restore page table
 		switch_pages(walks[i].pte, walks[i].pte + 1);
+		switch_pages(walks[i].pmd, walks[i].pmd + 1);
 	}
 
 	if (!p)

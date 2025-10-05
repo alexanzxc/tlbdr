@@ -12,7 +12,7 @@ void get_address_set_stlb_xor(unsigned long addrs[], int stlb_target, int split_
 
 	unsigned long right_mask = 0;
 	for(i = 0; i < stlb_bits; i++){ 
-		right_mask |= (0x1 << (i + 12));
+		right_mask |= (0x1 << (i + 21));
 	}
 
 	int max_outer = 1;
@@ -30,12 +30,16 @@ void get_address_set_stlb_xor(unsigned long addrs[], int stlb_target, int split_
 	for(it = 0; it < max_outer; it++){
 		for(it2 = 0; it2 < max_inner; it2++){
 			unsigned long base = (((unsigned long)BASE >> (12 + 2 * stlb_bits)) + it) << (12 + 2 * stlb_bits);
-			unsigned long right_side = ((((base >> (12 + split_tlb_bits)) + it2) << split_tlb_bits) + split_target) << 12;
-			unsigned long left_side = ((right_side & right_mask) ^ (stlb_target << 12)) << stlb_bits;
-			unsigned long final_addr = left_side | right_side;
+			// unsigned long right_side = ((((base >> (12 + split_tlb_bits)) + it2) << split_tlb_bits) + split_target) << 12;
+			// unsigned long left_side = ((right_side & right_mask) ^ (stlb_target << 12)) << stlb_bits;
+			// unsigned long final_addr = left_side | right_side;
+			unsigned long base = (((unsigned long)BASE >> (21 + 2 * stlb_bits)) + it) << (21 + 2 * stlb_bits);
+			unsigned long right_side = ((((base >> (21 + split_tlb_bits)) + it2) << split_tlb_bits) + split_target) << 21;
+			unsigned long left_side = ((right_side & right_mask) ^ (stlb_target << 21)) << stlb_bits;
 
             //Skip addresses that are at the end of the page table as they are not safe to swap
-			int difference = (final_addr - (unsigned long)BASE) / 4096;
+			//int difference = (final_addr - (unsigned long)BASE) / 4096;
+			int difference = (final_addr - (unsigned long)BASE) / 2097152;
 			if(difference % 512 == 511){
 				continue;
 			}
@@ -78,13 +82,17 @@ void get_address_set_stlb_lin(unsigned long addrs[], int stlb_target, int stlb_b
 
 	int index = 0;
 	for(it = 0; it < max_outer; it++){
-		unsigned long base = ((unsigned long)BASE >> (12 + 2 * stlb_bits)) << (12 + 2 * stlb_bits);
-		unsigned long right_side = ((base >> 12) + stlb_target) << 12;
-		unsigned long left_side = ((base >> (12 + stlb_bits)) + it) << (12 + stlb_bits);
+		// unsigned long base = ((unsigned long)BASE >> (12 + 2 * stlb_bits)) << (12 + 2 * stlb_bits);
+		// unsigned long right_side = ((base >> 12) + stlb_target) << 12;
+		// unsigned long left_side = ((base >> (12 + stlb_bits)) + it) << (12 + stlb_bits);
+		unsigned long base = ((unsigned long)BASE >> (21 + 2 * stlb_bits)) << (21 + 2 * stlb_bits);
+		unsigned long right_side = ((base >> 21) + stlb_target) << 21;
+    	unsigned long left_side = ((base >> (21 + stlb_bits)) + it) << (21 + stlb_bits);
 		unsigned long final_addr = left_side | right_side;
 
         //Skip addresses that are at the end of the page table as they are not safe to swap
-		int difference = (final_addr - (unsigned long)BASE) / 4096;
+		//int difference = (final_addr - (unsigned long)BASE) / 4096;
+		int difference = (final_addr - (unsigned long)BASE) / 2097152;
 		if(difference % 512 == 511){
 			continue;
 		}

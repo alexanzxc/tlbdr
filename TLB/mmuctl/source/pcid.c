@@ -21,6 +21,7 @@ int stlb_pcid_limit(int pcid_writes, int no_flush){
 	//Get the 4096 possible PCIDs in a random order
 	get_random_pcids(pcids);
 
+	// vkarakos: this is unclear
     u64 cr3 = (getcr3() >> 12) << 12;
 
 	volatile unsigned long addr;
@@ -28,16 +29,22 @@ int stlb_pcid_limit(int pcid_writes, int no_flush){
 	get_random_bytes(&random_offset, sizeof(random_offset));
 
 	//Take a random page out of the first 1000 ones
-	addr = (void *)BASE + (4096 * (random_offset % 1000));
+	//addr = (void *)BASE + (4096 * (random_offset % 1000));
+	addr = (void *)BASE + ((4096*512) * (random_offset % 1000));
 
 	//We should not use an address whose PTE is the last entry of a page table,
 	//as we would swap with arbritary memory (not necessarily a PTE)
-	int difference = ((addr - (unsigned long)BASE) / 4096) % 512;
-	while(difference % 512 == 511){
+	//int difference = ((addr - (unsigned long)BASE) / 4096) % 512;
+	int difference = ((addr - (unsigned long)BASE) / (4096*512)) % (512*512);
+	//while(difference % 512 == 511){
+	while(difference % (512*512) == (511*512)){
 		get_random_bytes(&random_offset, sizeof(random_offset));
-		addr = (void *)BASE + (4096 * (random_offset % 1000));
-		difference = ((addr - (unsigned long)BASE) / 4096) % 512;
+		//addr = (void *)BASE + (4096 * (random_offset % 1000));
+		//difference = ((addr - (unsigned long)BASE) / 4096) % 512;
+		addr = (void *)BASE + ((4096*512) * (random_offset % 1000));
+		difference = ((addr - (unsigned long)BASE) / (4096*512)) % (512*512);
 	}
+	
 
 	//Perform the page table walk and make it executable
 	struct ptwalk walk;
@@ -58,7 +65,8 @@ int stlb_pcid_limit(int pcid_writes, int no_flush){
 	//Read the original value to be able to distinguish TLB hits from misses
 	int original = read(addr);
 
-	switch_pages(walk.pte, walk.pte + 1);
+	//switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	//Switch to 'pcid_writes' different PCIDs
 	//Either with the NOFLUSH bit set or not
@@ -79,7 +87,8 @@ int stlb_pcid_limit(int pcid_writes, int no_flush){
 
 	give_up_cpu();
 
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	up_write(TLBDR_MMLOCK);
 
@@ -136,7 +145,8 @@ int stlb_pcid_vector_evicted(int vector_index, int element, int position, int no
 
     setcr3(cr3 | pcids[vector_index] | CR3_NOFLUSH);
 
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
     //To detect its position, we set 'position' fresh PCIDs
     for(i = 0; i < position; i++){
@@ -151,7 +161,8 @@ int stlb_pcid_vector_evicted(int vector_index, int element, int position, int no
     curr = execute(addrs[0]);
     give_up_cpu();
 
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
     up_write(TLBDR_MMLOCK);
 
@@ -250,7 +261,8 @@ int dtlb_pcid_limit(int pcid_writes, int no_flush){
 	}
 
 	//Desync the TLB
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	//Switch to 'pcid_writes' different PCIDs
 	//Either with the NOFLUSH bit set or not
@@ -271,7 +283,8 @@ int dtlb_pcid_limit(int pcid_writes, int no_flush){
 
 	give_up_cpu();
 
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	up_write(TLBDR_MMLOCK);
 
@@ -346,7 +359,8 @@ int itlb_pcid_limit(int pcid_writes, int no_flush){
 	}
 
 	//Desync the TLB
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	//Switch to 'pcid_writes' different PCIDs
 	//Either with the NOFLUSH bit set or not
@@ -367,7 +381,8 @@ int itlb_pcid_limit(int pcid_writes, int no_flush){
 
 	give_up_cpu();
 
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	up_write(TLBDR_MMLOCK);
 

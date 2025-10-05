@@ -34,8 +34,8 @@ void __attribute__((optimize("O0"))) detect_dtlb_vector(volatile unsigned int ve
 int __attribute__((optimize("O0"))) itlb_vector_evicted(volatile struct experiment_info info);
 void __attribute__((optimize("O0"))) detect_itlb_vector(volatile unsigned int vector_index, volatile int vector[], volatile unsigned int *agreement, volatile unsigned int set_mistakes_early[][tlb.split_component_instruction->ways], volatile unsigned int set_mistakes_late[][tlb.split_component_instruction->ways], int set_attempts[]);
 
-void __attribute__((optimize("O0"))) walk_dtlb_chain(volatile struct experiment_info *info, volatile pte_t *pte);
-void __attribute__((optimize("O0"))) walk_stlb_chain(volatile struct experiment_info *info, volatile pte_t *pte);
-void __attribute__((optimize("O0"))) walk_itlb_chain(volatile struct experiment_info *info, volatile pte_t *pte);
+void __attribute__((optimize("O0"))) walk_dtlb_chain(volatile struct experiment_info *info, volatile pmd_t *pmd);
+void __attribute__((optimize("O0"))) walk_stlb_chain(volatile struct experiment_info *info, volatile pmd_t *pmd);
+void __attribute__((optimize("O0"))) walk_itlb_chain(volatile struct experiment_info *info, volatile pmd_t *pmd);
 
 #endif

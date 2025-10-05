@@ -3,7 +3,7 @@
 #include "mm_locking.h"
 
 /*
-	This function tests whether a PTE is cached the dTLB
+	This function tests whether a PMD is cached the dTLB
 	independently of the sTLB. It is explained in Section 4.1 of the paper.
 */
 int non_inclusivity(void)
@@ -26,21 +26,27 @@ int non_inclusivity(void)
 	get_random_bytes(&random_offset, sizeof(random_offset));//kernel function for random numbers.
 
 	// Take a random page out of the first 1000 ones
-	addr = (void *)BASE + (4096 * (random_offset % 1000));
+	// addr = (void *)BASE + (4096 * (random_offset % 1000));
+	addr = (void *)BASE + ((4096*512) * (random_offset % 1000));
 
 	// We should not use an address whose PTE is the last entry of a page table,
 	// as we would swap with arbritary memory (not necessarily a PTE)
-	int difference = ((addr - (unsigned long)BASE) / 4096) % 512;
-	while(difference % 512 == 511){
+	// int difference = ((addr - (unsigned long)BASE) / 4096) % 512;
+	// while(difference % 512 == 511){
+	int difference = ((addr - (unsigned long)BASE) / (4096*512)) % (512*512);
+		while(difference % (512*512) == (511*512)){
 		//study PTE architecture
 		get_random_bytes(&random_offset, sizeof(random_offset));
-		addr = (void *)BASE + (4096 * (random_offset % 1000));
-		difference = ((addr - (unsigned long)BASE) / 4096) % 512;
+		// addr = (void *)BASE + (4096 * (random_offset % 1000));
+		// difference = ((addr - (unsigned long)BASE) / 4096) % 512;
+		addr = (void *)BASE + ((4096*512) * (random_offset % 1000));
+		difference = ((addr - (unsigned long)BASE) / (4096*512)) % (512*512);
 	}
 
 	// Perform the page table walk and make it executable
 	struct ptwalk walk;
 	resolve_va(addr, &walk, 0);
+	//vkarakos: should we do something here?
 	clear_nx(walk.pgd);
 
 	down_write(TLBDR_MMLOCK);
@@ -50,14 +56,16 @@ int non_inclusivity(void)
 	int original = read(addr);
 
 	// Desync TLB --- why pte + 1 ?
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
-	// Will executions evict the PTE?
+	// Will executions evict the PMD?
 	// why evict ?
 	volatile int i;
 	for (i = 0; i < 10000; i++)
 	{
-		execute((void *)BASE + (4096 * i)); // not understand
+        //vkarakos: should we do something here?
+		execute((void *)BASE + ((4096*512) * i));
 	}
 
 	int curr = read(addr); // uaccess again
@@ -65,7 +73,8 @@ int non_inclusivity(void)
 	give_up_cpu();
 
 	// Restore page table
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	up_write(TLBDR_MMLOCK);
 
@@ -92,20 +101,26 @@ int non_exclusivity(void)
 	get_random_bytes(&random_offset, sizeof(random_offset));
 
 	// Take a random page out of the first 1000 ones
-	*addr = (void *)BASE + (4096 * (random_offset % 1000));
+	// *addr = (void *)BASE + (4096 * (random_offset % 1000));
+	*addr = (void *)BASE + ((4096*512) * (random_offset % 1000));
 
-	// We should not use an address whose PTE is the last entry of a page table,
+	// We should not use an address whose PMD is the last entry of a page table,
 	// as we would swap with arbritary memory (not necessarily a PTE)
-	volatile unsigned int difference = ((*addr - (unsigned long)BASE) / 4096) % 512;
-	while (difference % 512 == 511)
+	// volatile unsigned int difference = ((*addr - (unsigned long)BASE) / 4096) % 512;
+	// while (difference % 512 == 511)
+	volatile unsigned int difference = ((*addr - (unsigned long)BASE) / (4096*512)) % (512*512);
+	while(difference % (512*512) == (511*512)){
 	{
 		get_random_bytes(&random_offset, sizeof(random_offset));
-		*addr = (void *)BASE + (4096 * (random_offset % 1000));
-		difference = ((*addr - (unsigned long)BASE) / 4096) % 512;
+		// *addr = (void *)BASE + (4096 * (random_offset % 1000));
+		// difference = ((*addr - (unsigned long)BASE) / 4096) % 512;
+		*addr = (void *)BASE + ((4096*512) * (random_offset % 1000));
+		difference = ((*addr - (unsigned long)BASE) / (4096*512)) % (512*512);
 	}
 
 	// Perform the page table walk and make it executable
 	struct ptwalk walk;
+	// vkarakos: should we do something here?
 	resolve_va(*addr, &walk, 0);
 	clear_nx(walk.pgd);
 
@@ -130,7 +145,8 @@ int non_exclusivity(void)
 	p = read_walk(p, &iteration);
 
 	// Desync TLB
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	// Was it inserted into the sTLB?
 	int curr = execute(p);
@@ -138,7 +154,8 @@ int non_exclusivity(void)
 	give_up_cpu();
 
 	// Restore page table
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	up_write(TLBDR_MMLOCK);
 
@@ -214,7 +231,8 @@ int reinsert_itlb(void)
 	p = execute_walk(p, &iteration);
 
 	// Desync TLB
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	// We wash the sTLB
 	for (i = 0; i < tlb.shared_component->ways * 2; i++)
@@ -228,7 +246,8 @@ int reinsert_itlb(void)
 	give_up_cpu();
 
 	// Restore page table
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	up_write(TLBDR_MMLOCK);
 
@@ -379,7 +398,8 @@ int reinsert_stlb_data(void)
 
 	write_instruction_chain(addrs[0], &iteration, addrs[0]);
 	iteration = iteration - 1;
-	write_instruction_chain(addrs[0] + 4096, &iteration, 0);
+	// write_instruction_chain(addrs[0] + 4096, &iteration, 0);
+	write_instruction_chain(addrs[0] + (4096*512), &iteration, 0);
 
 	vfree(addrs);
 
@@ -395,7 +415,8 @@ int reinsert_stlb_data(void)
 	p = read_walk(p, &iteration);
 
 	// Desync TLB
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	// We wash the sTLB
 	for (i = 0; i < tlb.shared_component->ways * 2; i++)
@@ -420,7 +441,8 @@ int reinsert_stlb_data(void)
 	give_up_cpu();
 
 	// Restore page table
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	up_write(TLBDR_MMLOCK);
 
@@ -497,7 +519,8 @@ int reinsert_stlb_instruction(void)
 	p = execute_walk(p, &iteration);
 
 	// Desync TLB
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	// We wash the sTLB
 	for (i = 0; i < tlb.shared_component->ways * 2; i++)
@@ -522,7 +545,8 @@ int reinsert_stlb_instruction(void)
 	give_up_cpu();
 
 	// Restore page table
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	up_write(TLBDR_MMLOCK);
 
@@ -566,6 +590,7 @@ int reinsert_stlb_dtlb_eviction(void)
 
 	// Perform the page walk for the first address
 	struct ptwalk walk;
+	// vkarakos: should we do something here?
 	resolve_va(addrs[0], &walk, 0);
 	clear_nx(walk.pgd);
 
@@ -607,7 +632,8 @@ int reinsert_stlb_dtlb_eviction(void)
 	p = read_walk(p, &iteration);
 
 	// Desync TLB
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	// We wash the sTLB
 	for (i = 0; i < tlb.shared_component->ways * 2; i++)
@@ -629,7 +655,8 @@ int reinsert_stlb_dtlb_eviction(void)
 	give_up_cpu();
 
 	// Restore page table
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	up_write(TLBDR_MMLOCK);
 
@@ -714,7 +741,8 @@ int reinsert_stlb_itlb_eviction(void)
 	p = execute_walk(p, &iteration);
 
 	// Desync TLB
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	// We wash the sTLB
 	for (i = 0; i < tlb.shared_component->ways * 2; i++)
@@ -736,7 +764,8 @@ int reinsert_stlb_itlb_eviction(void)
 	give_up_cpu();
 
 	// Restore page table
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	up_write(TLBDR_MMLOCK);
 

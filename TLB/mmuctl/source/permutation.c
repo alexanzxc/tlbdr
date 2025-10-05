@@ -120,12 +120,14 @@ int __attribute__((optimize("O0"))) stlb_vector_evicted(volatile struct experime
     down_write(TLBDR_MMLOCK);
 
     // Walk the pointer chain (it will desync)
-    walk_stlb_chain(&info, walk.pte);
+    // walk_stlb_chain(&info, walk.pte);
+    walk_stlb_chain(&info, walk.pmd);
 
     spirt(info.p);
 
     // Restore page table
-    switch_pages(walk.pte, walk.pte + 1);
+    // switch_pages(walk.pte, walk.pte + 1);
+    switch_pages(walk.pmd, walk.pmd + 1);
 
     up_write(TLBDR_MMLOCK);
 
@@ -191,12 +193,14 @@ int __attribute__((optimize("O0"))) stlb_miss_vector(volatile struct experiment_
     {
         write_instruction_chain(addrs[info.i], &info.iteration, addrs[info.i + 1]);
         info.iteration = info.iteration - 1;
-        write_instruction_chain(addrs[info.i] + 4096, &info.iteration, 0);
+        // write_instruction_chain(addrs[info.i] + 4096, &info.iteration, 0);
+        write_instruction_chain(addrs[info.i] + (4096*512), &info.iteration, 0);
     }
 
     write_instruction_chain(addrs[3 * info.ways - 1], &info.iteration, addrs[2 * info.ways]);
     info.iteration = info.iteration - 1;
-    write_instruction_chain(addrs[3 * info.ways - 1] + 4096, &info.iteration, 0);
+    // write_instruction_chain(addrs[3 * info.ways - 1] + 4096, &info.iteration, 0);
+    write_instruction_chain(addrs[info.i] + (4096*512), &info.iteration, 0);
 
     info.iteration = 1;
 
@@ -216,7 +220,8 @@ int __attribute__((optimize("O0"))) stlb_miss_vector(volatile struct experiment_
     {
         info.p = read_walk(info.p, &info.iteration);
         // Desync the TLB
-        switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
+        // switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
+        switch_pages(walks[info.i].pmd, walks[info.i].pmd + 1);
     }
 
     info.iteration = 2 * info.ways + 1;
@@ -234,7 +239,8 @@ int __attribute__((optimize("O0"))) stlb_miss_vector(volatile struct experiment_
         }
 
         // Restore page table
-        switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
+        // switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
+        switch_pages(walks[info.i].pmd, walks[info.i].pmd + 1);
     }
 
     if (!info.p)
@@ -456,12 +462,14 @@ int __attribute__((optimize("O0"))) dtlb_vector_evicted(volatile struct experime
     down_write(TLBDR_MMLOCK);
 
     // Walk the pointer chain (it will desync)
-    walk_dtlb_chain(&info, walk.pte);
+    // walk_dtlb_chain(&info, walk.pte);
+    walk_dtlb_chain(&info, walk.pmd);
 
     spirt(info.p);
 
     // Restore page table
-    switch_pages(walk.pte, walk.pte + 1);
+    // switch_pages(walk.pte, walk.pte + 1);
+    switch_pages(walk.pmd, walk.pmd + 1);
 
     up_write(TLBDR_MMLOCK);
 
@@ -533,7 +541,8 @@ int __attribute__((optimize("O0"))) dtlb_miss_vector(volatile struct experiment_
     {
         write_instruction_chain(addrs[2 * info.ways + info.i], &info.iteration, addrs[2 * info.ways + info.i + 1]);
         info.iteration = info.iteration - 1;
-        write_instruction_chain(addrs[2 * info.ways + info.i] + 4096, &info.iteration, 0);
+        // write_instruction_chain(addrs[2 * info.ways + info.i] + 4096, &info.iteration, 0);
+        write_instruction_chain(addrs[2 * info.ways + info.i] + (4096*512), &info.iteration, 0);
     }
 
     for (info.i = 0; info.i < info.number_of_washings - 1; info.i++)
@@ -561,7 +570,8 @@ int __attribute__((optimize("O0"))) dtlb_miss_vector(volatile struct experiment_
     {
         info.p = read_walk(info.p, &info.iteration);
         // Desync the TLB
-        switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
+        // switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
+        switch_pages(walks[info.i].pmd, walks[info.i].pmd + 1);
     }
 
     // Wash the sTLB set
@@ -585,7 +595,8 @@ int __attribute__((optimize("O0"))) dtlb_miss_vector(volatile struct experiment_
         }
 
         // Restore page table
-        switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
+        // switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
+        switch_pages(walks[info.i].pmd, walks[info.i].pmd + 1);
     }
 
     if (!info.p)
@@ -800,12 +811,14 @@ int __attribute__((optimize("O0"))) itlb_vector_evicted(volatile struct experime
     down_write(TLBDR_MMLOCK);
 
     // Walk the pointer chain (it will desync)
-    walk_itlb_chain(&info, walk.pte);
+    // walk_itlb_chain(&info, walk.pte);
+    walk_itlb_chain(&info, walk.pmd);
 
     spirt(info.p);
 
     // Restore page table
-    switch_pages(walk.pte, walk.pte + 1);
+    // switch_pages(walk.pte, walk.pte + 1);
+    switch_pages(walk.pmd, walk.pmd + 1);
 
     up_write(TLBDR_MMLOCK);
 
@@ -896,7 +909,8 @@ int __attribute__((optimize("O0"))) itlb_miss_vector(volatile struct experiment_
     {
         info.p = execute_walk(info.p, &info.iteration);
         // Desync the TLB
-        switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
+        // switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
+        switch_pages(walks[info.i].pmd, walks[info.i].pmd + 1);
     }
 
     // Wash the sTLB set
@@ -920,7 +934,8 @@ int __attribute__((optimize("O0"))) itlb_miss_vector(volatile struct experiment_
         }
 
         // Restore page table
-        switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
+        // switch_pages(walks[info.i].pte, walks[info.i].pte + 1);
+        switch_pages(walks[info.i].pmd, walks[info.i].pmd + 1);
     }
 
     if (!info.p)

@@ -12,7 +12,8 @@ typedef u64 (*retf_t)(void);
 */
 static inline __attribute__((always_inline)) unsigned long get_exec_pointer_address(volatile unsigned long addr, volatile unsigned int offset)
 {
-	return addr + 4096 - (offset * 13);
+	//return addr + 4096 - (offset * 13);
+	return addr + (4096 * 512) - (offset * 22);
 }
 
 /*
@@ -60,7 +61,8 @@ static inline __attribute__((always_inline)) unsigned long read_walk(volatile un
 	__uaccess_begin_nospec();
 	asm volatile("mfence\nlfence\n" ::
 					 : "memory");
-	val = *((volatile uint64_t *)&((volatile char *)(volatile void *)(addr + 4096 - (*(offset)*13)))[4]);
+	//val = *((volatile uint64_t *)&((volatile char *)(volatile void *)(addr + 4096 - (*(offset)*13)))[4]);
+	val = *((volatile uint64_t *)&((volatile char *)(volatile void *)(addr + (4096*512) - (*(offset) * 22)))[4]);
 	__uaccess_end();
 
 	*(offset) += 1;
@@ -97,7 +99,7 @@ static inline __attribute__((always_inline)) unsigned long execute_walk(volatile
 	__uaccess_begin_nospec();
 	asm volatile("mfence\nlfence\n" ::
 					 : "memory");
-	val = ((volatile retf_t)(addr + 4096 - (*(offset)*13)))();
+	val = ((volatile retf_t)(addr + (4096 * 512) - (*(offset) * 22)))();
 	__uaccess_end();
 
 	*(offset) += 1;

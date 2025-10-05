@@ -21,18 +21,27 @@ struct ptwalk
 #endif
 	pud_t *pud;
 	pmd_t *pmd;
+	 // do we need to remove the pte from here?e
 	pte_t *pte;
 	unsigned valid;
 };
-
-int resolve_va(size_t addr, struct ptwalk *entry, int lock);
-void clear_nx(pgd_t *p);
-
-static inline __attribute__((always_inline)) void switch_pages(pte_t *pte1, pte_t *pte2)
+// do we need to change these two functions?
+ int resolve_va(size_t addr, struct ptwalk *entry, int lock);
+ void clear_nx(pgd_t *p);
+ 
+/*
+ static inline __attribute__((always_inline)) void switch_pages(pte_t *pte1, pte_t *pte2)
+ {
+ 	u64 ptev = pte1->pte;
+ 	pte1->pte = pte2->pte;
+ 	pte2->pte = ptev;
+ }
+*/
+static inline __attribute__((always_inline)) void switch_pages(pmd_t *pmd1, pmd_t *pmd2)
 {
-	u64 ptev = pte1->pte;
-	pte1->pte = pte2->pte;
-	pte2->pte = ptev;
+	u64 pmdv = pmd1->pmd;
+	pmd1->pmd = pmd2->pmd;
+	pmd2->pmd = pmdv;
 }
 
 #endif

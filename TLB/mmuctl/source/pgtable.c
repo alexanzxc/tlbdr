@@ -13,7 +13,7 @@ int resolve_va(size_t addr, struct ptwalk *entry, int lock)
 #endif
 	pud_t *pud;
 	pmd_t *pmd;
-	pte_t *pte;
+	//pte_t *pte;
 
 	// page table walk entry
 	if (!entry)
@@ -23,7 +23,7 @@ int resolve_va(size_t addr, struct ptwalk *entry, int lock)
 	entry->p4d = NULL;
 	entry->pud = NULL;
 	entry->pmd = NULL;
-	entry->pte = NULL;
+	//entry->pte = NULL;
 	entry->valid = 0;
 
 	if (!current->mm)
@@ -66,14 +66,19 @@ int resolve_va(size_t addr, struct ptwalk *entry, int lock)
 		goto err;
 
 	entry->pmd = pmd;
-	entry->valid = MMUCTL_PMD; // why no OR ? 8
+	//entry->valid = MMUCTL_PMD; // why no OR ? 8
+	entry->valid |= MMUCTL_PMD;
+	
 
-	pte = pte_offset_map(pmd, addr); // study func
+	//pte = pte_offset_map(pmd, addr); // study func
+	// vkarakos: unclear how to handle this -- need to check
+    //pmd_unmap(pmd);
+    pte_unmap(pmd);
 
-	entry->pte = pte;
-	entry->valid |= MMUCTL_PTE; // bitwise OR, 0 OR 16
+	// entry->pte = pte;
+	// entry->valid |= MMUCTL_PTE; // bitwise OR, 0 OR 16
 
-	pte_unmap(pte);
+	// pte_unmap(pte);
 
 	if (lock)
 		up_read(TLBDR_MMLOCK);
@@ -92,5 +97,6 @@ err:
  This function sets it to 0 probably?*/
 void clear_nx(pgd_t *p)
 {
+	// vkarakos: should we change this?
 	p->pgd &= ~NXBIT;
 }

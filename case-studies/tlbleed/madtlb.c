@@ -173,7 +173,7 @@ static inline void tlb_evrun(void *base, uintptr_t targ, size_t n)
 static void **tlb_prep_l1(void *base, uintptr_t targ)
 {
 	uintptr_t l1t = TDL1(targ);
-	//fprintf(stderr, "%"PRIxPTR"\n", l1t);
+	fprintf(stderr, "%"PRIxPTR"\n", l1t);
 	void *p = base;
 	void **ev[TLB_PREPSZ_L1];
 	for (int i = 0; i < TLB_PREPSZ_L1; i++) {
@@ -229,7 +229,7 @@ static void **tlb_prepninja_l1(void *base, uintptr_t targ)
 static void **tlb_prepninja_l1(void *base, uintptr_t targ)
 {
 	uintptr_t l1t = TDL1(targ);
-	//fprintf(stderr, "%"PRIxPTR"\n", l1t);
+	fprintf(stderr, "%"PRIxPTR"\n", l1t);
 	void *p = base;
 	void **ev[4];
 	for (int i = 0; i < 4; i++) {
@@ -348,7 +348,7 @@ static void **tlb_prepninja_splice(void *base, uintptr_t targ)
 {
 	uintptr_t l1t = TDL1(targ);
 	uintptr_t l2t = TSL2(targ);
-	//fprintf(stderr, "%" PRIxPTR " %" PRIxPTR "\n", l1t, l2t);
+	fprintf(stderr, "%" PRIxPTR " %" PRIxPTR "\n", l1t, l2t);
 	void *p = base;
 	void **ev[9];
 	for (int i = 0; i < 9; i++) {
@@ -548,8 +548,10 @@ static void **tlb_prepnaive_splice(void *base, uintptr_t targ)
 
 static void pprint(void **head, size_t n)
 {
+	printf("pprint - size: %ld\n", n);
 	while (n--) {
-		fprintf(stderr, "%p\n", head);
+		// fprintf(stderr, "%p\n", head);
+		fprintf(stderr, "head: %p\n", head);
 		head = *head;
 	}
 	fputc('\n', stderr);
@@ -568,6 +570,14 @@ static void pprint(void **head, size_t n)
 	//}
 	//putchar('\n');
 //}
+
+static void prtim(uint32_t tim[TIMSZ])
+{
+	for (size_t i = 0; i < TIMSZ; i++) {
+		printf("%"PRIu32" ", tim[i]);
+	}
+	putchar('\n');
+}
 
 static inline uint16_t nxr(uint16_t x)
 {
@@ -681,6 +691,7 @@ static void do_recv(void *tebuf, const int oneshot, const int use_l2, const int 
 						ipchase(njcur, TLB_PREPSZ, tim[ti]);
 					}
 				}
+				prtim(tim);
 			}
 		} else {
 			if (use_ninja) {
@@ -695,13 +706,17 @@ static void do_recv(void *tebuf, const int oneshot, const int use_l2, const int 
 						}
 					}
 				}
+				prtim(tim);
 			} else {
+				printf("we are here\n");
 				for (size_t r = NINJA_ROUNDS*NINJA_THRESH/TIMSZ; r-- > 0;) {
+					//for (size_t r = NINJA_THRESH/TIMSZ; r-- > 0;) {
 					for (size_t ti = 0; ti < TIMSZ; ti++) {
-						DUMMY();
+						//DUMMY();
 						ipchase(njcur, TLB_PREPSZ_L1, tim[ti]);
 					}
 				}
+				prtim(tim);
 			}
 		}
 		clock_gettime(CLOCK_REALTIME, &t);
@@ -977,8 +992,11 @@ static void do_splice_setprobe_naive(void *tebuf, int ofd, int l1s, int l2s)
 		do {
 			for (int rnd = 0; rnd < SPROBEROUNDS; rnd++) {
 				ipfwd(cur, NAIVE_SPLICE_PRIME);
+				printf("cur0: %p\n", cur);
 				ipchase(cur, NAIVE_SPLICE_L1, timbuf[2*rnd]);
+				printf("cur1: %p\n", cur);
 				ipchase(cur, NAIVE_SPLICE_L2, timbuf[2*rnd + 1]);
+				printf("cur2: %p\n", cur);
 			}
 			// Output timbuf
 			write(ofd, timbuf, 2 * SPROBEROUNDS * sizeof(*timbuf));
@@ -1251,8 +1269,10 @@ int main(int argc, char *argv[])
 								goto err_usage;
 							}
 							if (argv[1][1] == 'p') {
+								printf("do_probe()\n");
 								do_probe(tebuf, use_l2, use_ninja, fd);
 							} else {
+								printf("do_setprobe()\n");
 								do_setprobe(tebuf, use_l2, use_ninja, fd, atoi(argv[3]), atoi(argv[4]));
 							}
 							close(fd);
@@ -1275,9 +1295,11 @@ int main(int argc, char *argv[])
 					}
 					switch (argv[1][2]) {
 						case 'j':
+							printf("do_splice_setprobe_ninja()\n");
 							do_splice_setprobe_ninja(tebuf, fd, atoi(argv[3]), atoi(argv[4]));
 							break;
 						case 'n':
+							printf("do_splice_setprobe_naive()\n");
 							do_splice_setprobe_naive(tebuf, fd, atoi(argv[3]), atoi(argv[4]));
 							break;
 					}
