@@ -29,13 +29,13 @@ void get_address_set_stlb_xor(unsigned long addrs[], int stlb_target, int split_
 	int index = 0;
 	for(it = 0; it < max_outer; it++){
 		for(it2 = 0; it2 < max_inner; it2++){
-			unsigned long base = (((unsigned long)BASE >> (12 + 2 * stlb_bits)) + it) << (12 + 2 * stlb_bits);
+			//unsigned long base = (((unsigned long)BASE >> (12 + 2 * stlb_bits)) + it) << (12 + 2 * stlb_bits);
 			// unsigned long right_side = ((((base >> (12 + split_tlb_bits)) + it2) << split_tlb_bits) + split_target) << 12;
 			// unsigned long left_side = ((right_side & right_mask) ^ (stlb_target << 12)) << stlb_bits;
-			// unsigned long final_addr = left_side | right_side;
 			unsigned long base = (((unsigned long)BASE >> (21 + 2 * stlb_bits)) + it) << (21 + 2 * stlb_bits);
 			unsigned long right_side = ((((base >> (21 + split_tlb_bits)) + it2) << split_tlb_bits) + split_target) << 21;
 			unsigned long left_side = ((right_side & right_mask) ^ (stlb_target << 21)) << stlb_bits;
+			unsigned long final_addr = left_side | right_side;
 
             //Skip addresses that are at the end of the page table as they are not safe to swap
 			//int difference = (final_addr - (unsigned long)BASE) / 4096;

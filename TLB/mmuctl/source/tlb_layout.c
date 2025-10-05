@@ -109,7 +109,7 @@ int non_exclusivity(void)
 	// volatile unsigned int difference = ((*addr - (unsigned long)BASE) / 4096) % 512;
 	// while (difference % 512 == 511)
 	volatile unsigned int difference = ((*addr - (unsigned long)BASE) / (4096*512)) % (512*512);
-	while(difference % (512*512) == (511*512)){
+	while(difference % (512*512) == (511*512))
 	{
 		get_random_bytes(&random_offset, sizeof(random_offset));
 		// *addr = (void *)BASE + (4096 * (random_offset % 1000));
@@ -323,7 +323,8 @@ int reinsert_dtlb(void)
 	p = read_walk(p, &iteration);
 
 	// Desync TLB
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	// We wash the sTLB
 	for (i = 0; i < tlb.shared_component->ways * 2; i++)
@@ -337,7 +338,8 @@ int reinsert_dtlb(void)
 	give_up_cpu();
 
 	// Restore page table
-	switch_pages(walk.pte, walk.pte + 1);
+	// switch_pages(walk.pte, walk.pte + 1);
+	switch_pages(walk.pmd, walk.pmd + 1);
 
 	up_write(TLBDR_MMLOCK);
 

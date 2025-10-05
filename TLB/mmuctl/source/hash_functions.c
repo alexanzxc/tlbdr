@@ -775,7 +775,7 @@ int test_lin_dtlb_stlb_xor(int set_bits, int ways)
 		}
 
 		// Restore page table
-		switch_pages(walks[i].pte, walks[i].pte + 1);
+		//switch_pages(walks[i].pte, walks[i].pte + 1);
 		switch_pages(walks[i].pmd, walks[i].pmd + 1);
 	}
 
